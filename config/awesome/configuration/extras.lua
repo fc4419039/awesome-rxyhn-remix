@@ -29,13 +29,20 @@ client.connect_signal("request::manage", function(c)
         icon:finish()
     end
 
-    -- Evitar que programas abran en fullscreen al iniciar
+    -- Evitar que programas abran en fullscreen al iniciar (Firefox restaura estado después del manage)
+    local fs_guard
+    fs_guard = function()
+        if c.valid then
+            c.fullscreen = false
+        end
+    end
     if c.fullscreen then
         c.fullscreen = false
     end
-    gears.timer.start_new(0.5, function()
-        if c.valid and c.fullscreen then
-            c.fullscreen = false
+    c:connect_signal("property::fullscreen", fs_guard)
+    gears.timer.start_new(3, function()
+        if c.valid then
+            c:disconnect_signal("property::fullscreen", fs_guard)
         end
         return false
     end)
