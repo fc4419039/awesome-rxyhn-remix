@@ -159,7 +159,7 @@ ruled.client.connect_signal("request::rules", function()
         callback = function (c)
             -- make it floating, ontop and move it out of the way if the current tag is maximized
             local g = c.screen.geometry
-            if awful.layout.get(awful.screen.focused()) == awful.layout.suit.floating then
+            if awful.layout.get(c.screen) == awful.layout.suit.floating then
                 c.floating = true
                 c.ontop = true
                 c.width = g.width * 0.30
