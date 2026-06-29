@@ -316,6 +316,9 @@ screen.connect_signal("request::desktop_decoration", function(s)
         if fs and fs.mywibar then
             fs.wibar_visible = not fs.wibar_visible
             fs.mywibar.visible = fs.wibar_visible
+            local p = { right = dpi(5), top = dpi(15), bottom = dpi(15) }
+            p.left = fs.wibar_visible and (dpi(10) + dpi(10)) or 0
+            fs.padding = p
         end
     end
 
