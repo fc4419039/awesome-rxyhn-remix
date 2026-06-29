@@ -312,10 +312,10 @@ screen.connect_signal("request::desktop_decoration", function(s)
     -- Toggle wibar con Ctrl+F
     s.wibar_visible = true
     _G["wibar_toggle"] = function()
-        if s and s.mywibar then
-            s.wibar_visible = not s.wibar_visible
-            s.mywibar.visible = s.wibar_visible
-            wibar_update_padding(s.wibar_visible)
+        local fs = awful.screen.focused()
+        if fs and fs.mywibar then
+            fs.wibar_visible = not fs.wibar_visible
+            fs.mywibar.visible = fs.wibar_visible
         end
     end
 

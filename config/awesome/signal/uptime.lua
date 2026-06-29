@@ -33,8 +33,13 @@ end
 
 gears.timer({
     timeout = update_interval,
-    call_now = true,
+    call_now = false,
     autostart = true,
     callback = read_uptime
 })
+
+gears.timer.start_new(1, function()
+    read_uptime()
+    return false
+end)
 
