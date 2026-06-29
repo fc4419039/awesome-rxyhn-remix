@@ -10,6 +10,12 @@ local wibox = require("wibox")
 local naughty = require("naughty")
 local helpers = {}
 
+helpers.misc = {}
+
+function helpers.misc.case_insensitive_pattern(s)
+    return s:gsub("%a", function(c) return "[" .. c:lower() .. c:upper() .. "]" end)
+end
+
 function helpers.contains(_table, _c)
 	for _, c in ipairs(_table) do
 		if _c == c then
