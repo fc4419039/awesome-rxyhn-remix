@@ -293,7 +293,7 @@ screen.connect_signal("request::desktop_decoration", function(s)
         visible = true,
     })
 
-    s.mywibar.x = s.geometry.x + dpi(20)
+    s.mywibar.x = s.geometry.x + dpi(10)
 
     awesome_icon:buttons(gears.table.join(
         awful.button({}, 1, function()
