@@ -35,10 +35,94 @@ end
 -- Wibar
 -----------
 
+-- Variables globales por pantalla (para los handlers de señal que actualizan widgets)
+local screen_batts = setmetatable({}, {__mode = "k"})
+local screen_chargers = setmetatable({}, {__mode = "k"})
+
+-- Función de lerp para color de batería
+local function lerp_color(a, b, t)
+    local function ch(h, i) return tonumber(h:sub(i, i+1), 16) end
+    local r = math.floor(ch(a, 2) + (ch(b, 2) - ch(a, 2)) * t)
+    local g = math.floor(ch(a, 4) + (ch(b, 4) - ch(a, 4)) * t)
+    local bl = math.floor(ch(a, 6) + (ch(b, 6) - ch(a, 6)) * t)
+    return string.format("#%02x%02x%02x", r, g, bl)
+end
+
+awesome.connect_signal("signal::battery", function(value)
+    if not value or type(value) ~= "number" then return end
+    local c2 = beautiful.xcolor2
+    local c3 = beautiful.xcolor3
+    local c1 = beautiful.xcolor1
+    local fill_color
+
+    if value > 30 then
+        local t = (value - 30) / 70
+        fill_color = lerp_color(c3, c2, t)
+    else
+        local t = value / 30
+        fill_color = lerp_color(c1, c3, t)
+    end
+
+    for scr, data in pairs(screen_batts) do
+        if data.batt and data.batt.valid then
+            data.batt.colors = {fill_color}
+            data.batt.value = value
+        end
+    end
+end)
+
+awesome.connect_signal("signal::charger", function(state)
+    for scr, data in pairs(screen_chargers) do
+        if data.charge_icon and data.charge_icon.valid then
+            data.charge_icon.visible = state
+        end
+    end
+end)
+
+-- Handlers de fullscreen/unmanage (conectados UNA sola vez)
+client.connect_signal("property::fullscreen", function(c)
+    for scr in screen do
+        if scr._hide_for_client then
+            scr._hide_for_client(c)
+        end
+    end
+end)
+client.connect_signal("property::maximized", function(c)
+    for scr in screen do
+        if scr._hide_for_client then
+            scr._hide_for_client(c)
+        end
+    end
+end)
+
+client.connect_signal("unmanage", function()
+    for scr in screen do
+        if scr._on_unmanage then
+            scr._on_unmanage()
+        end
+    end
+end)
+
+-- Wibar por pantalla
 screen.connect_signal("request::desktop_decoration", function(s)
 
     -- dpi redondeado a entero (evita artifacts por posiciones fraccionales)
     local dpi = function(v) return math.floor(xresources.apply_dpi(v) + 0.5) end
+
+    -- Pantalla de error segura
+    local safe_pcall = function(f, ...)
+        local ok, err = pcall(f, ...)
+        if not ok then
+            local log = io.open("/tmp/awesome-wibar-errors.log", "a")
+            if log then
+                log:write(os.date("%H:%M:%S") .. " " .. tostring(err) .. "\n")
+                log:close()
+            end
+        end
+    end
+
+    -- Si ya existe wibar, salir (evita recreación en hotplug)
+    if s.mywibar then return end
 
     -- Launcher
     -------------
@@ -77,56 +161,8 @@ screen.connect_signal("request::desktop_decoration", function(s)
         widget = wibox.container.arcchart
     }
 
-    -- Pantalla de error segura
-    local safe_pcall = function(f, ...)
-        local ok, err = pcall(f, ...)
-        if not ok then
-            local log = io.open("/tmp/awesome-wibar-errors.log", "a")
-            if log then
-                log:write(os.date("%H:%M:%S") .. " " .. tostring(err) .. "\n")
-                log:close()
-            end
-        end
-    end
-
-    local function lerp_color(a, b, t)
-        local function ch(h, i) return tonumber(h:sub(i, i+1), 16) end
-        local r = math.floor(ch(a, 2) + (ch(b, 2) - ch(a, 2)) * t)
-        local g = math.floor(ch(a, 4) + (ch(b, 4) - ch(a, 4)) * t)
-        local bl = math.floor(ch(a, 6) + (ch(b, 6) - ch(a, 6)) * t)
-        return string.format("#%02x%02x%02x", r, g, bl)
-    end
-
-    awesome.connect_signal("signal::battery", function(value)
-        safe_pcall(function()
-            if not value or type(value) ~= "number" then return end
-            local c2 = beautiful.xcolor2
-            local c3 = beautiful.xcolor3
-            local c1 = beautiful.xcolor1
-            local fill_color
-
-            if value > 30 then
-                local t = (value - 30) / 70
-                fill_color = lerp_color(c3, c2, t)
-            else
-                local t = value / 30
-                fill_color = lerp_color(c1, c3, t)
-            end
-
-            batt.colors = {fill_color}
-            batt.value = value
-        end)
-    end)
-
-    awesome.connect_signal("signal::charger", function(state)
-        safe_pcall(function()
-            if state then
-                charge_icon.visible = true
-            else
-                charge_icon.visible = false
-            end
-        end)
-    end)
+    screen_batts[s] = {batt = batt}
+    screen_chargers[s] = {charge_icon = charge_icon}
 
     -- Time
     ----------
@@ -261,11 +297,11 @@ screen.connect_signal("request::desktop_decoration", function(s)
     }
 
     notif_center_button:connect_signal("mouse::enter", function()
-        notif_center_button.markup = helpers.colorize_text(notif_center_button.text, beautiful.xcolor4 .. 55)
+        notif_center_button.markup = helpers.colorize_text("", beautiful.xcolor4 .. 55)
     end)
 
     notif_center_button:connect_signal("mouse::leave", function()
-        notif_center_button.markup = helpers.colorize_text(notif_center_button.text, beautiful.xcolor4)
+        notif_center_button.markup = helpers.colorize_text("", beautiful.xcolor4)
     end)
 
     notif_center_button:buttons(gears.table.join(
@@ -355,36 +391,29 @@ screen.connect_signal("request::desktop_decoration", function(s)
         end
     end
 
-    client.connect_signal("property::fullscreen", function(c)
-        safe_pcall(hide_for_client, c)
-    end)
-    client.connect_signal("property::maximized", function(c)
-        safe_pcall(hide_for_client, c)
-    end)
-
-    client.connect_signal("unmanage", function()
+    -- Guardar referencias para los handlers globales (conectados UNA vez arriba)
+    s._hide_for_client = function(c) safe_pcall(hide_for_client, c) end
+    s._on_unmanage = function()
         safe_pcall(function()
-            for scr in screen do
-                if scr.mywibar and not scr.mywibar.visible then
-                    local still_full = false
-                    for _, cl in ipairs(client.get(scr)) do
-                        if cl.valid and (cl.fullscreen or cl.maximized) then
-                            still_full = true
-                            break
-                        end
+            if s.mywibar and not s.mywibar.visible then
+                local still_full = false
+                for _, cl in ipairs(client.get(s)) do
+                    if cl.valid and (cl.fullscreen or cl.maximized) then
+                        still_full = true
+                        break
                     end
-                    if not still_full then
-                        scr.mywibar.visible = true
-                        scr.wibar_visible = true
-                        local p = { right = dpi(5), top = dpi(15), bottom = dpi(15) }
-                        p.left = dpi(10) + dpi(10)
-                        scr.padding = p
-                        awful.layout.arrange(scr)
-                    end
+                end
+                if not still_full then
+                    s.mywibar.visible = true
+                    s.wibar_visible = true
+                    local p = { right = dpi(5), top = dpi(15), bottom = dpi(15) }
+                    p.left = dpi(10) + dpi(10)
+                    s.padding = p
+                    awful.layout.arrange(s)
                 end
             end
         end)
-    end)
+    end
 
     -- Padding inicial (barra visible)
     wibar_update_padding(true)
