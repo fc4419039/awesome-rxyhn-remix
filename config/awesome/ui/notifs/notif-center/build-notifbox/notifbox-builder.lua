@@ -116,7 +116,6 @@ notifbox_box = function(notif, icon, title, message, app, bgcolor)
 
 	-- Delete notification box
 	local notifbox_delete = function()
-		time_of_popup:stop()
 		notifbox_layout:remove_widgets(notifbox, true)
 	end
 
