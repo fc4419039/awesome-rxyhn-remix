@@ -42,7 +42,7 @@ client.connect_signal("request::manage", function(c)
     c:connect_signal("property::fullscreen", fs_guard)
     gears.timer.start_new(3, function()
         if c.valid then
-            c:disconnect_signal("property::fullscreen", fs_guard)
+            pcall(c.disconnect_signal, c, "property::fullscreen", fs_guard)
         end
         return false
     end)
