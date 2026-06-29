@@ -34,11 +34,6 @@ openweathermap_key = "YOUR_API_KEY" -- API Key (https://openweathermap.org)
 openweathermap_city_id = "YOUR_CITY_ID" -- City ID
 weather_units = "metric" -- Unit
 
--- Global Vars (Calculadas de forma segura con fallback)
-local focused_screen = awful.screen.focused()
-screen_width = focused_screen and focused_screen.geometry.width or 1920
-screen_height = focused_screen and focused_screen.geometry.height or 1080
-
 -- Garbage Collector Settings (Valores estables para AwesomeWM)
 collectgarbage("setpause", 110)
 collectgarbage("setstepmul", 1000)

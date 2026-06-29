@@ -14,11 +14,6 @@ local ruled = require("ruled")
 -- Helpers
 local helpers = require("helpers")
 
--- Get screen geometry (seguro con fallback para startups)
-local focused_screen = awful.screen.focused()
-local screen_width = focused_screen and focused_screen.geometry.width or 1920
-local screen_height = focused_screen and focused_screen.geometry.height or 1080
-
 ruled.client.connect_signal("request::rules", function()
 
     -- Global
@@ -129,10 +124,13 @@ ruled.client.connect_signal("request::rules", function()
         },
         properties = {
             floating = true,
-            width = screen_width * 0.25,
-            height = screen_height * 0.4,
             placement = helpers.centered_client_placement
-        }
+        },
+        callback = function(c)
+            local g = c.screen.geometry
+            c.width = g.width * 0.25
+            c.height = g.height * 0.4
+        end
     }
 
     -- Image viewers
@@ -144,11 +142,12 @@ ruled.client.connect_signal("request::rules", function()
             }
         },
         properties = {
-            floating = true,
-            width = screen_width * 0.7,
-            height = screen_height * 0.75
+            floating = true
         },
         callback = function (c)
+            local g = c.screen.geometry
+            c.width = g.width * 0.7
+            c.height = g.height * 0.75
             awful.placement.centered(c,{honor_padding = true, honor_workarea=true})
         end
     }
@@ -159,11 +158,12 @@ ruled.client.connect_signal("request::rules", function()
         properties = {},
         callback = function (c)
             -- make it floating, ontop and move it out of the way if the current tag is maximized
+            local g = c.screen.geometry
             if awful.layout.get(awful.screen.focused()) == awful.layout.suit.floating then
                 c.floating = true
                 c.ontop = true
-                c.width = screen_width * 0.30
-                c.height = screen_height * 0.35
+                c.width = g.width * 0.30
+                c.height = g.height * 0.35
                 awful.placement.bottom_right(c, {
                     honor_padding = true,
                     honor_workarea = true,

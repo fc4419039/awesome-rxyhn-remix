@@ -442,8 +442,9 @@ client.connect_signal("request::default_keybindings", function()
                 honor_padding = true
             })
             helpers.single_double_tap(nil, function()
-                helpers.float_and_resize(c, screen_width * 0.25,
-                                         screen_height * 0.28)
+                local g = c.screen.geometry
+                helpers.float_and_resize(c, g.width * 0.25,
+                                         g.height * 0.28)
             end)
         end)
     })

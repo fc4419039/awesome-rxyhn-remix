@@ -85,6 +85,8 @@ local function toggle_pop()
     if pop.visible then
         pop_timeout:again()
     else
+        pop.screen = awful.screen.focused()
+        awful.placement.bottom(pop, {margins = {bottom = dpi(100)}})
         pop.visible = true
         pop_timeout:start()
     end
