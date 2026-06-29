@@ -161,6 +161,10 @@ fi
 
 echo -e "${GREEN}✓ Archivos de configuración copiados${NC}"
 
+# Actualizar módulos externos a sus últimas versiones
+echo -e "${YELLOW}📦 Actualizando módulos externos (bling, rubato, layout-machi)...${NC}"
+bash "$(dirname "$0")/update_modules.sh" 2>/dev/null || echo -e "${YELLOW}  ⚠ No se pudieron actualizar, se usan los versionados en el repo${NC}"
+
 echo ""
 
 # =====================================================================
