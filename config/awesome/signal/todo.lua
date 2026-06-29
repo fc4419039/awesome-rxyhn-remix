@@ -13,7 +13,7 @@ local todo_file_path = user_home .. "/.todo"
 -- Requires inotify-tools
 local todo_subscribe_script = [[
    bash -c "
-   while inotifywait -e modify ]] .. todo_file_path .. [[ -qq; do 
+   while inotifywait -e modify ]] .. todo_file_path .. [[ -qq; do
        echo 'update'
    done
 "
@@ -24,7 +24,7 @@ local todo_script = [[
    touch ]] .. todo_file_path .. [[
 
    todo_done=$(todo raw done | wc -l)
-   todo_undone=$(todo raw todo | wc -l) 
+   todo_undone=$(todo raw todo | wc -l)
 
    echo \"$todo_done\"@@\"$todo_undone\"
 "

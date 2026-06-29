@@ -22,9 +22,9 @@ awful.screen.connect_for_each_screen(function(s)
     powermenu = {
         {"Power OFF", function() awful.spawn.with_shell("systemctl poweroff") end},
         {"Reboot", function() awful.spawn.with_shell("systemctl reboot") end},
-        {"Suspend", function() 
+        {"Suspend", function()
             lock_screen_show()
-            awful.spawn.with_shell("systemctl suspend")  
+            awful.spawn.with_shell("systemctl suspend")
         end},
         {"Lock Screen", function() lock_screen_show() end}
     }

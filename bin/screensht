@@ -29,7 +29,7 @@ function shot() {
 	check_dir
 
 	file_loc="${screenshot_dir}screensht_$(date +%y-%m-%d_%H:%M:%S).png"
-	
+
 	maim_command="$1"
 	notif_message="$2"
 

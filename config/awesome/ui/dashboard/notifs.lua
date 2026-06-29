@@ -84,7 +84,7 @@ notifs_clear:buttons(gears.table.join(
 
 local create_notif = function(icon, n)
     local time = os.date("%H:%M")
-    
+
     local box = wibox.widget {
         {
             {

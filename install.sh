@@ -18,40 +18,40 @@ echo -e "${YELLOW}🔍 Buscando AUR helper...${NC}"
 
 AUR_HELPER=""
 
-if command -v paru &> /dev/null; then 
+if command -v paru &> /dev/null; then
     echo -e "${GREEN}✓ Paru está instalado${NC}"
     AUR_HELPER="paru"
-elif command -v yay &> /dev/null; then 
+elif command -v yay &> /dev/null; then
     echo -e "${GREEN}✓ yay está instalado${NC}"
     AUR_HELPER="yay"
 else
     echo -e "${YELLOW}⚠️  No se encontró AUR helper. Instalando yay...${NC}"
-    
+
     # Instalar dependencias necesarias
     sudo pacman -S --needed --noconfirm base-devel git
-    
+
     # Crear directorio temporal
     TEMPDIR=$(mktemp -d)
     echo -e "${YELLOW}📁 Directorio temporal: $TEMPDIR${NC}"
-    
+
     # Clonar yay-bin
     git clone https://aur.archlinux.org/yay-bin.git "$TEMPDIR/yay-bin"
     cd "$TEMPDIR/yay-bin"
-    
+
     # Compilar e instalar
     makepkg -si --noconfirm
-    
+
     # Volver al directorio original
     cd - > /dev/null
-    
+
     # Limpiar
     rm -rf "$TEMPDIR"
-    
+
     # Verificar instalación
     if command -v yay &> /dev/null; then
         echo -e "${GREEN}✓ yay instalado correctamente${NC}"
         AUR_HELPER="yay"
-    else 
+    else
         echo -e "${RED}✗ Error instalando yay${NC}"
         exit 1
     fi
@@ -191,13 +191,13 @@ if [ -d "fonts" ] && [ "$(ls -A fonts)" ]; then
     # Instalar en ~/.local/share/fonts/ (usuario actual)
     cp -r fonts/* ~/.local/share/fonts/
     echo -e "${GREEN}✓ Fuentes instaladas en ~/.local/share/fonts/${NC}"
-    
+
     # Instalar en /usr/share/fonts/ (sistema completo)
     echo -e "${YELLOW}⚠️  Instalando fuentes en /usr/share/fonts/ (requiere sudo)...${NC}"
     sudo mkdir -p /usr/share/fonts
     sudo cp -r fonts/* /usr/share/fonts/
     echo -e "${GREEN}✓ Fuentes instaladas en /usr/share/fonts/${NC}"
-    
+
     # Actualizar cache de fuentes
     echo -e "${YELLOW}🔄 Actualizando cache de fuentes...${NC}"
     fc-cache -fv
@@ -279,18 +279,18 @@ if command -v sddm &> /dev/null; then
     if [ -d "sddm/sugar-candy" ]; then
         echo -e "${YELLOW}🔒 Copiando tema sugar-candy...${NC}"
         sudo cp -r sddm/sugar-candy /usr/share/sddm/themes/
-        
+
         sudo mkdir -p /etc/sddm.conf.d
-        
+
         echo -e "${YELLOW}⚙️  Activando Sugar-Candy...${NC}"
         sudo bash -c 'cat << EOF > /etc/sddm.conf.d/theme.conf
 [Theme]
 Current=sugar-candy
 EOF'
-        
+
         echo -e "${YELLOW}🔄 Habilitando servicio SDDM...${NC}"
         sudo systemctl enable sddm.service
-        
+
         echo -e "${GREEN}✓ SDDM configurado${NC}"
     else
         echo -e "${YELLOW}⚠️  Carpeta sugar-candy no encontrada${NC}"

@@ -143,7 +143,7 @@ awful.keyboard.append_global_keybindings({
     awful.key({modkey, "Shift"}, "k", function()
         awful.client.swap.byidx(-1)
     end,
-    {description = "swap with previous client by index", group = "client"}), 
+    {description = "swap with previous client by index", group = "client"}),
     awful.key({modkey}, "u",
         awful.client.urgent.jumpto,
     {description = "jump to urgent client", group = "client"}),
@@ -151,20 +151,20 @@ awful.keyboard.append_global_keybindings({
         awesome.emit_signal("bling::window_switcher::turn_on")
     end,
     {description = "window switcher", group = "client"})
-    
-  
+
+
   })
 
 -- Hotkeys
 awful.keyboard.append_global_keybindings({
 
     -- Brightness Control
-    awful.key({}, "XF86MonBrightnessUp", function() 
-        awful.spawn("brightnessctl set 5%+ -q") 
+    awful.key({}, "XF86MonBrightnessUp", function()
+        awful.spawn("brightnessctl set 5%+ -q")
     end,
     {description = "increase brightness", group = "hotkeys"}),
-    awful.key({}, "XF86MonBrightnessDown", function() 
-        awful.spawn("brightnessctl set 5%- -q") 
+    awful.key({}, "XF86MonBrightnessDown", function()
+        awful.spawn("brightnessctl set 5%- -q")
     end,
     {description = "decrease brightness", group = "hotkeys"}),
 
@@ -181,19 +181,19 @@ awful.keyboard.append_global_keybindings({
         helpers.volume_control(0)
     end,
     {description = "mute volume", group = "hotkeys"}),
-          
+
 -- Music (Controlado nativamente con Bling)
-    awful.key({}, "XF86AudioPlay", function() 
+    awful.key({}, "XF86AudioPlay", function()
         playerctl:play_pause()
     end,
     {description = "reproducir/pausar música", group = "multimedia"}),
 
-    awful.key({}, "XF86AudioNext", function() 
+    awful.key({}, "XF86AudioNext", function()
         playerctl:next()
     end,
     {description = "siguiente canción", group = "multimedia"}),
 
-    awful.key({}, "XF86AudioPrev", function() 
+    awful.key({}, "XF86AudioPrev", function()
         playerctl:previous()
     end,
     {description = "canción anterior", group = "multimedia"}),
@@ -377,20 +377,20 @@ client.connect_signal("request::default_keybindings", function()
         awful.key({modkey, "Shift"}, "f", function(c)
             c.fullscreen = not c.fullscreen
             c:raise()
-        end, 
+        end,
         {description = "toggle fullscreen", group = "client"}),
-        awful.key({modkey}, "q", function(c) 
-            c:kill() 
+        awful.key({modkey}, "q", function(c)
+            c:kill()
         end,
         {description = "close", group = "client"}),
-        awful.key({modkey, "Control"}, "space", 
+        awful.key({modkey, "Control"}, "space",
             awful.client.floating.toggle,
         {description = "toggle floating", group = "client"}),
-        awful.key({modkey, "Control"}, "Return", function(c) 
-            c:swap(awful.client.getmaster()) 
+        awful.key({modkey, "Control"}, "Return", function(c)
+            c:swap(awful.client.getmaster())
         end,
         {description = "move to master", group = "client"}),
-        awful.key({modkey}, "o", function(c) 
+        awful.key({modkey}, "o", function(c)
             c:move_to_screen() end,
         {description = "move to screen", group = "client"}),
         awful.key({modkey, shift}, "b", function(c)
@@ -434,7 +434,7 @@ client.connect_signal("request::default_keybindings", function()
 
         awful.key({modkey}, "-", function() helpers.resize_gaps(-5) end,
                   {description = "subtract gaps", group = "screen"}),
-        -- Single tap: Center client 
+        -- Single tap: Center client
         -- Double tap: Center client + Floating + Resize
         awful.key({modkey}, "c", function(c)
             awful.placement.centered(c, {

@@ -40,8 +40,8 @@ local create_media_button = function(symbol, color, command, playpause)
         end
     end)
 
-    icon:buttons(gears.table.join(awful.button({}, 1, function() 
-        if command then command() end 
+    icon:buttons(gears.table.join(awful.button({}, 1, function()
+        if command then command() end
     end)))
 
     icon:connect_signal("mouse::enter", function()

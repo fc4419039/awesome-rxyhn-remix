@@ -176,7 +176,7 @@ local function draw_widget(
                   },
                 },
             })
-      
+
     return wibox.widget({
       {
           {

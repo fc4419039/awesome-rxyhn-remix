@@ -26,7 +26,7 @@ if [[ "$TARGET_PLAYER" == *"mpd"* ]]; then
     # Ajusta la ruta de tu librería de música si es necesario
     MUSIC_DIR="$HOME/Música"
     FILE=$(mpc current -f "%file%" 2>/dev/null)
-    
+
     if [ -n "$FILE" ]; then
         # Extrae la carátula incrustada a un archivo temporal
         ffmpeg -y -i "$MUSIC_DIR/$FILE" -an -vcodec copy /tmp/mpd_cover.jpg &>/dev/null
@@ -37,7 +37,7 @@ if [[ "$TARGET_PLAYER" == *"mpd"* ]]; then
 else
     # Para Spotify, Firefox (Youtube), etc., usamos la URL de mpris:artUrl
     ART_URL=$(playerctl -p "$TARGET_PLAYER" metadata mpris:artUrl 2>/dev/null)
-    
+
     if [[ "$ART_URL" == file://* ]]; then
         # Si es una ruta local (como Spotify a veces)
         echo "${ART_URL#file://}"

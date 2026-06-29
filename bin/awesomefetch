@@ -1,5 +1,5 @@
 #!/bin/bash
-# Author: https://github.com/rxyhn 
+# Author: https://github.com/rxyhn
 
 user="${USER}"
 shell="$(basename ${SHELL})"
@@ -13,7 +13,7 @@ end='\033[0m'
 
 printf '%b' "
  ${bold}${white}  __________ ${end}   ${bold}welcome,${user}${end}
- ${bold}${white} |______    |${end}  
+ ${bold}${white} |______    |${end}
  ${bold}${white}  ______|   |${end}   ${bold}os${end} ${distro}
  ${bold}${white} |   ____   |${end}   ${bold}sh${end} ${shell}
  ${bold}${white} |  |__  |  |${end}   ${bold}wm${end} ${wm}
