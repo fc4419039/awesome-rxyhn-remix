@@ -1,0 +1,20 @@
+#!/bin/bash
+# Pre-commit hook: revisa sintaxis de todos los .lua antes de commitear
+
+echo "🔍 Revisando sintaxis Lua..."
+errors=0
+while IFS= read -r -d '' f; do
+    if ! luac -p "$f" 2>/dev/null; then
+        luac -p "$f" 2>&1 | head -3
+        echo "  ✗ $f"
+        errors=$((errors + 1))
+    fi
+done < <(find . -name '*.lua' -not -path './.git/*' -print0)
+
+if [ $errors -gt 0 ]; then
+    echo ""
+    echo "✗ $errors archivos con errores — commit cancelado"
+    echo "  Corrige los errores o haz git commit --no-verify para saltar"
+    exit 1
+fi
+echo "✓ Todos los archivos Lua OK"

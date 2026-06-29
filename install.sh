@@ -104,6 +104,10 @@ sudo systemctl start acpid.service
 
 echo -e "${GREEN}✓ Servicios habilitados${NC}"
 
+# Configurar hooks de git (validación sintaxis Lua al commitear)
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+git config core.hooksPath "$SCRIPT_DIR/.githooks" 2>/dev/null && echo -e "${GREEN}✓ Git hooks configurados${NC}"
+
 echo ""
 
 # =====================================================================
@@ -168,6 +172,13 @@ bash "$(dirname "$0")/update_modules.sh" 2>/dev/null || echo -e "${YELLOW}  ⚠ 
 # Activar timer de limpieza automática (cada 3 días)
 systemctl --user daemon-reload 2>/dev/null || true
 systemctl --user enable --now limpiar-sistema.timer 2>/dev/null && echo -e "${GREEN}✓ Timer de limpieza automática activado${NC}" || true
+
+# Generar secrets.lua desde template si no existe
+if [ ! -f "$HOME/.config/awesome/secrets.lua" ]; then
+    cp config/awesome/secrets.lua.template "$HOME/.config/awesome/secrets.lua"
+    echo -e "${YELLOW}🔑 Edita ~/.config/awesome/secrets.lua con tu API key de OpenWeather${NC}"
+    echo -e "${YELLOW}   (consíguela gratis en https://openweathermap.org/api)${NC}"
+fi
 
 echo ""
 

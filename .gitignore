@@ -9,7 +9,8 @@
 *__pycache__/
 *.pyc
 
-# Spotify y MPD (Datos personales o locales)
+# Datos locales/personales
+config/awesome/secrets.lua
 config/spotify/Users/
 config/mpd/database
 config/mpd/log
