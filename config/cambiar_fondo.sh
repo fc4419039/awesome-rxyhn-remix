@@ -1,9 +1,20 @@
 #!/bin/bash
 
-# RUTA A TU CARPETA DE FOTOS
-# Cambia esto por la ruta real donde guardas tus fondos
 DIR_FONDOS="$HOME/fondos"
+QUEUE_DIR="$HOME/.cache"
+QUEUE_FILE="$QUEUE_DIR/fondo_queue.txt"
 
-# Selecciona una imagen al azar y la aplica con feh
-# --bg-fill estira la imagen llenando la pantalla sin deformarla
-feh --bg-fill "$(find "$DIR_FONDOS" -type f | shuf -n 1)"
+mkdir -p "$QUEUE_DIR"
+
+if [ ! -s "$QUEUE_FILE" ]; then
+    mapfile -t files < <(find "$DIR_FONDOS" -type f)
+    if [ ${#files[@]} -eq 0 ]; then
+        exit 1
+    fi
+    printf "%s\n" "${files[@]}" | shuf > "$QUEUE_FILE"
+fi
+
+WALLPAPER=$(head -n 1 "$QUEUE_FILE")
+tail -n +2 "$QUEUE_FILE" > "${QUEUE_FILE}.tmp" && mv "${QUEUE_FILE}.tmp" "$QUEUE_FILE"
+
+feh --bg-fill "$WALLPAPER"
