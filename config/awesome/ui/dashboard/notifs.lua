@@ -105,20 +105,15 @@ local create_notif = function(icon, n)
                 {
                     {
                         nil,
-                        {
                             {
                                 {
-                                    step_function = wibox.container.scroll.step_functions.waiting_nonlinear_back_and_forth,
-                                    speed = 50,
                                     {
-                                        markup = n.title or "Notification",
+                                        markup = helpers.colorize_text(n.title or "Notification", beautiful.xforeground .. "b3"),
                                         font = beautiful.font_name .. "medium 8",
                                         align = "left",
+                                        forced_width = dpi(140),
                                         widget = wibox.widget.textbox
                                     },
-                                    forced_width = dpi(140),
-                                    widget = wibox.container.scroll.horizontal
-                                },
                                 nil,
                                 {
                                     markup = helpers.colorize_text(time, beautiful.xforeground .. "b3"),

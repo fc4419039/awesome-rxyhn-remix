@@ -114,7 +114,6 @@ function M.create(s)
     slide.ended:subscribe(function()
         if dashboard_status then
             dashboard.visible = false
-            slide.duration = 0.4
         end
     end)
 
@@ -126,7 +125,6 @@ function M.create(s)
 
     local function dashboard_hide()
         slide:set(s.geometry.x - 375)
-        slide.duration = 0.2
         dashboard_status = true
     end
 
