@@ -29,6 +29,7 @@ Configuración de AwesomeWM basada en el trabajo original de **rxyhn**, completa
 | Terminal | kitty |
 | Shell | zsh + powerlevel10k |
 | Editor | neovim (NvChad) |
+| AI Agent | opencode (configuración incluida) |
 | Audio | pipewire + wireplumber |
 | Compositor | picom (blur & transparency) |
 | Launcher | rofi |
@@ -223,6 +224,7 @@ Panel desplegable al hacer clic en batería/reloj:
 - **Selector de layouts** con vista previa de iconos
 - **Scripts**: cambio de fondo dinámico, gestor de red, Bluetooth, power menu
 - **Lock screen**: usa PAM con `liblua_pam.so` compilado para Arch Linux x86_64. Si usas otra distro/arquitectura, recompílalo desde `ui/lockscreen/lib/`
+- **OpenCode**: agente de IA configurado listo para usar (`opencode.json` incluido)
 
 <details>
 <summary><strong>Instalación</strong></summary>
@@ -246,7 +248,8 @@ chmod +x install.sh
 yay -Sy awesome-git picom-git kitty rofi todo-bin acpi acpid \
 wireless_tools jq inotify-tools polkit-gnome xdotool xclip maim \
 brightnessctl alsa-utils alsa-tools pipewire pipewire-pulse wireplumber \
-playerctl feh zsh neovim btop lsd bat python-gobject pipewire-alsa --needed
+playerctl feh zsh neovim btop lsd bat python-gobject pipewire-alsa \
+opencode --needed
 ```
 
 2. **Fuentes**: Iosevka Nerd Font, Material Design Icons, Weather Icons + fuentes icomoon incluidas en `fonts/`

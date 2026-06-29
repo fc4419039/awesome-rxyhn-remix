@@ -73,7 +73,7 @@ $AUR_HELPER -Sy --needed awesome-git picom-git kitty rofi todo-bin acpi acpid \
     nerd-fonts-jetbrains-mono ttf-iosevka-nerd ttf-font-awesome ttf-material-design-icons ttf-weather-icons \
     zsh-syntax-highlighting zsh-autosuggestions zoxide feh zsh neovim \
     btop lsd bat python-gobject pipewire-alsa \
-    powerlevel10k sound-theme-freedesktop --needed
+    powerlevel10k sound-theme-freedesktop opencode --needed
 
 echo -e "${GREEN}✓ Dependencias instaladas${NC}"
 
