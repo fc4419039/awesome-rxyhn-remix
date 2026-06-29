@@ -65,7 +65,7 @@ require("ui")
 -- Wallpapers y scripts de sesión
 awful.spawn(os.getenv("HOME") .. "/.config/cambiar_fondo.sh")
 
--- Temperatura de color neutral (6500K = medio entre frío y cálido)
+-- Temperatura de color ligeramente fría (7000K)
 awful.spawn(os.getenv("HOME") .. "/.config/awesome/scripts/color_temp.sh")
 
 -- Auto-detectar monitores externos y re-aplicar temperatura
