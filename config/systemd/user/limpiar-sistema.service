@@ -1,0 +1,6 @@
+[Unit]
+Description=Limpieza periódica del sistema
+
+[Service]
+Type=oneshot
+ExecStart=%h/.config/limpiar_sistema.sh

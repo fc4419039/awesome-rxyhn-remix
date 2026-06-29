@@ -1,0 +1,10 @@
+[Unit]
+Description=Ejecutar limpieza del sistema cada 3 días
+
+[Timer]
+OnCalendar=*-*-* 04:00:00
+PeriodSec=3d
+Persistent=true
+
+[Install]
+WantedBy=timers.target

@@ -165,6 +165,10 @@ echo -e "${GREEN}✓ Archivos de configuración copiados${NC}"
 echo -e "${YELLOW}📦 Actualizando módulos externos (bling, rubato, layout-machi)...${NC}"
 bash "$(dirname "$0")/update_modules.sh" 2>/dev/null || echo -e "${YELLOW}  ⚠ No se pudieron actualizar, se usan los versionados en el repo${NC}"
 
+# Activar timer de limpieza automática (cada 3 días)
+systemctl --user daemon-reload 2>/dev/null || true
+systemctl --user enable --now limpiar-sistema.timer 2>/dev/null && echo -e "${GREEN}✓ Timer de limpieza automática activado${NC}" || true
+
 echo ""
 
 # =====================================================================
