@@ -1,7 +1,7 @@
 #!/bin/bash
 # Lanza kitty con split horizontal: ncmpcpp + carátula automática
 
-kitty --session "$HOME/.config/ncmpcpp/session.conf" \
+kitty --session /home/spectre/.config/ncmpcpp/session.conf \
       --class "music" \
       --title "ncmpcpp" \
-      --config "$HOME/.config/ncmpcpp/kitty-music.conf"
+      --config /home/spectre/.config/ncmpcpp/kitty-music.conf
