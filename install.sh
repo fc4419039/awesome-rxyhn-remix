@@ -85,13 +85,8 @@ echo ""
 echo -e "${YELLOW}🤖 Instalando OpenCode (AI Agent)...${NC}"
 
 if ! command -v opencode &> /dev/null; then
-    echo -e "${YELLOW}📦 Clonando e instalando opencode...${NC}"
-    TEMPDIR=$(mktemp -d)
-    git clone --depth 1 https://github.com/anomalyco/opencode.git "$TEMPDIR/opencode"
-    cd "$TEMPDIR/opencode"
-    npm install -g opencode-ai 2>/dev/null || curl -fsSL https://opencode.ai/install | bash
-    cd - > /dev/null
-    rm -rf "$TEMPDIR"
+    echo -e "${YELLOW}📦 Instalando opencode...${NC}"
+    curl -fsSL https://opencode.ai/install | bash
     echo -e "${GREEN}✓ OpenCode instalado${NC}"
 else
     echo -e "${GREEN}✓ OpenCode ya está instalado${NC}"
