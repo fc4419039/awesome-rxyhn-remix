@@ -66,6 +66,12 @@ ruled.client.connect_signal("request::rules", function()
         }
     }
 
+    -- Firefox: ignorar size_hints para que respete el tiling al cambiar workarea
+    ruled.client.append_rule {
+        rule = { class = "firefox" },
+        properties = { honor_size_hints = false }
+    }
+
     -- Float
     ruled.client.append_rule {
         id = "floating",
