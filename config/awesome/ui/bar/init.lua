@@ -77,6 +77,18 @@ screen.connect_signal("request::desktop_decoration", function(s)
         widget = wibox.container.arcchart
     }
 
+    -- Pantalla de error segura
+    local safe_pcall = function(f, ...)
+        local ok, err = pcall(f, ...)
+        if not ok then
+            local log = io.open("/tmp/awesome-wibar-errors.log", "a")
+            if log then
+                log:write(os.date("%H:%M:%S") .. " " .. tostring(err) .. "\n")
+                log:close()
+            end
+        end
+    end
+
     local function lerp_color(a, b, t)
         local function ch(h, i) return tonumber(h:sub(i, i+1), 16) end
         local r = math.floor(ch(a, 2) + (ch(b, 2) - ch(a, 2)) * t)
@@ -86,7 +98,7 @@ screen.connect_signal("request::desktop_decoration", function(s)
     end
 
     awesome.connect_signal("signal::battery", function(value)
-        pcall(function()
+        safe_pcall(function()
             if not value or type(value) ~= "number" then return end
             local c2 = beautiful.xcolor2
             local c3 = beautiful.xcolor3
@@ -107,7 +119,7 @@ screen.connect_signal("request::desktop_decoration", function(s)
     end)
 
     awesome.connect_signal("signal::charger", function(state)
-        pcall(function()
+        safe_pcall(function()
             if state then
                 charge_icon.visible = true
             else
@@ -197,8 +209,8 @@ screen.connect_signal("request::desktop_decoration", function(s)
     local slide = rubato.timed{
         pos = s.geometry.x + dpi(-300),
         rate = 60,
-        intro = 0.3,
-        duration = 0.8,
+        intro = 0.05,
+        duration = 0.4,
         easing = rubato.quadratic,
         awestore_compat = true,
         subscribed = function(pos) notif_center.x = pos end
@@ -343,29 +355,35 @@ screen.connect_signal("request::desktop_decoration", function(s)
         end
     end
 
-    client.connect_signal("property::fullscreen", hide_for_client)
-    client.connect_signal("property::maximized", hide_for_client)
+    client.connect_signal("property::fullscreen", function(c)
+        safe_pcall(hide_for_client, c)
+    end)
+    client.connect_signal("property::maximized", function(c)
+        safe_pcall(hide_for_client, c)
+    end)
 
     client.connect_signal("unmanage", function()
-        for scr in screen do
-            if scr.mywibar and not scr.mywibar.visible then
-                local still_full = false
-                for _, cl in ipairs(client.get(scr)) do
-                    if cl.valid and (cl.fullscreen or cl.maximized) then
-                        still_full = true
-                        break
+        safe_pcall(function()
+            for scr in screen do
+                if scr.mywibar and not scr.mywibar.visible then
+                    local still_full = false
+                    for _, cl in ipairs(client.get(scr)) do
+                        if cl.valid and (cl.fullscreen or cl.maximized) then
+                            still_full = true
+                            break
+                        end
+                    end
+                    if not still_full then
+                        scr.mywibar.visible = true
+                        scr.wibar_visible = true
+                        local p = { right = dpi(5), top = dpi(15), bottom = dpi(15) }
+                        p.left = dpi(10) + dpi(10)
+                        scr.padding = p
+                        awful.layout.arrange(scr)
                     end
                 end
-                if not still_full then
-                    scr.mywibar.visible = true
-                    scr.wibar_visible = true
-                    local p = { right = dpi(5), top = dpi(15), bottom = dpi(15) }
-                    p.left = dpi(10) + dpi(10)
-                    scr.padding = p
-                    awful.layout.arrange(scr)
-                end
             end
-        end
+        end)
     end)
 
     -- Padding inicial (barra visible)
