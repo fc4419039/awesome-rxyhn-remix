@@ -65,14 +65,16 @@ require("ui")
 -- Wallpapers y scripts de sesión
 awful.spawn(os.getenv("HOME") .. "/.config/cambiar_fondo.sh")
 
--- Temperatura de color (8500K) para ambos monitores
+-- Temperatura de color neutral (6500K = medio entre frío y cálido)
 awful.spawn(os.getenv("HOME") .. "/.config/awesome/scripts/color_temp.sh")
 
--- Re-aplicar temperatura al conectar/desconectar monitor
+-- Auto-detectar monitores externos y re-aplicar temperatura
 screen.connect_signal("added", function()
+    awful.spawn.with_shell("autorandr --change")
     awful.spawn.with_shell(os.getenv("HOME") .. "/.config/awesome/scripts/color_temp.sh")
 end)
 screen.connect_signal("removed", function()
+    awful.spawn.with_shell("autorandr --change")
     awful.spawn.with_shell(os.getenv("HOME") .. "/.config/awesome/scripts/color_temp.sh")
 end)
 
