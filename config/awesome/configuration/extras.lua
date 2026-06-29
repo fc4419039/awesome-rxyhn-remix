@@ -33,6 +33,12 @@ client.connect_signal("request::manage", function(c)
     if c.fullscreen then
         c.fullscreen = false
     end
+    gears.timer.start_new(0.5, function()
+        if c.valid and c.fullscreen then
+            c.fullscreen = false
+        end
+        return false
+    end)
 
     -- Set the windows at the slave,
     if awesome.startup and not c.size_hints.user_position and
