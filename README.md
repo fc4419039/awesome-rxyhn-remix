@@ -5,7 +5,7 @@
 <br>
 
 <div align="center">
-    <img src="assets/awesome.png" alt="Rice Preview">
+    <img src=".github/assets/awesome.png" alt="Rice Preview">
 </div>
 
 <br>
@@ -249,7 +249,7 @@ brightnessctl alsa-utils alsa-tools pipewire pipewire-pulse wireplumber \
 playerctl feh zsh neovim btop lsd bat python-gobject pipewire-alsa --needed
 ```
 
-2. **Fuentes**: Iosevka Nerd Font, Material Design Icons, icomoon
+2. **Fuentes**: Iosevka Nerd Font, Material Design Icons, Weather Icons + fuentes icomoon incluidas en `fonts/`
 
 3. **Copiar config**:
 

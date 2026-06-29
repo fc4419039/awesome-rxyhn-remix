@@ -70,7 +70,7 @@ $AUR_HELPER -Sy --needed awesome-git picom-git kitty rofi todo-bin acpi acpid \
     playerctl spotify onlyoffice-bin mpd ncmpcpp mpd-mpris blueman pasystray \
     touchegg redshift networkmanager bluez libnotify curl ffmpeg gpick \
     imagemagick thunar firefox krita xorg-xrdb \
-    nerd-fonts-jetbrains-mono ttf-font-awesome ttf-material-design-icons \
+    nerd-fonts-jetbrains-mono ttf-font-awesome ttf-material-design-icons ttf-weather-icons \
     zsh-syntax-highlighting zsh-autosuggestions zoxide feh zsh neovim \
     btop lsd bat python-gobject pipewire-alsa \
     powerlevel10k sound-theme-freedesktop --needed
@@ -187,12 +187,8 @@ if [ -f ~/.config/cambiar_fondo.sh ]; then
     chmod +x ~/.config/cambiar_fondo.sh
 fi
 
-if [ -f ~/.config/autostart ]; then
-    chmod +x ~/.config/autostart
-fi
-
-if [ -f ~/.config/configuration/autostart ]; then
-    chmod +x ~/.config/configuration/autostart
+if [ -f ~/.config/awesome/configuration/autostart ]; then
+    chmod +x ~/.config/awesome/configuration/autostart
 fi
 
 echo -e "${GREEN}✓ Permisos configurados${NC}"
