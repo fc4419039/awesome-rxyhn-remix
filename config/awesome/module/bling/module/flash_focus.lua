@@ -6,10 +6,6 @@ local stp = beautiful.flash_focus_step or 0.01
 
 local flashfocus = function(c)
     if c and #c.screen.clients > 1 then
-        if c._flash_timer then
-            c._flash_timer:stop()
-            c._flash_timer = nil
-        end
         c.opacity = op
         local q = op
         local g = gears.timer({
@@ -17,7 +13,6 @@ local flashfocus = function(c)
             call_now = false,
             autostart = true,
         })
-        c._flash_timer = g
 
         g:connect_signal("timeout", function()
             if not c.valid then
@@ -26,17 +21,11 @@ local flashfocus = function(c)
             if q >= 1 then
                 c.opacity = 1
                 g:stop()
-                c._flash_timer = nil
             else
                 c.opacity = q
                 q = q + stp
             end
         end)
-    end
-
-    -- Bring the focused client to the top
-    if c then
-        c:raise()
     end
 end
 
