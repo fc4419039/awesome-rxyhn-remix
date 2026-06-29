@@ -341,6 +341,23 @@ screen.connect_signal("request::desktop_decoration", function(s)
     client.connect_signal("property::fullscreen", hide_for_client)
     client.connect_signal("property::maximized", hide_for_client)
 
+    client.connect_signal("unmanage", function(c)
+        if c.screen == s and s.mywibar and not s.mywibar.visible then
+            local still_full = false
+            for _, cl in ipairs(client.get(s)) do
+                if cl.valid and (cl.fullscreen or cl.maximized) then
+                    still_full = true
+                    break
+                end
+            end
+            if not still_full then
+                s.mywibar.visible = true
+                s.wibar_visible = true
+                wibar_update_padding(true)
+            end
+        end
+    end)
+
     -- Padding inicial (barra visible)
     wibar_update_padding(true)
 
