@@ -1,0 +1,82 @@
+* {
+    bg:                #061115;
+    bg-alt:            #0c1a20;
+    fg:                #d9d7d6;
+    fg-dim:            #484e5b;
+    cyan:              #67afc1;
+    blue:              #6791c9;
+    yellow:            #e5c07b;
+    green:             #98c379;
+    red:               #df5b61;
+    orange:            #d19a66;
+    purple:            #c678dd;
+
+    background-color:  transparent;
+    text-color:        @fg;
+}
+
+window {
+    transparency:      "real";
+    width:             420px;
+    location:          center;
+    anchor:            center;
+    border-radius:     16px;
+    background-color:  @bg;
+    border:            1px;
+    border-color:      @cyan;
+    padding:           6px;
+}
+
+mainbox {
+    spacing:           0;
+    padding:           0;
+    background-color:  transparent;
+}
+
+inputbar {
+    enabled:           false;
+}
+
+message {
+    background-color:  @bg-alt;
+    border-radius:     10px;
+    padding:           10px 14px;
+    margin:           4px 4px 0 4px;
+    text-color:        @fg;
+    font:              "Iosevka Nerd Font Mono 11";
+    horizontal-align:  0.5;
+}
+
+listview {
+    spacing:           2px;
+    padding:          4px;
+    scrollbar:         false;
+    background-color:  transparent;
+    layout:            vertical;
+    lines:             7;
+}
+
+element {
+    padding:           8px 14px;
+    border-radius:     10px;
+    cursor:            pointer;
+    text-color:        @fg;
+    background-color:  transparent;
+    font:              "Iosevka Nerd Font Mono 10";
+}
+
+element selected {
+    background-color:  @cyan;
+    text-color:        @bg;
+    font:              "Iosevka Nerd Font Mono 10";
+}
+
+element-icon {
+    size:              18px;
+    padding:           0 8px 0 0;
+}
+
+element-text {
+    vertical-align:    0.5;
+    horizontal-align:  0.0;
+}

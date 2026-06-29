@@ -13,6 +13,44 @@ local dpi = xresources.apply_dpi
 -- Helpers
 local helpers = require("helpers")
 
+local function saturate(color, amount)
+    local function ch(h, i) return tonumber(h:sub(i, i+1), 16) end
+    local r, g, b = ch(color, 2), ch(color, 4), ch(color, 6)
+    r, g, b = r / 255, g / 255, b / 255
+    local mx, mn = math.max(r, g, b), math.min(r, g, b)
+    local d = mx - mn
+    if d == 0 then return color end
+    local hh = mx == r and 60 * ((g - b) / d % 6)
+             or mx == g and 60 * ((b - r) / d + 2)
+             or 60 * ((r - g) / d + 4)
+    local ss, vv = d / mx, mx
+    ss = math.min(1, ss * (1 + amount))
+    vv = math.min(1, vv + (1 - vv) * amount * 0.6)
+    local c = vv * ss
+    local x = c * (1 - math.abs((hh / 60) % 2 - 1))
+    local nr, ng, nb
+    if hh < 60 then nr, ng, nb = c, x, 0
+    elseif hh < 120 then nr, ng, nb = x, c, 0
+    elseif hh < 180 then nr, ng, nb = 0, c, x
+    elseif hh < 240 then nr, ng, nb = 0, x, c
+    elseif hh < 300 then nr, ng, nb = x, 0, c
+    else nr, ng, nb = c, 0, x end
+    local m = vv - c
+    return string.format("#%02x%02x%02x",
+        math.floor((nr + m) * 255),
+        math.floor((ng + m) * 255),
+        math.floor((nb + m) * 255))
+end
+
+-- Colores brillantes para decoraciones
+theme.deco_red    = saturate(xrdb.color1, 0.25)
+theme.deco_green  = saturate(xrdb.color2, 0.25)
+theme.deco_yellow = saturate(xrdb.color3, 0.25)
+theme.deco_blue   = saturate(xrdb.color4, 0.25)
+theme.deco_purple = saturate(xrdb.color5, 0.25)
+theme.deco_cyan   = saturate(xrdb.color6, 0.25)
+theme.deco_gray   = saturate(xrdb.color8, 0.2)
+theme.deco_fg     = saturate(xrdb.foreground, 0.5)
 
 -- Theme
 ----------
@@ -86,14 +124,14 @@ theme.fg_minimize = theme.xcolor0
 -- Borders
 theme.border_width = 2
 theme.oof_border_width = dpi(1)
-theme.border_normal = theme.xcolor8
-theme.border_focus = "#7accff"
+theme.border_normal = "#22d3ee"
+theme.border_focus = "#22d3ee"
 theme.widget_border_width = dpi(2)
 theme.widget_border_color = theme.darker_bg
 
 -- Radius
 theme.border_radius = dpi(12)
-theme.client_radius = dpi(10)
+theme.client_radius = dpi(16)
 theme.dashboard_radius = dpi(10)
 theme.bar_radius = dpi(10)
 
@@ -105,7 +143,7 @@ theme.taglist_font = theme.font_taglist
 theme.taglist_bg = theme.wibar_bg
 
 theme.taglist_bg_focus = theme.lighter_bg
-theme.taglist_fg_focus = theme.xcolor3
+theme.taglist_fg_focus = theme.deco_yellow
 
 theme.taglist_bg_urgent = theme.wibar_bg
 theme.taglist_fg_urgent = theme.xcolor6
@@ -129,15 +167,15 @@ theme.taglist_shape_volatile = helpers.rrect(theme.bar_radius)
 
 -- Titlebars
 theme.titlebar_enabled = true
-theme.titlebar_size = dpi(28)
+theme.titlebar_size = dpi(31)
 theme.titlebar_unfocused = theme.xcolor0
 
 -- Pop up notifications
 theme.pop_size = dpi(180)
 theme.pop_bg = theme.xbackground
 theme.pop_bar_bg = theme.xcolor0
-theme.pop_vol_color = theme.xcolor4
-theme.pop_brightness_color = theme.xcolor5
+theme.pop_vol_color = theme.deco_blue
+theme.pop_brightness_color = theme.deco_purple
 theme.pop_fg = theme.xforeground
 theme.pop_border_radius = theme.border_radius
 

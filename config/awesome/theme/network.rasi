@@ -1,74 +1,118 @@
-* {
-    bg:                #061115;
-    bg-alt:            #0c1a20;
-    fg:                #d9d7d6;
-    fg-dim:            #484e5b;
-    cyan:              #67afc1;
-    blue:              #6791c9;
-    red:               #df5b61;
+@theme "/dev/null"
 
-    background-color:  transparent;
-    text-color:        @fg;
+* {
+    bg:                     #0d0d1a;
+    fg:                     #e2e8f0;
+    accent:                 #22d3ee;
+    accent-dim:             #000000;
+    surface:                #1a1a2e;
+    darker:                 #141428;
+    active:                 #06b6d4;
+    active-dim:             #0891b2;
+    muted:                  #3d3d5c;
+    rad:                    16px;
+    rad-sm:                 10px;
+
+    background-color:       transparent;
+    text-color:             @fg;
 }
 
 window {
-    transparency:      "real";
-    width:             320px;
-    location:          center;
-    anchor:            center;
-    border-radius:     12px;
-    background-color:  @bg;
-    border:            1px;
-    border-color:      @cyan;
-    padding:           4px;
+    transparency:           "real";
+    width:                  380px;
+    height:                 520px;
+    location:               center;
+    anchor:                 center;
+    border-radius:          @rad;
+    border:                 2px;
+    border-color:           @accent;
+    background-color:       #0d0d1aF2;
+    padding:                0;
 }
 
 mainbox {
-    spacing:           0;
-    padding:           0;
-    background-color:  transparent;
+    spacing:                0;
+    padding:                0;
+    background-color:       transparent;
 }
 
 inputbar {
-    enabled:           true;
-    background-color:  @bg-alt;
-    border-radius:     8px;
-    padding:           6px 10px;
-    margin:           4px 4px 0 4px;
-    text-color:        @fg;
-    font:              "Iosevka Nerd Font Mono 9";
-    placeholder:       "Search...";
-    placeholder-color: @fg-dim;
+    enabled:                true;
+    margin:                 20px 20px 0 20px;
+    border-radius:          @rad;
+    background-color:       @darker;
+    border:                 1px;
+    border-color:           @muted;
+    padding:                10px 16px;
+    text-color:             @fg;
+    font:                   "JetBrainsMono Nerd Font 10";
+    placeholder:            "Search...";
+    placeholder-color:      @muted;
+    children:               [entry];
+}
+
+entry {
+    expand:                 true;
+    padding:                0;
+    border-radius:          @rad;
+    background-color:       transparent;
+    text-color:             @fg;
+    font:                   "JetBrainsMono Nerd Font 10";
+    placeholder:            "Search...";
+    placeholder-color:      @muted;
 }
 
 listview {
-    spacing:           2px;
-    padding:          4px;
-    scrollbar:         false;
-    background-color:  transparent;
-    layout:            vertical;
+    spacing:                4px;
+    padding:                16px 20px 20px 20px;
+    scrollbar:              false;
+    layout:                 vertical;
+    dynamic:                true;
+    cursor:                 pointer;
 }
 
 element {
-    padding:           6px 10px;
-    border-radius:     8px;
-    cursor:            pointer;
-    text-color:        @fg;
-    background-color:  transparent;
+    padding:                10px 14px;
+    border-radius:          @rad-sm;
+    cursor:                 pointer;
+    text-color:             @fg;
+    background-color:       transparent;
+}
+
+element normal.normal {
+    background-color:       transparent;
 }
 
 element selected {
-    background-color:  @cyan;
-    text-color:        @bg;
+    background-color:       @darker;
+    text-color:             @active;
+    border:                 1px;
+    border-color:           @active-dim;
+}
+
+element selected.normal {
+    background-color:       @darker;
 }
 
 element-icon {
-    size:              14px;
-    padding:           0 6px 0 0;
+    size:                   18px;
+    padding:                0 10px 0 0;
+    horizontal-align:       0;
+    vertical-align:         0.5;
+    background-color:       transparent;
 }
 
 element-text {
-    vertical-align:    0.5;
-    horizontal-align:  0.0;
-    font:              "Iosevka Nerd Font Mono 9";
+    padding:                0;
+    horizontal-align:       0;
+    vertical-align:         0.5;
+    background-color:       transparent;
+    text-color:             inherit;
+    font:                   "JetBrainsMono Nerd Font 10";
+}
+
+scrollbar {
+    handle-color:           @accent-dim;
+    handle-width:           4px;
+    border-radius:          2px;
 }

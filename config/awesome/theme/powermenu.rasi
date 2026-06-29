@@ -1,64 +1,102 @@
 @theme "/dev/null"
 
 * {
-    bg:             #1a1b26;
-    fg:             #a9b1d6;
-    accent:         #24283b;
-    active:         #7dcfff;
-    urgent:         #f7768e;
+    bg:                     #0d0d1a;
+    fg:                     #e2e8f0;
+    accent:                 #22d3ee;
+    accent-dim:             #4c1d95;
+    surface:                #1a1a2e;
+    darker:                 #141428;
+    active:                 #06b6d4;
+    active-dim:             #0891b2;
+    muted:                  #3d3d5c;
+    rad:                    16px;
+    rad-sm:                 10px;
 
-    background-color: @bg;
-    text-color:     @fg;
-    border-color:   @active;
+    background-color:       transparent;
+    text-color:             @fg;
+    border-color:           @active;
 }
 
 window {
-    transparency:   "real";
-    width:          180px;
-    height:         180px;
-    location:       center;
-    anchor:         center;
-    border-radius:  16px;
-    border:         0px;
+    transparency:           "real";
+    width:                  280px;
+    height:                 280px;
+    location:               center;
+    anchor:                 center;
+    border-radius:          @rad;
+    border:                 2px;
+    border-color:           @accent;
+    background-color:       #0d0d1aF2;
 }
 
 mainbox {
-    spacing:        0;
-    padding:        0;
-    children:       [listview];
+    spacing:                0;
+    padding:                0;
+    children:               [listview];
 }
 
 inputbar {
-    enabled:        false;
+    enabled:                false;
 }
 
 listview {
-    spacing:        2px;
-    padding:        8px;
-    scrollbar:      false;
-    columns:        3;
-    layout:         vertical;
+    spacing:                6px;
+    padding:                16px;
+    scrollbar:              false;
+    columns:                3;
+    layout:                 vertical;
+    cursor:                 pointer;
 }
 
 element {
-    padding:        4px;
-    border-radius:  6px;
-    orientation:    vertical;
-    cursor:         pointer;
-    border:         0px;
+    padding:                14px 8px;
+    border-radius:          @rad-sm;
+    orientation:            vertical;
+    cursor:                 pointer;
+    border:                 0px;
+    background-color:       transparent;
 }
 
-element normal {
-    background-color: transparent;
+element normal.normal {
+    background-color:       transparent;
 }
 
 element selected {
-    background-color: @active;
-    text-color:     @bg;
-    border:         0px;
+    background-color:       @darker;
+    text-color:             @active;
+    border:                 1px;
+    border-color:           @active;
+}
+
+element selected.normal {
+    background-color:       @darker;
+}
+
+element-icon {
+    size:                   32px;
+    padding:                0;
+    horizontal-align:       0.5;
+    vertical-align:         0.5;
+    background-color:       transparent;
+}
+
+element-text {
+    padding:                6px 0 0 0;
+    horizontal-align:       0.5;
+    vertical-align:         0.5;
+    background-color:       transparent;
+    text-color:             inherit;
+    font:                   "JetBrainsMono Nerd Font 9";
 }
 
 element urgent.normal {
-    background-color: @urgent;
-    text-color:     @bg;
+    background-color:       transparent;
+    text-color:             @accent;
+}
+
+element urgent.selected {
+    background-color:       @accent;
+    text-color:             @bg;
+    border:                 0px;
 }

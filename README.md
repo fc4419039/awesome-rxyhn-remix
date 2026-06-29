@@ -98,12 +98,21 @@ Panel desplegable al hacer clic en batería/reloj:
 - **Loopback** de notificaciones al sink por defecto con latencia mínima (25ms)
 - **Do-Not-Disturb** silencia completamente los sonidos de notificación
 
+### Rofi menus
+- **Launcher** (`Super+d`) — centrado, estética gamer con bordes púrpura `#7c3aed` y selección cyan `#06b6d4`
+- **WiFi** (`Super+Shift+w`) — con buscador, `network.sh` mejorado con `mktemp`, parsing robusto de SSID y detección de errores
+- **Bluetooth** (`Super+b`) — `bluetooth.sh` reescrito con funciones separadas, extracción de MAC corregida y estructura de loops mejorada
+- **Power** (`Alt+F4`) — menú de apagado/reinicio/bloqueo/suspensión
+- **Volumen** (`Super+v`) — ventana GTK3 con sliders por aplicación, sink de notificaciones aislado, CSS con temática gamer
+- **Cycle accent** (`Ctrl+Super+b`) — cambia el color de acento (bordes + rofi) entre 12 colores sin recargar configuración
+
 ### Decoraciones de ventana
 
 **Barra de título estándar:**
 - Botones redondos: cerrar (rojo), maximizar (amarillo), flotar (púrpura)
 - Widgets de info: WiFi, IP pública, VPN
 - Título de la ventana centrado
+- **Borde de ventana** de 2px del mismo color que los menús rofi, cambiable con `Ctrl+Super+b`
 
 **Reproductor de música (ventanas ncmpcpp):**
 - Barra de título reemplazada por reproductor completo
@@ -180,6 +189,7 @@ Panel desplegable al hacer clic en batería/reloj:
 | `Mod+z` | Scratchpad |
 | `Mod+Shift+n` | ncmpcpp |
 | `Mod+Ctrl+l` | Lock screen |
+| `Ctrl+Super+b` | Cambiar color de acento (bordes + rofi) |
 | `Alt+Tab` | Window switcher |
 | `Mod+q` | Cerrar ventana |
 | `Mod+f` | Thunar |

@@ -16,9 +16,9 @@ SYSTEM_SINK_NAME = "system_sink"
 
 CSS = """
 window.background {
-    background-color: #061115;
+    background-color: #0d0d1a;
     border-radius: 12px;
-    border: 1px solid #67afc1;
+    border: 2px solid #7c3aed;
     padding: 4px;
 }
 
@@ -27,14 +27,14 @@ box, scrolledwindow, viewport, list {
 }
 
 .app-row {
-    background-color: #0c1a20;
+    background-color: #141428;
     border-radius: 8px;
     margin: 3px 0;
     padding: 5px 8px;
 }
 
 .app-row:hover {
-    background-color: rgba(103, 175, 193, 0.15);
+    background-color: rgba(124, 58, 237, 0.15);
 }
 
 .app-icon {
@@ -52,19 +52,19 @@ box, scrolledwindow, viewport, list {
 .app-source {
     font-family: "Iosevka Nerd Font Mono";
     font-size: 8pt;
-    color: #484e5b;
+    color: #4a4a6a;
 }
 
 scale slider {
     min-height: 14px;
     min-width: 14px;
     border-radius: 50%;
-    background-color: #67afc1;
-    border: 2px solid #061115;
+    background-color: #7c3aed;
+    border: 2px solid #0d0d1a;
 }
 
 scale slider:hover {
-    background-color: #7acfe4;
+    background-color: #06b6d4;
 }
 
 scale trough {
@@ -75,7 +75,7 @@ scale trough {
 
 scale highlight {
     border-radius: 2px;
-    background-color: #67afc1;
+    background-color: #7c3aed;
 }
 
 .vol-label {
@@ -86,9 +86,9 @@ scale highlight {
 }
 
 headerbar {
-    background-color: rgba(6, 17, 21, 0.5);
+    background-color: rgba(13, 13, 26, 0.5);
     border: none;
-    border-bottom: 1px solid rgba(103, 175, 193, 0.2);
+    border-bottom: 1px solid rgba(124, 58, 237, 0.2);
     box-shadow: none;
     padding: 2px 4px;
 }
@@ -101,14 +101,14 @@ headerbar .title {
 }
 
 headerbar .subtitle {
-    color: #484e5b;
+    color: #4a4a6a;
     font-family: "Iosevka Nerd Font Mono";
     font-size: 8pt;
 }
 
 headerbar button {
-    background-color: #0c1a20;
-    border: 1px solid rgba(103, 175, 193, 0.3);
+    background-color: #141428;
+    border: 1px solid rgba(124, 58, 237, 0.3);
     border-radius: 6px;
     color: #d9d7d6;
     min-height: 24px;
@@ -116,8 +116,8 @@ headerbar button {
 }
 
 headerbar button:hover {
-    background-color: rgba(103, 175, 193, 0.2);
-    border-color: #67afc1;
+    background-color: rgba(124, 58, 237, 0.2);
+    border-color: #06b6d4;
 }
 
 scrollbar {
@@ -125,21 +125,21 @@ scrollbar {
 }
 
 scrollbar slider {
-    background-color: rgba(103, 175, 193, 0.2);
+    background-color: rgba(124, 58, 237, 0.2);
     border-radius: 3px;
     min-width: 4px;
 }
 
 scrollbar slider:hover {
-    background-color: rgba(103, 175, 193, 0.4);
+    background-color: rgba(124, 58, 237, 0.4);
 }
 
 .notif-row {
-    background-color: rgba(12, 26, 32, 0.8);
+    background-color: rgba(20, 20, 40, 0.8);
     border-radius: 8px;
     margin: 3px 0;
     padding: 5px 8px;
-    border: 1px solid rgba(103, 175, 193, 0.12);
+    border: 1px solid rgba(124, 58, 237, 0.12);
 }
 
 .mute-btn {
@@ -147,24 +147,24 @@ scrollbar slider:hover {
     min-height: 28px;
     border-radius: 50%;
     padding: 0;
-    background-color: #0c1a20;
-    border: 1px solid rgba(103, 175, 193, 0.2);
+    background-color: #141428;
+    border: 1px solid rgba(124, 58, 237, 0.2);
 }
 
 .mute-btn:hover {
-    background-color: rgba(103, 175, 193, 0.15);
-    border-color: #67afc1;
+    background-color: rgba(124, 58, 237, 0.15);
+    border-color: #06b6d4;
 }
 
 .mute-btn:checked {
-    background-color: rgba(223, 91, 97, 0.2);
-    border-color: #df5b61;
+    background-color: rgba(124, 58, 237, 0.2);
+    border-color: #06b6d4;
 }
 
 .no-apps {
     font-family: "Iosevka Nerd Font Mono";
     font-style: italic;
-    color: #484e5b;
+    color: #4a4a6a;
     padding: 16px;
 }
 """

@@ -9,8 +9,8 @@ local helpers = require("helpers")
 
 local function create_title_button(c, color_focus, color_unfocus)
     local tb = wibox.widget {
-        forced_width = dpi(14),
-        forced_height = dpi(14),
+        forced_width = dpi(12),
+        forced_height = dpi(12),
         bg = color_unfocus,
         shape = function(cr, w, h) gears.shape.circle(cr, w, h) end,
         widget = wibox.container.background
@@ -43,13 +43,13 @@ client.connect_signal("request::titlebars", function(c)
         end)
     )
 
-    local close = create_title_button(c, beautiful.xcolor1, beautiful.xcolor8)
+    local close = create_title_button(c, beautiful.deco_red, beautiful.deco_gray)
     close:connect_signal("button::press", function() c:kill() end)
 
-    local max = create_title_button(c, beautiful.xcolor5, beautiful.xcolor8)
+    local max = create_title_button(c, beautiful.deco_purple, beautiful.deco_gray)
     max:connect_signal("button::press", function() c.maximized = not c.maximized end)
 
-    local float = create_title_button(c, beautiful.xcolor4, beautiful.xcolor8)
+    local float = create_title_button(c, beautiful.deco_blue, beautiful.deco_gray)
     float:connect_signal("button::press", function() awful.client.floating.toggle(c) end)
 
     local title_text = wibox.widget {
@@ -172,10 +172,10 @@ client.connect_signal("request::titlebars", function(c)
                         function(ssid_out)
                             local ssid = ssid_out:match("^(.+)$")
                             if ssid and ssid ~= "" then
-                                wifi_icon.markup = helpers.colorize_text("", "#2dd4bf")
+                                wifi_icon.markup = helpers.colorize_text("", beautiful.deco_cyan)
                                 wifi_tooltip.text = "WiFi: " .. ssid
                             else
-                                wifi_icon.markup = helpers.colorize_text("", "#d946ef")
+                                wifi_icon.markup = helpers.colorize_text("", beautiful.deco_red)
                                 wifi_tooltip.text = "WiFi: Disconnected"
                             end
                         end
