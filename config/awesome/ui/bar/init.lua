@@ -341,19 +341,24 @@ screen.connect_signal("request::desktop_decoration", function(s)
     client.connect_signal("property::fullscreen", hide_for_client)
     client.connect_signal("property::maximized", hide_for_client)
 
-    client.connect_signal("unmanage", function(c)
-        if c.screen == s and s.mywibar and not s.mywibar.visible then
-            local still_full = false
-            for _, cl in ipairs(client.get(s)) do
-                if cl.valid and (cl.fullscreen or cl.maximized) then
-                    still_full = true
-                    break
+    client.connect_signal("unmanage", function()
+        for scr in screen do
+            if scr.mywibar and not scr.mywibar.visible then
+                local still_full = false
+                for _, cl in ipairs(client.get(scr)) do
+                    if cl.valid and (cl.fullscreen or cl.maximized) then
+                        still_full = true
+                        break
+                    end
                 end
-            end
-            if not still_full then
-                s.mywibar.visible = true
-                s.wibar_visible = true
-                wibar_update_padding(true)
+                if not still_full then
+                    scr.mywibar.visible = true
+                    scr.wibar_visible = true
+                    local p = { right = dpi(5), top = dpi(15), bottom = dpi(15) }
+                    p.left = dpi(10) + dpi(10)
+                    scr.padding = p
+                    awful.layout.arrange(scr)
+                end
             end
         end
     end)
