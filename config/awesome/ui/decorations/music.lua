@@ -21,7 +21,7 @@ local helpers = require("helpers")
 local big_music_icon = wibox.widget{
     align = "center",
     font = beautiful.icon_font_name .. "Bold 16",
-    markup = helpers.colorize_text("", beautiful.xcolor4),
+    markup = helpers.colorize_text("", beautiful.deco_blue),
     widget = wibox.widget.textbox()
 }
 
@@ -58,7 +58,7 @@ local music_icon = wibox.widget{
 -------------
 
 local control_button_bg = "#00000000"
-local control_button_bg_hover = beautiful.xcolor0
+local control_button_bg_hover = beautiful.deco_gray .. "66"
 local control_button = function(c, symbol, color, font, size, on_click, on_right_click)
     local icon = wibox.widget{
         markup = helpers.colorize_text(symbol, color),
@@ -124,11 +124,11 @@ local function create_slider_widget(slider_color)
                 right = dpi(6),
             },
             forced_width  = dpi(60),
-            forced_height = dpi(12),
+            forced_height = dpi(10),
             shape         = gears.shape.rounded_bar,
             bar_shape     = gears.shape.rounded_bar,
             color = slider_color,
-            background_color = beautiful.xcolor0,
+    background_color = beautiful.deco_gray .. "44",
             widget = wibox.widget.progressbar
         },
         expand = "none",
@@ -210,7 +210,7 @@ local music_bar = wibox.widget {
     max_value = 100,
     value = 0,
     background_color = beautiful.xcolor0,
-    color = beautiful.xcolor4,
+    color = beautiful.deco_blue,
     forced_height = dpi(3),
     widget = wibox.widget.progressbar
 }
@@ -229,7 +229,7 @@ local shuffle_textbox = shuffle:get_all_children()[1]:get_all_children()[1]
 -- Volume
 --------
 
-local vol_color = beautiful.xcolor4
+local vol_color = beautiful.deco_blue
 local vol_slider = create_slider_widget(vol_color)
 local vol_tooltip = create_tooltip(vol_slider)
 
@@ -319,9 +319,9 @@ end)
 playerctl:connect_signal("playback_status", function(_, playing, player_name)
     if player_name == "mpd" then
         if playing then
-            music_play_pause_textbox:set_markup_silently(helpers.colorize_text("", beautiful.xcolor4))
+            music_play_pause_textbox:set_markup_silently(helpers.colorize_text("", beautiful.deco_blue))
         else
-            music_play_pause_textbox:set_markup_silently(helpers.colorize_text("", beautiful.xcolor4))
+            music_play_pause_textbox:set_markup_silently(helpers.colorize_text("", beautiful.deco_blue))
         end
     end
 end)

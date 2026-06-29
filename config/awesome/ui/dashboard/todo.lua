@@ -35,7 +35,7 @@ local todo_badge = wibox.widget{
 
 local todo_stat = wibox.widget{
     colors = {beautiful.xcolor8},
-    bg = "#1C252C",
+    bg = beautiful.darker_bg,
     value = 5,
     min_value = 0,
     max_value = 8,
@@ -102,7 +102,7 @@ awesome.connect_signal("signal::todo", function(total, done, undone)
     todo_badge.markup = helpers.colorize_text("-" .. undone, beautiful.xcolor1)
 
     todo_total.markup = helpers.colorize_text("/" .. total, beautiful.xcolor8)
-    
+
     if total == 0 then
         todo_badge.visible = false
         total = 1

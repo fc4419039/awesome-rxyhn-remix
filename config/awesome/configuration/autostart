@@ -11,6 +11,9 @@ start() {
 start mpd
 start mpd-mpris # add playerctl support to mpd
 
+# compositor
+start picom -b --dbus --config $HOME/.config/awesome/theme/picom.conf
+
 # auth
 start /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
 

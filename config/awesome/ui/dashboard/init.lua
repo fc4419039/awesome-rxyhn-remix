@@ -54,7 +54,7 @@ local function create_boxed_widget(widget_to_be_boxed, width, height, bg_color)
             widget = box_container,
         },
         margins = dpi(10),
-        color = "#FF000000",
+        color = "#00000000",
         widget = wibox.container.margin
     }
     return boxed_widget
@@ -119,7 +119,7 @@ function M.create(s)
 
     local function dashboard_show()
         dashboard.visible = true
-        slide:set(s.geometry.x + 82)
+        slide:set(s.geometry.x + dpi(70))
         dashboard_status = false
     end
 

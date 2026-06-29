@@ -35,7 +35,7 @@ local function create_slider_widget(slider_color)
             id = "slider",
             max_value = 100,
             value = 20,
-            background_color = "#1C252C",
+            background_color = beautiful.darker_bg,
             color = slider_color,
             shape = gears.shape.rounded_rect,
             bar_shape = gears.shape.rounded_rect,

@@ -28,7 +28,7 @@ local function create_boxed_widget(widget_to_be_boxed, width, height, inner_pad)
             widget = box_container,
         },
         margins = beautiful.tooltip_gap / 2,
-        color = "#FF000000",
+        color = "#00000000",
         widget = wibox.container.margin
     }
     return boxed_widget
@@ -54,12 +54,31 @@ function M.create(s)
         widget = wibox.container.rotate
     }
 
-    local batt_icon = wibox.widget{
+    local batt_glyph = wibox.widget{
         markup = helpers.colorize_text("", beautiful.xcolor1),
         font = beautiful.icon_font_name .. "Round 18",
         align = "center",
         valign = "center",
         widget = wibox.widget.textbox
+    }
+
+    local batt_pct_text = wibox.widget{
+        font = beautiful.font_name .. "bold 8",
+        align = "center",
+        valign = "bottom",
+        widget = wibox.widget.textbox
+    }
+
+    local batt_pct_on_icon = wibox.widget{
+        batt_pct_text,
+        bottom = dpi(2),
+        widget = wibox.container.margin
+    }
+
+    local batt_icon = wibox.widget{
+        batt_glyph,
+        batt_pct_on_icon,
+        layout = wibox.layout.stack
     }
 
     local batt_icon_container = wibox.widget{
@@ -74,21 +93,10 @@ function M.create(s)
         layout = wibox.layout.align.horizontal
     }
 
-    local batt_pct = wibox.widget{
-        font = beautiful.font_name .. "bold 12",
-        align = "center",
-        valign = "center",
-        widget = wibox.widget.textbox
-    }
-
     local batt = wibox.widget{
-        {
-            batt_bar_container,
-            batt_icon_container,
-            layout = wibox.layout.stack
-        },
-        batt_pct,
-        layout = wibox.layout.fixed.vertical
+        batt_bar_container,
+        batt_icon_container,
+        layout = wibox.layout.stack
     }
 
     local batt_val = 0
@@ -142,8 +150,8 @@ function M.create(s)
         end
 
         batt_bar.value = batt_val
-        batt_icon.markup = helpers.colorize_text(b, fill_color)
-        batt_pct.markup = helpers.colorize_text(batt_val .. "%", fill_color)
+        batt_glyph.markup = helpers.colorize_text(b, fill_color)
+        batt_pct_text.markup = helpers.colorize_text(batt_val .. "%", beautiful.xforeground)
     end)
 
 
@@ -675,7 +683,7 @@ function M.create(s)
     }
 
     local inactivity_timer = gears.timer {
-        timeout = 5,
+        timeout = 3,
         autostart = false,
         single_shot = true,
         callback = function()

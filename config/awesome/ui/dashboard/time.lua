@@ -17,7 +17,7 @@ local helpers = require("helpers")
 
 local time_hour = wibox.widget{
     font = beautiful.font_name .. "bold 48",
-    format = helpers.colorize_text("%H", "#cfcdcc"),
+    format = helpers.colorize_text("%H", beautiful.xforeground),
     align = "center",
     valign = "center",
     widget = wibox.widget.textclock
