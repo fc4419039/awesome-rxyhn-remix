@@ -29,6 +29,11 @@ client.connect_signal("request::manage", function(c)
         icon:finish()
     end
 
+    -- Evitar que programas abran en fullscreen al iniciar
+    if c.fullscreen then
+        c.fullscreen = false
+    end
+
     -- Set the windows at the slave,
     if awesome.startup and not c.size_hints.user_position and
         not c.size_hints.program_position then
