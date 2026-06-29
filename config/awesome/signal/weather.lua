@@ -8,6 +8,7 @@
 --      wind_speed (number)
 --      pressure (integer)
 local awful = require("awful")
+local gears = require("gears")
 local beautiful = require("beautiful")
 local helpers = require("helpers")
 
@@ -75,7 +76,7 @@ local weather_details_script = [[
     fi
   ']]
 
-helpers.remote_watch(weather_details_script, update_interval, temp_file, function(stdout)
+local function parse_weather(stdout)
     if stdout == "...\n" then
         awful.spawn.with_shell("rm "..temp_file)
         local icon = weather_icons['_'].icon
@@ -106,4 +107,21 @@ helpers.remote_watch(weather_details_script, update_interval, temp_file, functio
     local weather_icon = helpers.colorize_text(entry.icon, entry.color)
 
     awesome.emit_signal("signal::weather", temperature, description, weather_icon, condition, humidity, wind_speed, pressure)
+end
+
+-- Delay initial read so dashboard has time to connect its signal handler
+gears.timer.start_new(2, function()
+    local f = io.open(temp_file, "r")
+    if f then
+        local content = f:read("*a")
+        f:close()
+        if content then
+            parse_weather(content)
+        end
+    end
+    return false
+end)
+
+helpers.remote_watch(weather_details_script, update_interval, temp_file, function(stdout)
+    parse_weather(stdout)
 end)
