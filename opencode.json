@@ -1,0 +1,23 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "model": "opencode/big-pickle",
+  "provider": {
+    "ollama": {
+      "api": "http://localhost:11434",
+      "models": {
+        "qwen2.5-coder:14b": {
+          "id": "qwen2.5-coder:14b",
+          "limit": { "context": 32768, "output": 4096 }
+        }
+      }
+    }
+  },
+  "agent": {
+    "offline": {
+      "model": "ollama/qwen2.5-coder:14b",
+      "description": "Usa el modelo local Ollama (sin internet)",
+      "mode": "primary",
+      "permission": { "edit": "allow", "bash": "ask", "read": "allow" }
+    }
+  }
+}

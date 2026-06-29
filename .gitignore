@@ -22,8 +22,8 @@ config/ncmpcpp/session.conf
 config/ncmpcpp/kitty-music.conf
 config/ncmpcpp/config.
 
-# Claude / OpenCode
-opencode.json
+# Claude / OpenCode (config compartida para IA - ver opencode.json)
+# opencode.json
 
 # Si no quieres que otros descarguen tus imágenes
 fondos/
