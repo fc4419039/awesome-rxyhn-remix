@@ -307,6 +307,7 @@ screen.connect_signal("request::desktop_decoration", function(s)
         local p = { right = dpi(5), top = dpi(15), bottom = dpi(15) }
         p.left = visible and (dpi(10) + dpi(10)) or 0
         s.padding = p
+        awful.layout.arrange(s)
     end
 
     -- Toggle wibar con Ctrl+F
@@ -319,6 +320,7 @@ screen.connect_signal("request::desktop_decoration", function(s)
             local p = { right = dpi(5), top = dpi(15), bottom = dpi(15) }
             p.left = fs.wibar_visible and (dpi(10) + dpi(10)) or 0
             fs.padding = p
+            awful.layout.arrange(fs)
         end
     end
 
