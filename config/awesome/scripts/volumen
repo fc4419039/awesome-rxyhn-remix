@@ -12,6 +12,7 @@ import os
 import time
 
 NOTIF_SINK_NAME = "notifications"
+SYSTEM_SINK_NAME = "system_sink"
 
 CSS = """
 window.background {
@@ -333,9 +334,18 @@ class VolumeControl(Gtk.Window):
                 return parts[0]
         return None
 
+    def get_system_sink_id(self):
+        result = subprocess.run(["pactl", "list", "sinks", "short"], capture_output=True, text=True)
+        for line in result.stdout.strip().split("\n"):
+            parts = line.split()
+            if len(parts) >= 2 and parts[1] == SYSTEM_SINK_NAME:
+                return parts[0]
+        return None
+
     def move_notif_streams(self):
         notif_sink = self.get_notif_sink_id()
-        if not notif_sink:
+        system_sink = self.get_system_sink_id()
+        if not notif_sink or not system_sink:
             return
         result = subprocess.run(["pactl", "list", "sink-inputs"], capture_output=True, text=True)
         blocks = result.stdout.strip().split("\n\nSink Input #")
@@ -347,24 +357,34 @@ class VolumeControl(Gtk.Window):
             lines = block.split("\n")
             sid = None
             sink = None
+            owner = None
             props = []
             for line in lines:
                 if line.startswith("Sink Input #"):
                     sid = line.split("#")[1].strip().rstrip(":")
                 elif line.strip().startswith("Sink:"):
                     sink = line.split()[-1].strip()
+                elif line.strip().startswith("Owner Module:"):
+                    owner = line.split()[-1].strip()
                 prop_m = re.search(r'\s+(media\.role|application\.name|media\.name)\s*=\s*"(.+)"', line)
                 if prop_m:
                     props.append(prop_m.group(2).lower())
-            if sid and sink and sink != notif_sink:
-                is_notif = False
-                for p in props:
-                    if any(k in p for k in ["notification", "event", "alarm", "alert", "paplay", "libcanberra"]):
-                        is_notif = True
-                        break
-                if is_notif:
-                    subprocess.run(["pactl", "move-sink-input", sid, NOTIF_SINK_NAME],
-                                 capture_output=True)
+            if not sid or not sink:
+                continue
+            # Skip module-created streams (loopbacks)
+            if owner and owner.isdigit():
+                continue
+            is_notif = False
+            for p in props:
+                if any(k in p for k in ["notification", "event", "alarm", "alert", "paplay", "libcanberra"]):
+                    is_notif = True
+                    break
+            if is_notif and sink != notif_sink:
+                subprocess.run(["pactl", "move-sink-input", sid, NOTIF_SINK_NAME],
+                             capture_output=True)
+            elif not is_notif and sink == notif_sink:
+                subprocess.run(["pactl", "move-sink-input", sid, SYSTEM_SINK_NAME],
+                             capture_output=True)
 
     def set_vol(self, target, pct):
         if target == "notifications":

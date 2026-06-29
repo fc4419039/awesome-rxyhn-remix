@@ -504,19 +504,12 @@ end
 
 -- Volume Control
 function helpers.volume_control(step)
-    local cmd
-    local mpc_cmd
+    local sink = "system_sink"
     if step == 0 then
-        cmd = "pactl set-sink-mute @DEFAULT_SINK@ toggle"
-        mpc_cmd = ""
+        awful.spawn.with_shell("pactl set-sink-mute " .. sink .. " toggle")
     else
         local sign = step > 0 and "+" or ""
-        cmd = "pactl set-sink-mute @DEFAULT_SINK@ 0 && pactl set-sink-volume @DEFAULT_SINK@ "..sign..tostring(step).."%"
-        mpc_cmd = "mpc volume "..sign..tostring(step)
-    end
-    awful.spawn.with_shell(cmd)
-    if mpc_cmd ~= "" then
-        awful.spawn.with_shell(mpc_cmd)
+        awful.spawn.with_shell("pactl set-sink-mute " .. sink .. " 0 && pactl set-sink-volume " .. sink .. " " .. sign .. tostring(step) .. "%")
     end
 end
 

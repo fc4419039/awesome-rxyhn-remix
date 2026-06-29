@@ -1,16 +1,17 @@
 #!/usr/bin/env bash
 # Monitor sink-inputs and route notification-type streams to the 'notifications' sink
-# The notifications sink has a loopback to @DEFAULT_SINK@, so the volume is
-# controlled independently via the notifications sink's volume slider.
+# and non-notification streams out of the 'notifications' sink back to system_sink.
+# This ensures each stream always lands on the correct sink, even if module-stream-restore
+# or similar tools try to restore a wrong route.
 set -e
 
 NOTIF_SINK_NAME="notifications"
+SYSTEM_SINK_NAME="system_sink"
 NOTIF_SINK_ID=$(pactl list sinks short 2>/dev/null | awk -v name="$NOTIF_SINK_NAME" '$2 == name {print $1}')
-NOTIF_LOOP_MODULE=$(pactl list modules short 2>/dev/null | \
-  grep "module-loopback" | grep "source=${NOTIF_SINK_NAME}.monitor" | awk '{print $1}')
+SYSTEM_SINK_ID=$(pactl list sinks short 2>/dev/null | awk -v name="$SYSTEM_SINK_NAME" '$2 == name {print $1}')
 
-if [ -z "$NOTIF_SINK_ID" ]; then
-  echo "ERROR: notifications sink not found — run notif-sink-setup.sh first" >&2
+if [ -z "$NOTIF_SINK_ID" ] || [ -z "$SYSTEM_SINK_ID" ]; then
+  echo "ERROR: notifications or system_sink not found — run notif-sink-setup.sh first" >&2
   exit 1
 fi
 
@@ -31,8 +32,8 @@ is_notification_stream() {
   return 1
 }
 
-move_existing() {
-  pactl list sink-inputs 2>/dev/null | awk -v notif_sink="$NOTIF_SINK_ID" -v loop_mod="$NOTIF_LOOP_MODULE" '
+move_route() {
+  pactl list sink-inputs 2>/dev/null | awk -v notif_sink="$NOTIF_SINK_ID" -v sys_sink="$SYSTEM_SINK_ID" '
     BEGIN { block = ""; id = ""; in_block = 0 }
 
     /^Sink Input #[0-9]+/ {
@@ -58,25 +59,30 @@ move_existing() {
         if (line ~ /application.name/)         { gsub(/.*application.name[ \t]*=[ \t]*"/, "", line); gsub(/".*$/, "", line); app = tolower(line) }
         if (line ~ /media.name/)               { gsub(/.*media.name[ \t]*=[ \t]*"/, "", line); gsub(/".*$/, "", line); mname = tolower(line) }
       }
-      if (length(owner) > 0 && owner == loop_mod) return
+      # Skip module-created streams (loopbacks)
+      if (owner ~ /^[0-9]+$/) return
       is_notif = 0
       if (role ~ /notification|event|alarm|alert|x-event|x-notification|system-sound/) is_notif = 1
       if (app ~ /paplay|libcanberra|notification|notify|canberra|speech-dispatcher/) is_notif = 1
       if (mname ~ /notification|event|audio-volume-change|bell|dialog|message|alert/) is_notif = 1
-      if (is_notif && sink != notif_sink) system("pactl move-sink-input " id " " notif_sink " 2>/dev/null")
+      # Route notification streams TO notifications sink
+      if (is_notif && sink != notif_sink)
+        system("pactl move-sink-input " id " " notif_sink " 2>/dev/null")
+      # Route non-notification streams FROM notifications sink TO system_sink
+      if (!is_notif && sink == notif_sink)
+        system("pactl move-sink-input " id " " sys_sink " 2>/dev/null")
     }
   '
 }
 
-# Move existing notification streams at startup
-move_existing
+# Route existing streams at startup
+move_route
 
 # Subscribe to new sink-inputs and react immediately
 pactl subscribe 2>/dev/null | grep --line-buffered "on sink-input" | while read -r line; do
   id=$(echo "$line" | sed -n 's/.*#\([0-9]*\).*/\1/p')
   [ -z "$id" ] && continue
 
-  # Dump properties of ONLY this specific sink-input
   props=$(pactl list sink-inputs 2>/dev/null | awk -v id="$id" '
     BEGIN { found = 0 }
     /^Sink Input #/ {
@@ -89,8 +95,14 @@ pactl subscribe 2>/dev/null | grep --line-buffered "on sink-input" | while read 
   ')
 
   sink=$(echo "$props" | awk '/^[ \t]*Sink: / {gsub(/.*Sink: /, "", $0); print $0; exit}')
+  owner=$(echo "$props" | awk '/^[ \t]*Owner Module: / {gsub(/.*Owner Module: /, "", $0); print $0; exit}')
+
+  # Skip module-created streams (loopbacks)
+  echo "$owner" | grep -qE '^[0-9]+$' && continue
 
   if [ "$sink" != "$NOTIF_SINK_ID" ] && is_notification_stream "$props"; then
     pactl move-sink-input "$id" "$NOTIF_SINK_NAME" 2>/dev/null
+  elif [ "$sink" = "$NOTIF_SINK_ID" ] && ! is_notification_stream "$props"; then
+    pactl move-sink-input "$id" "$SYSTEM_SINK_NAME" 2>/dev/null
   fi
 done
