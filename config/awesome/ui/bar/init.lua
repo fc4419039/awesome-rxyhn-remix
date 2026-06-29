@@ -86,29 +86,34 @@ screen.connect_signal("request::desktop_decoration", function(s)
     end
 
     awesome.connect_signal("signal::battery", function(value)
-        local c2 = beautiful.xcolor2
-        local c3 = beautiful.xcolor3
-        local c1 = beautiful.xcolor1
-        local fill_color
+        pcall(function()
+            if not value or type(value) ~= "number" then return end
+            local c2 = beautiful.xcolor2
+            local c3 = beautiful.xcolor3
+            local c1 = beautiful.xcolor1
+            local fill_color
 
-        if value > 30 then
-            local t = (value - 30) / 70
-            fill_color = lerp_color(c3, c2, t)
-        else
-            local t = value / 30
-            fill_color = lerp_color(c1, c3, t)
-        end
+            if value > 30 then
+                local t = (value - 30) / 70
+                fill_color = lerp_color(c3, c2, t)
+            else
+                local t = value / 30
+                fill_color = lerp_color(c1, c3, t)
+            end
 
-        batt.colors = {fill_color}
-        batt.value = value
+            batt.colors = {fill_color}
+            batt.value = value
+        end)
     end)
 
     awesome.connect_signal("signal::charger", function(state)
-        if state then
-            charge_icon.visible = true
-        else
-            charge_icon.visible = false
-        end
+        pcall(function()
+            if state then
+                charge_icon.visible = true
+            else
+                charge_icon.visible = false
+            end
+        end)
     end)
 
     -- Time
