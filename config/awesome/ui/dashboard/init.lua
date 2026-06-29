@@ -124,7 +124,8 @@ function M.create(s)
     end
 
     local function dashboard_hide()
-        slide:set(s.geometry.x - 375)
+        dashboard.visible = false
+        slide.pos = s.geometry.x - 375
         dashboard_status = true
     end
 
