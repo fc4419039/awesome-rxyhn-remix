@@ -248,8 +248,7 @@ chmod +x install.sh
 yay -Sy awesome-git picom-git kitty rofi todo-bin acpi acpid \
 wireless_tools jq inotify-tools polkit-gnome xdotool xclip maim \
 brightnessctl alsa-utils alsa-tools pipewire pipewire-pulse wireplumber \
-playerctl feh zsh neovim btop lsd bat python-gobject pipewire-alsa \
-opencode --needed
+playerctl feh zsh neovim btop lsd bat python-gobject pipewire-alsa --needed
 ```
 
 2. **Fuentes**: Iosevka Nerd Font, Material Design Icons, Weather Icons + fuentes icomoon incluidas en `fonts/`
