@@ -1,0 +1,64 @@
+@theme "/dev/null"
+
+* {
+    bg:             #1a1b26;
+    fg:             #a9b1d6;
+    accent:         #24283b;
+    active:         #7dcfff;
+    urgent:         #f7768e;
+
+    background-color: @bg;
+    text-color:     @fg;
+    border-color:   @active;
+}
+
+window {
+    transparency:   "real";
+    width:          180px;
+    height:         180px;
+    location:       center;
+    anchor:         center;
+    border-radius:  16px;
+    border:         0px;
+}
+
+mainbox {
+    spacing:        0;
+    padding:        0;
+    children:       [listview];
+}
+
+inputbar {
+    enabled:        false;
+}
+
+listview {
+    spacing:        2px;
+    padding:        8px;
+    scrollbar:      false;
+    columns:        3;
+    layout:         vertical;
+}
+
+element {
+    padding:        4px;
+    border-radius:  6px;
+    orientation:    vertical;
+    cursor:         pointer;
+    border:         0px;
+}
+
+element normal {
+    background-color: transparent;
+}
+
+element selected {
+    background-color: @active;
+    text-color:     @bg;
+    border:         0px;
+}
+
+element urgent.normal {
+    background-color: @urgent;
+    text-color:     @bg;
+}

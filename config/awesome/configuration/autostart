@@ -1,0 +1,18 @@
+#!/bin/sh
+
+start() {
+  if ! pgrep -f "$1" > /dev/null 2>&1 ;
+  then
+    "$@" &
+  fi
+}
+
+# music
+start mpd
+start mpd-mpris # add playerctl support to mpd
+
+# auth
+start /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
+
+# load X colors
+start xrdb $HOME/.Xresources

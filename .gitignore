@@ -1,0 +1,29 @@
+# Archivos de sesión y temporales
+*.log
+*.sql
+*.state
+*.db
+*.bnk
+.cache/
+.DS_Store
+*__pycache__/
+*.pyc
+
+# Spotify y MPD (Datos personales o locales)
+config/spotify/Users/
+config/mpd/database
+config/mpd/log
+
+# Datos locales/personales
+config/mpd/pid
+config/mpd/state
+config/awesome/ui/notifs/notif-center/dont-disturb/disturb_status
+config/ncmpcpp/session.conf
+config/ncmpcpp/kitty-music.conf
+config/ncmpcpp/config.
+
+# Claude / OpenCode
+opencode.json
+
+# Si no quieres que otros descarguen tus imágenes
+fondos/
