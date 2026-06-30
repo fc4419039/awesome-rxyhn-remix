@@ -50,21 +50,20 @@ end
 
 awesome.connect_signal("signal::battery", function(value)
     if not value or type(value) ~= "number" then return end
-    local c2 = beautiful.xcolor2
-    local c3 = beautiful.xcolor3
-    local c1 = beautiful.xcolor1
+    local c2 = beautiful.deco_green or beautiful.xcolor2
+    local c3 = beautiful.deco_yellow or beautiful.xcolor3
+    local c1 = beautiful.deco_red or beautiful.xcolor1
     local fill_color
 
-    if value > 30 then
-        local t = (value - 30) / 70
-        fill_color = lerp_color(c3, c2, t)
+    if value > 20 then
+        fill_color = c2
     else
-        local t = value / 30
+        local t = value / 20
         fill_color = lerp_color(c1, c3, t)
     end
 
     for scr, data in pairs(screen_batts) do
-        if data.batt and data.batt.valid then
+        if data.batt then
             data.batt.colors = {fill_color}
             data.batt.value = value
         end
@@ -73,7 +72,7 @@ end)
 
 awesome.connect_signal("signal::charger", function(state)
     for scr, data in pairs(screen_chargers) do
-        if data.charge_icon and data.charge_icon.valid then
+        if data.charge_icon then
             data.charge_icon.visible = state
         end
     end
