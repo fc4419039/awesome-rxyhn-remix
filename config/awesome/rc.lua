@@ -98,11 +98,4 @@ gears.timer({
     end
 })
 
--- Welcome notification solo al iniciar sesión (no al recargar)
-if awesome.startup then
-    gears.timer({
-        timeout = 2,
-        autostart = true,
-        single_shot = true,
-    })
-end
+
