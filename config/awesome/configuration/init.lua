@@ -57,9 +57,11 @@ screen.connect_signal("request::desktop_decoration", function(s)
 end)
 
 -- Wallpapers (lo establece ~/.config/cambiar_fondo.sh)
--- awful.screen.connect_for_each_screen(function(s)
---     gears.wallpaper.set(beautiful.xcolor8)
--- end)
+if awesome.startup and not gears.filesystem.file_readable(os.getenv("HOME") .. "/.cache/wallpaper_fijo.txt") then
+    awful.screen.connect_for_each_screen(function(s)
+        gears.wallpaper.set(beautiful.xcolor8)
+    end)
+end
 
 -- Set Tile Wallpaper
 -- bling.module.tiled_wallpaper("", s, {
