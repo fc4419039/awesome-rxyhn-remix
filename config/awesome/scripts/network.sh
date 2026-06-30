@@ -77,8 +77,8 @@ has_sec=$(grep -F "${chosen}|" "$sec_file" 2>/dev/null | head -1 | cut -d'|' -f2
 
 if [ "$has_sec" = "1" ]; then
     password=$(rofi -dmenu -theme "$theme" \
-        -theme-str "window { width: 340px; height: 120px; } listview { enabled: false; } inputbar { enabled: true; margin: 20px; placeholder: 'Password'; children: [entry]; } entry { placeholder: 'Password'; }" \
-        -p "" -password)
+        -theme-str "window { width: 340px; height: 140px; } listview { enabled: false; } inputbar { enabled: true; margin: 20px; children: [textbox-prompt, entry]; } textbox-prompt { text-color: #06b6d4; font: 'JetBrainsMono Nerd Font 10'; padding: 0 10px 0 0; }" \
+        -p "Password" -password)
     if [ -z "$password" ]; then
         rm -f "$list_file" "$sec_file"
         exit 0
