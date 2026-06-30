@@ -19,7 +19,3 @@ start /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
 
 # load X colors
 start xrdb $HOME/.Xresources
-
-# portal file chooser (needed for Firefox, etc.)
-start /usr/lib/xdg-desktop-portal
-start /usr/lib/xdg-desktop-portal-gtk

@@ -53,6 +53,9 @@ source ~/powerlevel10k/powerlevel10k.zsh-theme
 
 export PATH="$HOME/.local/bin:$PATH"
 
+# Desactivar xapp-gtk3-module (viene con Thunar, rompe file chooser sin xdg-desktop-portal-xapp)
+export GTK3_MODULES=""
+
 # Manual aliases
 alias ll='lsd -lh --group-dirs=first'
 alias la='lsd -a --group-dirs=first'
