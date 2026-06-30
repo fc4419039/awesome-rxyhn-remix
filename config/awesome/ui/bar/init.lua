@@ -221,10 +221,12 @@ screen.connect_signal("request::desktop_decoration", function(s)
     stats:connect_signal("mouse::enter", function()
         stats.bg = beautiful.xcolor8
         if s.stats_tooltip_show then s.stats_tooltip_show() end
+        awesome.emit_signal("stats::mouse_enter")
     end)
 
     stats:connect_signal("mouse::leave", function()
         stats.bg = beautiful.xcolor0
+        awesome.emit_signal("stats::mouse_leave")
     end)
 
     -- Notification center
@@ -253,6 +255,8 @@ screen.connect_signal("request::desktop_decoration", function(s)
 
     local notif_center_status = false
 
+    local notif_center_hide_timer = nil
+
     slide.ended:subscribe(function()
         if notif_center_status then
             notif_center.visible = false
@@ -263,12 +267,36 @@ screen.connect_signal("request::desktop_decoration", function(s)
         notif_center.visible = true
         slide:set(s.geometry.x + dpi(10) + dpi(50) + dpi(10))
         notif_center_status = false
+        if notif_center_hide_timer then notif_center_hide_timer:stop() end
+        notif_center_hide_timer = gears.timer.start_new(2, function()
+            notif_center_hide()
+            return false
+        end)
     end
 
     local notif_center_hide = function()
+        if notif_center_hide_timer then
+            notif_center_hide_timer:stop()
+            notif_center_hide_timer = nil
+        end
         slide:set(s.geometry.x + dpi(-375))
         notif_center_status = true
     end
+
+    notif_center:connect_signal("mouse::enter", function()
+        if notif_center_hide_timer then
+            notif_center_hide_timer:stop()
+            notif_center_hide_timer = nil
+        end
+    end)
+
+    notif_center:connect_signal("mouse::leave", function()
+        if notif_center_hide_timer then notif_center_hide_timer:stop() end
+        notif_center_hide_timer = gears.timer.start_new(2, function()
+            notif_center_hide()
+            return false
+        end)
+    end)
 
     local notif_center_toggle = function()
         if notif_center.visible then

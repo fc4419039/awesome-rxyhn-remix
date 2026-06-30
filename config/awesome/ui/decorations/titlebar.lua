@@ -31,6 +31,7 @@ local function create_title_button(c, color_focus, color_unfocus)
 end
 
 client.connect_signal("request::titlebars", function(c)
+    if c.class == "firefox" or c.class == "Firefox" or c.class == "Navigator" then return end
     local buttons = gears.table.join(
         awful.button({}, 1, function()
             c:emit_signal("request::activate", "titlebar", {raise = true})

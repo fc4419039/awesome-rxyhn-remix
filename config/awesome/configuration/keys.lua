@@ -544,10 +544,14 @@ client.connect_signal("request::default_mousebindings", function()
             c:activate{context = "mouse_click"}
         end),
         awful.button({modkey}, 1, function(c)
-            c:activate{context = "mouse_click", action = "mouse_move"}
+            c:activate{context = "mouse_click"}
+            if not c.floating then c.floating = true end
+            awful.mouse.client.move(c)
         end),
         awful.button({modkey}, 3, function(c)
-            c:activate{context = "mouse_click", action = "mouse_resize"}
+            c:activate{context = "mouse_click"}
+            if not c.floating then c.floating = true end
+            awful.mouse.client.resize(c)
         end)
     })
 end)

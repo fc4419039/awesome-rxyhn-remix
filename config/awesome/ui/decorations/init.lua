@@ -15,8 +15,7 @@ if beautiful.border_radius and beautiful.border_radius > 0 then
         end
     end)
 
-    -- Fullscreen and maximized clients should not have rounded corners
-    local function no_round_corners (c)
+    local function no_round_corners(c)
         if c.fullscreen or c.maximized then
             c.shape = gears.shape.rectangle
         else
@@ -32,5 +31,4 @@ else
     beautiful.snap_shape = gears.shape.rectangle
 end
 
-require("ui.decorations.titlebar")
 require("ui.decorations.music")

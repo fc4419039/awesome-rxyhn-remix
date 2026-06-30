@@ -181,7 +181,7 @@ local function draw_widget(
       {
           {
               tasklist_widget,
-              margins = dpi(40),
+              margins = dpi(300),
               widget = wibox.container.margin,
           },
           halign = 'center',
@@ -250,6 +250,7 @@ local enable = function(opts)
         ontop = true,
         type = "splash",
         screen = awful.screen.focused() or screen.primary or 1,
+        widget = wibox.container.background, -- A dummy widget to make awful.popup not scream
         widget = {
             {
                 draw_widget(),

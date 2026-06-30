@@ -683,7 +683,7 @@ function M.create(s)
     }
 
     local inactivity_timer = gears.timer {
-        timeout = 3,
+        timeout = 1,
         autostart = false,
         single_shot = true,
         callback = function()
@@ -692,17 +692,19 @@ function M.create(s)
     }
 
     stats_tooltip:connect_signal("mouse::enter", function()
-        inactivity_timer:again()
+        inactivity_timer:stop()
     end)
 
     stats_tooltip:connect_signal("mouse::leave", function()
         inactivity_timer:again()
     end)
 
-    stats_tooltip:connect_signal("property::visible", function()
-        if stats_tooltip.visible then
-            inactivity_timer:again()
-        end
+    awesome.connect_signal("stats::mouse_enter", function()
+        inactivity_timer:stop()
+    end)
+
+    awesome.connect_signal("stats::mouse_leave", function()
+        inactivity_timer:again()
     end)
 
     s.stats_tooltip_show = function()
@@ -727,7 +729,6 @@ function M.create(s)
         wifi_scan()
         analog_clock_api.start()
         stats_tooltip.visible = true
-        inactivity_timer:again()
     end
 
     s.stats_tooltip_hide = function()

@@ -58,7 +58,6 @@ local function mouse_resize_handler(m, c)
         wfact_below = colfact[idx_below] or 1
     end
 
-    local cursor
     if idx_above and move_mwfact then
         cursor = "cross"
     elseif idx_above then

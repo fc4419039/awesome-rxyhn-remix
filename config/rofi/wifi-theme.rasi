@@ -22,7 +22,7 @@ configuration {
 }
 
 window {
-    background-color:       #0d0d1aF2;
+    background-color:       @bg;
     border:                 2px;
     border-color:           @accent;
     border-radius:          @rad;

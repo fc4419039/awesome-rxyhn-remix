@@ -124,16 +124,16 @@ theme.fg_minimize = theme.xcolor0
 -- Borders
 theme.border_width = 2
 theme.oof_border_width = dpi(1)
-theme.border_normal = "#06b6d4"
-theme.border_focus = "#06b6d4"
+theme.border_normal = "#3b82f6"
+theme.border_focus = "#3b82f6"
 theme.widget_border_width = dpi(2)
 theme.widget_border_color = theme.darker_bg
 
 -- Radius
-theme.border_radius = dpi(12)
+theme.border_radius = dpi(10)
 theme.client_radius = dpi(16)
-theme.dashboard_radius = dpi(10)
-theme.bar_radius = dpi(10)
+theme.dashboard_radius = dpi(14)
+theme.bar_radius = dpi(14)
 
 -- Taglist
 local taglist_square_size = dpi(0)
@@ -166,7 +166,7 @@ theme.taglist_shape_urgent = helpers.rrect(theme.bar_radius)
 theme.taglist_shape_volatile = helpers.rrect(theme.bar_radius)
 
 -- Titlebars
-theme.titlebar_enabled = true
+theme.titlebar_enabled = false
 theme.titlebar_size = dpi(31)
 theme.titlebar_unfocused = theme.xcolor0
 

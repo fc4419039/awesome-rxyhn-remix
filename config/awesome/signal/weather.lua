@@ -109,21 +109,19 @@ local function parse_weather(stdout)
     awesome.emit_signal("signal::weather", temperature, description, weather_icon, condition, humidity, wind_speed, pressure)
 end
 
-if key and key ~= "" and city_id and city_id ~= "" then
-    -- Delay initial read so dashboard has time to connect its signal handler
-    gears.timer.start_new(2, function()
-        local f = io.open(temp_file, "r")
-        if f then
-            local content = f:read("*a")
-            f:close()
-            if content then
-                parse_weather(content)
-            end
+-- Delay initial read so dashboard has time to connect its signal handler
+gears.timer.start_new(2, function()
+    local f = io.open(temp_file, "r")
+    if f then
+        local content = f:read("*a")
+        f:close()
+        if content then
+            parse_weather(content)
         end
-        return false
-    end)
+    end
+    return false
+end)
 
-    helpers.remote_watch(weather_details_script, update_interval, temp_file, function(stdout)
-        parse_weather(stdout)
-    end)
-end
+helpers.remote_watch(weather_details_script, update_interval, temp_file, function(stdout)
+    parse_weather(stdout)
+end)

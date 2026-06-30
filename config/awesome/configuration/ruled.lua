@@ -38,28 +38,6 @@ ruled.client.connect_signal("request::rules", function()
         callback = awful.client.setslave
     }
 
-    -- Titlebar rules
-    ruled.client.append_rule {
-        id = "titlebars",
-        rule_any = {
-            class = {
-                "discord",
-                "Spotify",
-                "Org.gnome.Nautilus",
-                "music"
-            },
-            type = {
-              "splash"
-            },
-            name = {
-                "^discord.com is sharing your screen.$" -- Discord (running in browser) screen sharing popup
-            }
-        },
-        properties = {
-            titlebars_enabled = false
-        }
-    }
-
     -- Firefox: ignorar size_hints para que respete el tiling al cambiar workarea
     ruled.client.append_rule {
         rule = { class = "firefox" },

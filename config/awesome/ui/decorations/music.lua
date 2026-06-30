@@ -59,7 +59,7 @@ local music_icon = wibox.widget{
 
 local control_button_bg = "#00000000"
 local control_button_bg_hover = beautiful.deco_gray .. "66"
-local control_button = function(symbol, color, font, size, on_click, on_right_click)
+local control_button = function(c, symbol, color, font, size, on_click, on_right_click)
     local icon = wibox.widget{
         markup = helpers.colorize_text(symbol, color),
         font = font,
@@ -97,17 +97,17 @@ local control_button = function(symbol, color, font, size, on_click, on_right_cl
     return container
 end
 
-local music_play_pause = control_button("", beautiful.xforeground, beautiful.icon_font_name .. "Round 22", dpi(30), function()
+local music_play_pause = control_button(c, "", beautiful.xforeground, beautiful.icon_font_name .. "Round 22", dpi(30), function()
     awful.spawn.with_shell("mpc -q toggle")
 end)
 
 -- Loop button
-local loop = control_button("", beautiful.xforeground, beautiful.icon_font_name .. "Round 12", dpi(30), function()
+local loop = control_button(c, "", beautiful.xforeground, beautiful.icon_font_name .. "Round 12", dpi(30), function()
     awful.spawn.with_shell("mpc repeat")
 end)
 
 -- Shuffle playlist
-local shuffle = control_button("", beautiful.xforeground, beautiful.icon_font_name .. "Round 12", dpi(30), function()
+local shuffle = control_button(c, "", beautiful.xforeground, beautiful.icon_font_name .. "Round 12", dpi(30), function()
     awful.spawn.with_shell("mpc random")
 end)
 
@@ -408,13 +408,13 @@ local music_create_decoration = function (c)
             {
                 {
                     -- Go to playlist and focus currently playing song
-                    control_button("", beautiful.xforeground, beautiful.icon_font_name .. "Round 14", dpi(30), function()
+                    control_button(c, "", beautiful.xforeground, beautiful.icon_font_name .. "Round 14", dpi(30), function()
                         awful.spawn.with_shell("mpc -q prev")
                     end),
                     -- Toggle play pause
                     music_play_pause,
                     -- Go to list of playlists
-                    control_button("", beautiful.xforeground, beautiful.icon_font_name .. "Round 14", dpi(30), function()
+                    control_button(c, "", beautiful.xforeground, beautiful.icon_font_name .. "Round 14", dpi(30), function()
                         awful.spawn.with_shell("mpc -q next")
                     end),
                     layout = wibox.layout.flex.horizontal
@@ -441,11 +441,11 @@ local music_create_decoration = function (c)
                         loop,
                         shuffle,
                         -- Go to list of playlists
-                        control_button("", beautiful.xforeground, beautiful.icon_font_name .. "Round 12", dpi(30), function()
+                        control_button(c, "", beautiful.xforeground, beautiful.icon_font_name .. "Round 12", dpi(30), function()
                             helpers.send_key(c, "1")
                         end),
                         -- Go to visualizer
-                        control_button("", beautiful.xforeground, "icomoon 12", dpi(30), function()
+                        control_button(c, "", beautiful.xforeground, "icomoon 12", dpi(30), function()
                             helpers.send_key(c, "8")
                         end),
                         layout = wibox.layout.flex.horizontal
