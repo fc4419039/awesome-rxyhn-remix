@@ -76,7 +76,9 @@ chosen=$(echo "$choice" | sed 's/^[^ ]*  //' | sed 's/ $//')
 has_sec=$(grep -F "${chosen}|" "$sec_file" 2>/dev/null | head -1 | cut -d'|' -f2)
 
 if [ "$has_sec" = "1" ]; then
-    password=$(rofi -dmenu -theme "$theme" -theme-str "inputbar { enabled: true; }" -p "Password" -password)
+    password=$(rofi -dmenu -theme "$theme" \
+        -theme-str "window { width: 340px; height: 120px; } listview { enabled: false; } inputbar { enabled: true; margin: 20px; placeholder: 'Password'; children: [entry]; } entry { placeholder: 'Password'; }" \
+        -p "" -password)
     if [ -z "$password" ]; then
         rm -f "$list_file" "$sec_file"
         exit 0
