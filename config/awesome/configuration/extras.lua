@@ -60,6 +60,92 @@ client.connect_signal("mouse::enter", function(c)
     c:emit_signal("request::activate", "mouse_enter", {raise = false})
 end)
 
+-- Archivos de estado para persistencia entre recargas
+local state_dir = os.getenv("HOME") .. "/.cache/awesome"
+os.execute("mkdir -p " .. state_dir)
+local border_state_file = state_dir .. "/border-state"
+local titlebar_state_file = state_dir .. "/titlebar-state"
+
+-- Toggle de bordes para ventanas (NO afecta rofi, que dibuja sus propios bordes)
+local window_borders_enabled = true
+
+local f = io.open(border_state_file, "r")
+if f then f:close(); window_borders_enabled = false end
+
+local function update_window_borders()
+    for _, c in ipairs(client.get()) do
+        c.border_width = window_borders_enabled and beautiful.border_width or 0
+    end
+end
+update_window_borders()
+
+function toggle_window_borders()
+    window_borders_enabled = not window_borders_enabled
+    update_window_borders()
+    if window_borders_enabled then
+        os.remove(border_state_file)
+    else
+        io.open(border_state_file, "w"):close()
+    end
+    naughty.notify({
+        text = window_borders_enabled and "Bordes de ventanas activados" or "Bordes de ventanas desactivados",
+        timeout = 2
+    })
+end
+
+-- Toggle de titlebars para ventanas
+local titlebar_builder = require("ui.decorations.titlebar")
+local titlebars_enabled = true
+
+local f = io.open(titlebar_state_file, "r")
+if f then f:close(); titlebars_enabled = false end
+
+function toggle_window_titlebars()
+    titlebars_enabled = not titlebars_enabled
+    local n = 0
+    if titlebars_enabled then
+        for _, c in ipairs(client.get()) do
+            if not c.titlebar then
+                titlebar_builder.setup(c)
+                n = n + 1
+            end
+        end
+        os.remove(titlebar_state_file)
+    else
+        for _, c in ipairs(client.get()) do
+            if c.titlebar then
+                c.titlebar:remove()
+                n = n + 1
+            end
+        end
+        io.open(titlebar_state_file, "w"):close()
+    end
+    naughty.notify({
+        text = (titlebars_enabled and "Titlebars activados" or "Titlebars desactivados")
+            .. " (" .. n .. " ventanas)",
+        timeout = 3
+    })
+end
+
+client.connect_signal("manage", function(c)
+    c.border_width = window_borders_enabled and beautiful.border_width or 0
+    if titlebars_enabled and not c.titlebar then
+        titlebar_builder.setup(c)
+    end
+end)
+
+-- Restaurar titlebars persistidos al recargar
+if titlebars_enabled then
+    gears.timer.start_new(1, function()
+        for _, c in ipairs(client.get()) do
+            if not c.titlebar then
+                titlebar_builder.setup(c)
+            end
+        end
+        return false
+    end)
+end
+
 client.connect_signal("focus",
                       function(c) c.border_color = beautiful.border_focus end)
 

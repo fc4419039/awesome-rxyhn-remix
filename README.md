@@ -115,6 +115,10 @@ Panel desplegable al hacer clic en batería/reloj:
 - Widgets de info: WiFi, IP pública, VPN
 - Título de la ventana centrado
 - **Borde de ventana** de 2px del mismo color que los menús rofi, cambiable con `Ctrl+Super+b`
+- **Bordes y titlebars activados por defecto.** Para desactivarlos:
+  - `Ctrl+Super+Shift+B` — quita/pone los bordes de las ventanas (rofi no se afecta)
+  - `Ctrl+Super+Shift+T` — quita/pone la barra de título completa
+- Ambos toggles persisten entre recargas de Awesome
 
 **Reproductor de música (ventanas ncmpcpp):**
 - Barra de título reemplazada por reproductor completo
@@ -203,6 +207,8 @@ Buscador y descargador de música desde YouTube con menú interactivo y modo dir
 | `Mod+Shift+n` | ncmpcpp |
 | `Mod+Ctrl+l` | Lock screen |
 | `Ctrl+Super+b` | Cambiar color de acento (bordes + rofi) |
+| `Ctrl+Super+Shift+B` | Quitar/poner bordes de ventanas (activos por defecto) |
+| `Ctrl+Super+Shift+T` | Quitar/poner titlebars (activas por defecto) |
 | `Alt+Tab` | Window switcher |
 | `Mod+q` | Cerrar ventana |
 | `Mod+f` | Thunar |
@@ -236,7 +242,10 @@ Buscador y descargador de música desde YouTube con menú interactivo y modo dir
 ### Extras
 - **Sloppy focus** — el foco sigue al mouse
 - **Flash focus** — destello al cambiar foco
-- **Menú contextual** en click derecho del escritorio
+- **Menú contextual** en click derecho del escritorio con submenú **"Fondos"** que incluye:
+  - **Fondo interactivo** — cambia el wallpaper automáticamente de forma aleatoria desde `~/fondos/` en cada recarga o rotación programada
+  - **Elegir imagen** — selector gráfico (`yad`) para escoger una imagen específica de `~/fondos/` y fijarla manualmente (persiste entre cambios automáticos)
+  - **Pantalla de bloqueo** — establece la imagen de fondo del lock screen SDDM
 - **Scratchpad** terminal flotante (Mod+z)
 - **Window swallowing** — las terminales son reemplazadas por apps lanzadas
 - **Save floats** — preserva posición de ventanas flotantes al cambiar tags

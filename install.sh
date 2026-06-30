@@ -67,6 +67,7 @@ echo -e "${YELLOW}📦 Instalando dependencias...${NC}"
 $AUR_HELPER -Sy --needed awesome-git picom-git kitty rofi todo-bin acpi acpid \
     wireless_tools jq inotify-tools polkit-gnome xdotool xclip maim \
     brightnessctl alsa-utils alsa-tools pipewire pipewire-pulse wireplumber \
+    qt5-imageformats qt6-imageformats \
     playerctl spotify onlyoffice-bin mpd ncmpcpp mpd-mpris blueman pasystray \
     touchegg redshift networkmanager bluez libnotify curl ffmpeg gpick \
     imagemagick thunar firefox krita xorg-xrdb \

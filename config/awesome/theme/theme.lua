@@ -124,8 +124,8 @@ theme.fg_minimize = theme.xcolor0
 -- Borders
 theme.border_width = 2
 theme.oof_border_width = dpi(1)
-theme.border_normal = "#3b82f6"
-theme.border_focus = "#3b82f6"
+theme.border_normal = "#7c3aed"
+theme.border_focus = "#7c3aed"
 theme.widget_border_width = dpi(2)
 theme.widget_border_color = theme.darker_bg
 

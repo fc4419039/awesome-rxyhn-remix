@@ -3,7 +3,7 @@
 * {
     bg:                     #0d0d1a;
     fg:                     #e2e8f0;
-    accent:                 #3b82f6;
+    accent:                 #7c3aed;
     accent-dim:             #000000;
     surface:                #1a1a2e;
     darker:                 #141428;

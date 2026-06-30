@@ -20,7 +20,7 @@ get_devices() {
         local paired
         paired=$(echo "$info" | grep "Paired:" | awk '{print $2}')
         local icon=""
-        [ "$connected" = "yes" ] && icon=""
+        [ "$connected" = "yes" ] && icon=""
         local label=""
         [ "$paired" != "yes" ] && label=" (unpaired)"
         echo "$icon $name$label"
@@ -43,9 +43,9 @@ main_menu() {
     status=$(get_status)
 
     if [ "$status" = "yes" ]; then
-        printf " Status: On\nﴛ Turn Off\n料 Devices\n Quit"
+        printf " Status: On\n Turn Off\n Devices\n Quit"
     else
-        printf " Status: Off\nﴜ Turn On\n料 Devices\n Quit"
+        printf " Status: Off\n Turn On\n Devices\n Quit"
     fi
 }
 
@@ -101,6 +101,8 @@ while true; do
             continue
             ;;
         *"Turn On"*)
+            rfkill unblock bluetooth >/dev/null 2>&1
+            sleep 0.5
             bluetoothctl power on >/dev/null 2>&1
             bluetoothctl agent on >/dev/null 2>&1
             bluetoothctl default-agent >/dev/null 2>&1

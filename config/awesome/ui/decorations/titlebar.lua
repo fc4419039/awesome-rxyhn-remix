@@ -30,7 +30,7 @@ local function create_title_button(c, color_focus, color_unfocus)
     return tb
 end
 
-client.connect_signal("request::titlebars", function(c)
+local function setup_titlebar(c)
     if c.class == "firefox" or c.class == "Firefox" or c.class == "Navigator" then return end
     local buttons = gears.table.join(
         awful.button({}, 1, function()
@@ -250,5 +250,9 @@ client.connect_signal("request::titlebars", function(c)
         buttons = buttons,
         layout = wibox.layout.flex.horizontal
     }
-end)
+end
+
+client.connect_signal("request::titlebars", setup_titlebar)
+
+return { setup = setup_titlebar }
 

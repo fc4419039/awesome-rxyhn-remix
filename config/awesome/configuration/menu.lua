@@ -29,6 +29,13 @@ awful.screen.connect_for_each_screen(function(s)
         {"Lock Screen", function() lock_screen_show() end}
     }
 
+    -- Wallpaper submenu
+    wallpapermenu = {
+        {"Fondo interactivo", function() awful.spawn.with_shell("rm -f $HOME/.cache/wallpaper_fijo.txt && " .. os.getenv("HOME") .. "/.config/cambiar_fondo.sh") end},
+        {"Elegir imagen", function() awful.spawn.with_shell(os.getenv("HOME") .. "/.config/awesome/scripts/set-wallpaper.sh") end},
+        {"Pantalla de bloqueo", function() awful.spawn.with_shell(os.getenv("HOME") .. "/.config/awesome/scripts/set-sddm-bg.sh") end}
+    }
+
     -- Mainmenu
     mymainmenu = awful.menu({
         items = {
@@ -37,6 +44,7 @@ awful.screen.connect_for_each_screen(function(s)
             {"File Manager", function() awful.spawn.with_shell(file_manager) end},
             {"Web Browser", function() awful.spawn.with_shell(browser) end},
             {"Music", function() awful.spawn.with_shell(music_client) end},
+            {"Fondos", wallpapermenu},
             {"AwesomeWM", awesomemenu,  beautiful.awesome_logo},
             {"Power Menu", powermenu}
         }

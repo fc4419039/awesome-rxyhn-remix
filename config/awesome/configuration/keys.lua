@@ -245,6 +245,18 @@ awful.keyboard.append_global_keybindings({
     end,
     {description = "cycle accent color", group = "hotkeys"}),
 
+    -- Toggle window borders (no afecta a rofi)
+    awful.key({ctrl, modkey, shift}, "b", function()
+        toggle_window_borders()
+    end,
+    {description = "toggle window borders", group = "hotkeys"}),
+
+    -- Toggle titlebars
+    awful.key({ctrl, modkey, shift}, "t", function()
+        toggle_window_titlebars()
+    end,
+    {description = "toggle window titlebars", group = "hotkeys"}),
+
     -- ncmpcpp music player
     awful.key({modkey, "Shift"}, "n", function()
         awful.spawn(terminal .. " --session " .. os.getenv("HOME") .. "/.config/ncmpcpp/session.conf --class music --title ncmpcpp --config " .. os.getenv("HOME") .. "/.config/ncmpcpp/kitty-music.conf")
