@@ -70,7 +70,7 @@ $AUR_HELPER -Sy --needed awesome-git picom-git kitty rofi todo-bin acpi acpid \
     qt5-imageformats qt6-imageformats \
     playerctl spotify onlyoffice-bin mpd ncmpcpp mpd-mpris blueman pasystray \
     touchegg redshift networkmanager bluez libnotify curl ffmpeg gpick \
-    imagemagick thunar firefox krita xorg-xrdb \
+    imagemagick thunar firefox krita xorg-xrdb yad \
     nerd-fonts-jetbrains-mono ttf-iosevka-nerd ttf-font-awesome ttf-material-design-icons ttf-weather-icons \
     zsh-syntax-highlighting zsh-autosuggestions zoxide feh zsh neovim \
     btop lsd bat python-gobject pipewire-alsa \
