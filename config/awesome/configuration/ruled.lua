@@ -45,7 +45,6 @@ ruled.client.connect_signal("request::rules", function()
             class = {
                 "discord",
                 "Spotify",
-                "firefox",
                 "Org.gnome.Nautilus",
                 "music"
             },
