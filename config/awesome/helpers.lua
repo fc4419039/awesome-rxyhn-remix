@@ -17,12 +17,12 @@ function helpers.misc.case_insensitive_pattern(s)
 end
 
 function helpers.contains(_table, _c)
-	for _, c in ipairs(_table) do
-		if _c == c then
-			return true
-		end
-	end
-	return false
+    for _, c in ipairs(_table) do
+        if _c == c then
+            return true
+        end
+    end
+    return false
 end
 
 function helpers.find(rule)

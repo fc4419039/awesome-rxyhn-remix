@@ -1,0 +1,3 @@
+[submodule "mscdown"]
+	path = mscdown
+	url = https://github.com/fc4419039/mscdown.git

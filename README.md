@@ -34,6 +34,7 @@ Configuración de AwesomeWM basada en el trabajo original de **rxyhn**, completa
 | Compositor | picom (blur & transparency) |
 | Launcher | rofi |
 | Música | ncmpcpp + mpd + mpd-mpris |
+| Descargar música | mscdown (yt-dlp + ffmpeg) |
 
 <h2></h2><br>
 
@@ -124,6 +125,17 @@ Panel desplegable al hacer clic en batería/reloj:
 - Texto animado de canción actual
 - Volumen ajustable
 
+### MSCDown — Music Searcher & Downloader
+Buscador y descargador de música desde YouTube con menú interactivo y modo directo:
+- **Instalación automática** con el dotfiles o manual desde `mscdown/install.sh`
+- **Menú interactivo** con selección estilo questionary (`musica`)
+- **Modo directo**: `musica Queen Bohemian Rhapsody`
+- **Sincronización automática con MPD** (opcional, configurable en `mscdown/settings.conf`)
+- **Metadatos y miniaturas** embebidos (título, artista, carátula)
+- **Calidad ajustable**: 320/192/128 kbps, formato mp3/m4a/ogg/wav
+- **Entorno virtual aislado** con venv, sin dependencias globales
+- Repositorio: [`fc4419039/mscdown`](https://github.com/fc4419039/mscdown)
+
 ### Lock Screen
 - Pantalla de bloqueo con **autenticación PAM**
 - **Word clock** en inglés (ej. "IT IS HALF PAST TEN")
@@ -211,6 +223,16 @@ Panel desplegable al hacer clic en batería/reloj:
 | `Alt+Insert` | Captura de área (portapapeles) |
 | `Alt+a/s/d` | Agrupar/iterar/desagrupar pestañas |
 
+### MSCDown — Music Searcher & Downloader
+Buscador y descargador de música desde YouTube con menú interactivo y modo directo:
+- **Detección automática** del gestor de paquetes (apt/pacman/dnf)
+- **Modo interactivo** con menú de selección (`musica`)
+- **Modo directo**: `musica Queen Bohemian Rhapsody`
+- **Sincronización automática con MPD** (opcional)
+- **Metadatos y miniaturas** embebidos en los archivos
+- **Entorno virtual aislado** con venv, sin ensuciar el sistema
+- Se instala junto con el dotfiles o manualmente desde `mscdown/install.sh`
+
 ### Extras
 - **Sloppy focus** — el foco sigue al mouse
 - **Flash focus** — destello al cambiar foco
@@ -232,7 +254,7 @@ Panel desplegable al hacer clic en batería/reloj:
 ### Instalación automática
 
 ```bash
-git clone https://github.com/fc4419039/awesome-rxyhn-remix.git
+git clone --recurse-submodules https://github.com/fc4419039/awesome-rxyhn-remix.git
 cd awesome-rxyhn-remix
 chmod +x install.sh
 ./install.sh

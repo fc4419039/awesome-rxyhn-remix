@@ -271,7 +271,32 @@ fi
 echo ""
 
 # =====================================================================
-# 🔟 CONFIGURACIÓN DE SDDM (SUGAR-CANDY)
+# 🔟 INSTALAR MSCDOWN (Music Searcher & Downloader)
+# =====================================================================
+echo -e "${YELLOW}🎵 Instalando MSCDown (Music Searcher & Downloader)...${NC}"
+
+# Inicializar submodulos (mscdown)
+if [ -f "$(dirname "$0")/mscdown/install.sh" ]; then
+    echo -e "${YELLOW}📦 Ejecutando instalador de mscdown...${NC}"
+    chmod +x "$(dirname "$0")/mscdown/install.sh"
+    cd "$(dirname "$0")/mscdown"
+    ./install.sh
+    cd "$(dirname "$0")"
+    echo -e "${GREEN}✓ MSCDown instalado${NC}"
+else
+    echo -e "${YELLOW}⚠️  Submódulo mscdown no encontrado. Inicializando...${NC}"
+    git submodule update --init --recursive
+    chmod +x "$(dirname "$0")/mscdown/install.sh"
+    cd "$(dirname "$0")/mscdown"
+    ./install.sh
+    cd "$(dirname "$0")"
+    echo -e "${GREEN}✓ MSCDown instalado${NC}"
+fi
+
+echo ""
+
+# =====================================================================
+# 1️⃣1️⃣ CONFIGURACIÓN DE SDDM (SUGAR-CANDY)
 # =====================================================================
 echo -e "${YELLOW}🎨 Configurando tema de inicio de sesión (SDDM)...${NC}"
 
@@ -321,6 +346,11 @@ echo "   El script notif-sink-setup.sh (autostart) crea un sink"
 echo "   independiente 'notifications' con volumen separado."
 echo "   Usa Super+v para abrir el control de volumen GTK."
 echo ""
-echo "4. Reinicia tu sesión o presiona Super+Ctrl+R en AwesomeWM"
+echo "4. MSCDown (Music Searcher & Downloader):"
+echo "   Escribe 'musica' (o el alias que elegiste) para abrir"
+echo "   el buscador interactivo de música desde YouTube."
+echo "   También puedes usarlo directo: musica <canción>"
+echo ""
+echo "5. Reinicia tu sesión o presiona Super+Ctrl+R en AwesomeWM"
 echo ""
 echo "════════════════════════════════════════════════════"
