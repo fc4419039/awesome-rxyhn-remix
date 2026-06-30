@@ -8,8 +8,6 @@
 --]]
 pcall(require, "luarocks.loader")
 
--- Override xapp-gtk3-module (viene con Thunar, rompe file chooser sin xdg-desktop-portal-xapp)
-os.setenv("GTK3_MODULES", "")
 
 -- Standard awesome library
 local gears = require("gears")
