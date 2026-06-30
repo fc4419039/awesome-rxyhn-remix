@@ -239,6 +239,12 @@ awful.keyboard.append_global_keybindings({
     end,
     {description = "bluetooth menu", group = "hotkeys"}),
 
+    -- Cycle accent color
+    awful.key({ctrl, modkey}, "b", function()
+        awful.spawn.with_shell(os.getenv("HOME") .. "/.config/awesome/scripts/cycle-accent.sh")
+    end,
+    {description = "cycle accent color", group = "hotkeys"}),
+
     -- ncmpcpp music player
     awful.key({modkey, "Shift"}, "n", function()
         awful.spawn(terminal .. " --session " .. os.getenv("HOME") .. "/.config/ncmpcpp/session.conf --class music --title ncmpcpp --config " .. os.getenv("HOME") .. "/.config/ncmpcpp/kitty-music.conf")
