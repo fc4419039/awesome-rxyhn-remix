@@ -24,7 +24,7 @@ terminal = "kitty"
 spotify = "spotify"
 editor = "kitty nvim"
 nvim = "kitty nvim"
-browser = "firefox"
+browser = "env MOZ_GTK_TITLEBAR_DECORATION=none firefox"
 launcher = "rofi -show drun -theme " .. os.getenv("HOME") .. "/.config/awesome/theme/rofi.rasi"
 file_manager = "thunar"
 music_client = "kitty --session " .. os.getenv("HOME") .. "/.config/ncmpcpp/session.conf --class music --title ncmpcpp --config " .. os.getenv("HOME") .. "/.config/ncmpcpp/kitty-music.conf"
@@ -104,14 +104,5 @@ if awesome.startup then
         timeout = 2,
         autostart = true,
         single_shot = true,
-        callback = function()
-            naughty.notify({
-                title = "Bienvenido",
-                text = "AwesomeWM listo — Mod+Ctrl+t para night mode",
-                timeout = 5,
-                bg = beautiful.xcolor0,
-                fg = beautiful.xforeground,
-            })
-        end
     })
 end
