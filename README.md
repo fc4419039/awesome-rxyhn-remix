@@ -18,12 +18,6 @@ Configuración de AwesomeWM basada en el trabajo original de **rxyhn**, completa
 
 > ⚠️ El repositorio original de rxyhn fue eliminado. Esta es una versión actualizada, sin errores de sintaxis ni compatibilidad, lista para usar en sistemas modernos.
 
-<p align="center">
-  <img alt="Clones" src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Ffc4419039%2Fawesome-rxyhn-remix%2Fmain%2Fstats%2Fclones.json&query=%24.count&label=Clones%20(14d)&color=blue&suffix=%20total">
-  <img alt="Unique cloners" src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Ffc4419039%2Fawesome-rxyhn-remix%2Fmain%2Fstats%2Fclones.json&query=%24.uniques&label=Clonadores&color=blue&suffix=%20%C3%BAnicos">
-  <img alt="License" src="https://img.shields.io/badge/License-GPL3-67AFC1">
-</p>
-
 <h2></h2><br>
 
 **Stack principal:**
