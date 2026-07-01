@@ -132,6 +132,5 @@ source ~/powerlevel10k/powerlevel10k.zsh-theme
 
 # AwesomeWM Remix
 export TODO_PATH="$HOME/.config/todo"
-alias david='/home/spectre/mscdown/./ejecutar.sh'
 alias opencode='$HOME/.opencode/bin/opencode'
 
