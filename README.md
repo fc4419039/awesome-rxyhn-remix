@@ -309,4 +309,12 @@ cp -r bin/* ~/.local/bin/
 
 </details>
 
-<p align="center"><a href="https://github.com/rxyhn/AwesomeWM-Dotfiles/blob/main/.github/LICENSE"><img src="https://img.shields.io/static/v1.svg?style=flat-square&label=License&message=GPL-3.0&logoColor=eceff4&logo=github&colorA=061115&colorB=67AFC1"/></a></p>
+<br>
+
+<div align="center">
+  <i>⭐ Si este dotfiles te fue útil, considera dejar una estrella — me ayuda a seguir mejorándolo. Gracias por tu visita. 🫶</i>
+  <br><br>
+  <img src="https://img.shields.io/github/stars/fc4419039/awesome-rxyhn-remix?style=for-the-badge&label=★%20STARS&color=7c3aed&labelColor=0f0f0f">
+</div>
+
+<p align="center"><a href="https://github.com/fc4419039/awesome-rxyhn-remix/blob/main/LICENSE"><img src="https://img.shields.io/static/v1.svg?style=flat-square&label=License&message=GPL-3.0&logoColor=eceff4&logo=github&colorA=061115&colorB=67AFC1"/></a></p>
