@@ -17,7 +17,7 @@
 <br>
 
 <div align="center">
-  <img src=".github/assets/awesome.png" alt="Rice Preview" width="90%">
+  <img src=".github/assets/awesome.png" alt="Rice Preview" width="85%" style="border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.5);">
 </div>
 
 <br>
@@ -52,16 +52,42 @@
 
 <br>
 
-## Vista previa
+<br>
 
-<p align="center">
-  <img src=".github/assets/preview-dashboard.png" width="45%" />
-  <img src=".github/assets/login.png" width="45%" />
-  <img src=".github/assets/preview-widgets.png" width="45%" />
-</p>
-<p align="center">
-  <img src=".github/assets/preview-btop.png" width="90%" />
-</p>
+<h2 align="center">
+  <img src="https://img.shields.io/badge/-VISTA_PREVIA-7c3aed?style=for-the-badge&labelColor=0f0f0f" alt="Vista previa">
+</h2>
+
+<br>
+
+<div align="center">
+  <table>
+    <tr>
+      <td width="50%" align="center">
+        <img src=".github/assets/preview-dashboard.png" alt="Dashboard" style="border-radius: 12px; box-shadow: 0 4px 24px rgba(0,0,0,0.6);">
+        <br>
+        <sub><b>Dashboard</b> — clima, música, stats y más</sub>
+      </td>
+      <td width="50%" align="center">
+        <img src=".github/assets/login.png" alt="Lock Screen" style="border-radius: 12px; box-shadow: 0 4px 24px rgba(0,0,0,0.6);">
+        <br>
+        <sub><b>Lock Screen</b> — word clock y controles musicales</sub>
+      </td>
+    </tr>
+    <tr>
+      <td width="50%" align="center">
+        <img src=".github/assets/preview-widgets.png" alt="Widgets" style="border-radius: 12px; box-shadow: 0 4px 24px rgba(0,0,0,0.6);">
+        <br>
+        <sub><b>Widgets</b> — tooltips, notificaciones y menús</sub>
+      </td>
+      <td width="50%" align="center">
+        <img src=".github/assets/preview-btop.png" alt="BTOP" style="border-radius: 12px; box-shadow: 0 4px 24px rgba(0,0,0,0.6);">
+        <br>
+        <sub><b>BTOP</b> — monitor del sistema</sub>
+      </td>
+    </tr>
+  </table>
+</div>
 
 ## Características
 
