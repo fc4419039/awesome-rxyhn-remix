@@ -561,7 +561,7 @@ cp -r bin/* ~/.local/bin/
 | Source | Description |
 |---|---|
 | [rxyhn](https://github.com/rxyhn) (original, deleted) | Dotfiles original de AwesomeWM |
-| Alpharivs | Fork base usado para esta remix |
+| [Alpharivs](https://github.com/Alpharivs/dotfiles) | Fork base usado para esta remix |
 | [s4vitar](https://github.com/s4vitar) | Configuración de zsh |
 | [ner0z](https://github.com/ner0z) | Colorscheme night |
 
