@@ -22,18 +22,6 @@
 
 <br>
 
-<h2 align="center">📺 Demo</h2>
-
-<p align="center">
-  <a href="https://imgur.com/your-video-link">
-    <img src="https://img.shields.io/badge/▶️-VER_DEMO-7c3aed?style=for-the-badge&labelColor=0f0f0f" alt="Demo">
-  </a>
-  <br><br>
-  <i>⬆️ Reemplaza este link con tu video cuando lo subas ⬆️</i>
-</p>
-
-<br>
-
 <h1 align="center">
   AwesomeWM Dotfiles — Modernized & Fixed Remix
 </h1>
