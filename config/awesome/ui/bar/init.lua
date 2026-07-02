@@ -63,18 +63,22 @@ awesome.connect_signal("signal::battery", function(value)
     end
 
     for scr, data in pairs(screen_batts) do
-        if data.batt then
-            data.batt.colors = {fill_color}
-            data.batt.value = value
-        end
+        pcall(function()
+            if data and data.batt and data.batt.valid then
+                data.batt.colors = {fill_color}
+                data.batt.value = value
+            end
+        end)
     end
 end)
 
 awesome.connect_signal("signal::charger", function(state)
     for scr, data in pairs(screen_chargers) do
-        if data.charge_icon then
-            data.charge_icon.visible = state
-        end
+        pcall(function()
+            if data and data.charge_icon and data.charge_icon.visible ~= nil then
+                data.charge_icon.visible = state
+            end
+        end)
     end
 end)
 
@@ -512,26 +516,90 @@ screen.connect_signal("request::desktop_decoration", function(s)
         },
     }
 
-    s.mywibar:setup {
-        {
-            layout = wibox.layout.align.vertical,
-            expand = "none",
+    -- Construcción segura del wibar (con pcall para evitar crasheos)
+    local function build_wibar_content()
+        s.mywibar:setup {
             {
-                awesome_icon,
-                taglist,
-                spacing = dpi(10),
-                layout = wibox.layout.fixed.vertical
+                layout = wibox.layout.align.vertical,
+                expand = "none",
+                {
+                    awesome_icon,
+                    taglist,
+                    spacing = dpi(10),
+                    layout = wibox.layout.fixed.vertical
+                },
+                nil,
+                {
+                    stats,
+                    notif_center_button,
+                    layoutbox,
+                    spacing = dpi(8),
+                    layout = wibox.layout.fixed.vertical
+                }
             },
-            nil,
-            {
-                stats,
-                notif_center_button,
-                layoutbox,
-                spacing = dpi(8),
-                layout = wibox.layout.fixed.vertical
+            margins = dpi(8),
+            widget = wibox.container.margin
+        }
+    end
+
+    local ok, err = pcall(build_wibar_content)
+    if not ok then
+        local log = io.open("/tmp/awesome-wibar-errors.log", "a")
+        if log then
+            log:write(os.date("%H:%M:%S") .. " INIT ERR: " .. tostring(err) .. "\n")
+            log:close()
+        end
+        -- Intento con setup mínimo como fallback
+        pcall(function()
+            s.mywibar:setup {
+                { widget = wibox.widget.textbox, markup = "!", align = "center", valign = "center" },
+                margins = dpi(8),
+                widget = wibox.container.margin
             }
-        },
-        margins = dpi(8),
-        widget = wibox.container.margin
-    }
+        end)
+    end
+
+    -- Timer de salud: verifica cada 30s si la barra tiene widgets, si no, los reconstruye
+    local health_timer = gears.timer.start_new(30, function()
+        pcall(function()
+            if s and s.mywibar and s.mywibar.visible then
+                local ok_check = pcall(function()
+                    local w = s.mywibar:get_widget() or s.mywibar._widget
+                    return w ~= nil
+                end)
+                if not ok_check then
+                    local log = io.open("/tmp/awesome-wibar-errors.log", "a")
+                    if log then
+                        log:write(os.date("%H:%M:%S") .. " Wibar corrupted, rebuilding...\n")
+                        log:close()
+                    end
+                    pcall(build_wibar_content)
+                    awful.layout.arrange(s)
+                end
+            end
+        end)
+        return true
+    end)
+
+    -- Función global de reparación manual (se puede llamar desde keys o terminal)
+    _G["wibar_repair"] = function(scr)
+        scr = scr or awful.screen.focused()
+        if scr and scr.mywibar then
+            pcall(function()
+                scr.mywibar:setup(nil)
+            end)
+            pcall(build_wibar_content)
+            awful.layout.arrange(scr)
+        end
+    end
+
+    -- Limpiar timer al desconectar la pantalla
+    s._wibar_health_timer = health_timer
+end)
+
+screen.connect_signal("removed", function(s)
+    if s._wibar_health_timer then
+        s._wibar_health_timer:stop()
+        s._wibar_health_timer = nil
+    end
 end)
