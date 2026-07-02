@@ -1,42 +1,68 @@
 <div align="center">
-    <img src="https://awesomewm.org/images/awesome-logo.svg">
+  <img src="https://awesomewm.org/images/awesome-logo.svg" height="80">
 </div>
 
 <br>
 
 <div align="center">
-    <img src=".github/assets/awesome.png" alt="Rice Preview">
+
+[![GitHub stars](https://img.shields.io/github/stars/fc4419039/awesome-rxyhn-remix?style=for-the-badge&label=★%20STARS&color=7c3aed&labelColor=0f0f0f)](https://github.com/fc4419039/awesome-rxyhn-remix/stargazers)
+[![GitHub license](https://img.shields.io/github/license/fc4419039/awesome-rxyhn-remix?style=for-the-badge&color=67AFC1&labelColor=0f0f0f)](https://github.com/fc4419039/awesome-rxyhn-remix/blob/main/LICENSE)
+[![AwesomeWM](https://img.shields.io/badge/WM-Awesome-F4C2C2?style=for-the-badge&labelColor=0f0f0f&logo=awesomewm)](https://awesomewm.org/)
+[![Arch Linux](https://img.shields.io/badge/OS-Arch_Linux-1793D1?style=for-the-badge&labelColor=0f0f0f&logo=arch-linux)](https://archlinux.org/)
+[![Lua](https://img.shields.io/badge/Lua-2C2D72?style=for-the-badge&labelColor=0f0f0f&logo=lua)](https://www.lua.org/)
+
 </div>
 
 <br>
+
+<div align="center">
+  <img src=".github/assets/awesome.png" alt="Rice Preview" width="90%">
+</div>
+
 <br>
 
-<a href="https://awesomewm.org/"><img alt="AwesomeWM Logo" height="160" align="left" src="https://awesomewm.org/doc/api/images/AUTOGEN_wibox_logo_logo_and_name.svg"></a>
-<b>AwesomeWM Dotfiles — Modernized & Fixed Remix</b>
+<h2 align="center">📺 Demo</h2>
 
-Configuración de AwesomeWM basada en el trabajo original de **rxyhn**, completamente reparada, optimizada y extendida con múltiples funcionalidades nuevas.
+<p align="center">
+  <a href="https://imgur.com/your-video-link">
+    <img src="https://img.shields.io/badge/▶️-VER_DEMO-7c3aed?style=for-the-badge&labelColor=0f0f0f" alt="Demo">
+  </a>
+  <br><br>
+  <i>⬆️ Reemplaza este link con tu video cuando lo subas ⬆️</i>
+</p>
 
-> ⚠️ El repositorio original de rxyhn fue eliminado. Esta es una versión actualizada, sin errores de sintaxis ni compatibilidad, lista para usar en sistemas modernos.
+<br>
 
-<h2></h2><br>
+<h1 align="center">
+  AwesomeWM Dotfiles — Modernized & Fixed Remix
+</h1>
 
-**Stack principal:**
+<p align="center">
+  <i>Configuración completa de <b>AwesomeWM</b>, reparada, optimizada y extendida con funcionalidades modernas.</i>
+  <br><br>
+  Basado en el trabajo original de <b>rxyhn</b> (repositorio eliminado). Versión actualizada, sin errores, lista para producción.
+</p>
 
-| Componente | Uso |
-|---|---|
-| WM | awesome |
-| OS | Arch Linux |
-| Terminal | kitty |
-| Shell | zsh + powerlevel10k |
-| Editor | neovim (NvChad) |
-| AI Agent | opencode (configuración incluida) |
-| Audio | pipewire + wireplumber |
-| Compositor | picom (blur & transparency) |
-| Launcher | rofi |
-| Música | ncmpcpp + mpd + mpd-mpris |
-| Descargar música | mscdown (yt-dlp + ffmpeg) |
+<br>
 
-<h2></h2><br>
+<div align="center">
+  <h2>Stack</h2>
+  <p>
+    <img src="https://img.shields.io/badge/AwesomeWM-F4C2C2?style=flat-square&logo=awesomewm&labelColor=0f0f0f">
+    <img src="https://img.shields.io/badge/Arch_Linux-1793D1?style=flat-square&logo=arch-linux&labelColor=0f0f0f">
+    <img src="https://img.shields.io/badge/Kitty-000000?style=flat-square&logo=kitty&labelColor=0f0f0f">
+    <img src="https://img.shields.io/badge/Zsh-F15A24?style=flat-square&logo=zsh&labelColor=0f0f0f">
+    <img src="https://img.shields.io/badge/Neovim-57A143?style=flat-square&logo=neovim&labelColor=0f0f0f">
+    <img src="https://img.shields.io/badge/Rofi-000000?style=flat-square&logo=rofi&labelColor=0f0f0f">
+    <img src="https://img.shields.io/badge/PipeWire-8B5CF6?style=flat-square&logo=pipewire&labelColor=0f0f0f">
+    <img src="https://img.shields.io/badge/Picom-000000?style=flat-square&logo=picom&labelColor=0f0f0f">
+    <img src="https://img.shields.io/badge/ncmpcpp-000000?style=flat-square&logo=mpd&labelColor=0f0f0f">
+    <img src="https://img.shields.io/badge/OpenCode-000000?style=flat-square&labelColor=0f0f0f">
+  </p>
+</div>
+
+<br>
 
 ## Vista previa
 
@@ -312,9 +338,10 @@ cp -r bin/* ~/.local/bin/
 <br>
 
 <div align="center">
-  <i>⭐ Si este dotfiles te fue útil, considera dejar una estrella — me ayuda a seguir mejorándolo. Gracias por tu visita. 🫶</i>
+  <i>⭐ Si este dotfiles te fue útil, ¡deja una estrella! Me ayuda a seguir mejorándolo. 🫶</i>
   <br><br>
-  <img src="https://img.shields.io/github/stars/fc4419039/awesome-rxyhn-remix?style=for-the-badge&label=★%20STARS&color=7c3aed&labelColor=0f0f0f">
-</div>
 
-<p align="center"><a href="https://github.com/fc4419039/awesome-rxyhn-remix/blob/main/LICENSE"><img src="https://img.shields.io/static/v1.svg?style=flat-square&label=License&message=GPL-3.0&logoColor=eceff4&logo=github&colorA=061115&colorB=67AFC1"/></a></p>
+  [![GitHub stars](https://img.shields.io/github/stars/fc4419039/awesome-rxyhn-remix?style=for-the-badge&label=★%20STARS&color=7c3aed&labelColor=0f0f0f)](https://github.com/fc4419039/awesome-rxyhn-remix/stargazers)
+  [![GitHub license](https://img.shields.io/badge/License-GPL--3.0-67AFC1?style=for-the-badge&labelColor=0f0f0f)](https://github.com/fc4419039/awesome-rxyhn-remix/blob/main/LICENSE)
+
+</div>
