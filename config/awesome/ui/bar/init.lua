@@ -385,7 +385,7 @@ screen.connect_signal("request::desktop_decoration", function(s)
     -- bar.x = dpi(10), strut.width = dpi(50) → workarea.left = padding + strut
     local function wibar_update_padding(visible)
         local p = { right = dpi(5), top = dpi(15), bottom = dpi(15) }
-        p.left = visible and (dpi(10) + dpi(10)) or 0
+        p.left = visible and (dpi(10)) or 0
         s.padding = p
         awful.layout.arrange(s)
     end
@@ -398,7 +398,7 @@ screen.connect_signal("request::desktop_decoration", function(s)
             fs.wibar_visible = not fs.wibar_visible
             fs.mywibar.visible = fs.wibar_visible
             local p = { right = dpi(5), top = dpi(15), bottom = dpi(15) }
-            p.left = fs.wibar_visible and (dpi(10) + dpi(10)) or 0
+            p.left = fs.wibar_visible and (dpi(10)) or 0
             fs.padding = p
             awful.layout.arrange(fs)
         end
@@ -434,7 +434,7 @@ screen.connect_signal("request::desktop_decoration", function(s)
                     s.mywibar.visible = true
                     s.wibar_visible = true
                     local p = { right = dpi(5), top = dpi(15), bottom = dpi(15) }
-                    p.left = dpi(10) + dpi(10)
+                    p.left = dpi(10)
                     s.padding = p
                     awful.layout.arrange(s)
                 end
