@@ -107,7 +107,7 @@
 <p align="center">
   <i>Complete <b>AwesomeWM</b> configuration — repaired, optimized, and extended with modern features.</i>
   <br><br>
-  Based on the original work by <b>rxyhn</b> (deleted repository) and the <b><a href="https://github.com/Alpharivs/dotfiles">Alpharivs fork</a></b>. Bug-free, production-ready for modern systems.
+  Based on the original work by <b>rxyhn</b> (deleted repository) and the <b><a href="https://github.com/Alpharivs/dotfiles">Alpharivs fork</a></b>.
 </p>
 
 <br>
@@ -301,7 +301,7 @@ YouTube music search & download with interactive menu and direct mode:
 <p align="center">
   <i>Configuración completa de <b>AwesomeWM</b>, reparada, optimizada y extendida con funcionalidades modernas.</i>
   <br><br>
-  Basado en el trabajo original de <b>rxyhn</b> (repo eliminado) y el <b><a href="https://github.com/Alpharivs/dotfiles">fork de Alpharivs</a></b>. Versión actualizada, sin errores, lista para producción.
+  Basado en el trabajo original de <b>rxyhn</b> (repo eliminado) y el <b><a href="https://github.com/Alpharivs/dotfiles">fork de Alpharivs</a></b>.
 </p>
 
 <br>
