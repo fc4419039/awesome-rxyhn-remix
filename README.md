@@ -107,7 +107,7 @@
 <p align="center">
   <i>Complete <b>AwesomeWM</b> configuration — repaired, optimized, and extended with modern features.</i>
   <br><br>
-  Based on the original work by <b>rxyhn</b> (deleted repository). This is a bug-free, production-ready version for modern systems.
+  Based on the original work by <b>rxyhn</b> (deleted repository) and the <b><a href="https://github.com/Alpharivs/dotfiles">Alpharivs fork</a></b>. Bug-free, production-ready for modern systems.
 </p>
 
 <br>
@@ -301,7 +301,7 @@ YouTube music search & download with interactive menu and direct mode:
 <p align="center">
   <i>Configuración completa de <b>AwesomeWM</b>, reparada, optimizada y extendida con funcionalidades modernas.</i>
   <br><br>
-  Basado en el trabajo original de <b>rxyhn</b> (repositorio eliminado). Versión actualizada, sin errores, lista para producción.
+  Basado en el trabajo original de <b>rxyhn</b> (repo eliminado) y el <b><a href="https://github.com/Alpharivs/dotfiles">fork de Alpharivs</a></b>. Versión actualizada, sin errores, lista para producción.
 </p>
 
 <br>
@@ -553,7 +553,17 @@ cp -r bin/* ~/.local/bin/
 
 <div align="center">
 
-**rxyhn** — Original design • **s4vitar** — Zsh config • **ner0z** — Colorscheme night • **ChocolateBread799**, **JavaCafe01** — Original contributions
+**rxyhn** — Original design • **[Alpharivs](https://github.com/Alpharivs/dotfiles)** — Fork base • **s4vitar** — Zsh config • **ner0z** — Colorscheme night • **ChocolateBread799**, **JavaCafe01** — Original contributions
+
+<br>
+<br>
+
+| Source | Description |
+|---|---|
+| [rxyhn](https://github.com/rxyhn) (original, deleted) | Dotfiles original de AwesomeWM |
+| [Alpharivs/dotfiles](https://github.com/Alpharivs/dotfiles) | Fork base usado para esta remix |
+| [s4vitar](https://github.com/s4vitar) | Configuración de zsh |
+| [ner0z](https://github.com/ner0z) | Colorscheme night |
 
 </div>
 
