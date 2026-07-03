@@ -85,7 +85,7 @@ naughty.connect_signal("request::display", function(n)
         awful.spawn("pw-play --target=notifications " .. sound_file, false)
     end
 
-    local appicon = gears.color.recolor_image(beautiful.notification_icon, beautiful.xcolor4)
+    local appicon = beautiful.notification_icon and gears.color.recolor_image(beautiful.notification_icon, beautiful.xcolor4)
     local time = os.date("%H:%M")
 
     local action_widget = {
@@ -144,7 +144,7 @@ naughty.connect_signal("request::display", function(n)
     naughty.layout.box {
         notification = n,
         type = "notification",
-        bg = beautiful.xbackground .. 00,
+        bg = beautiful.xbackground .. "00",
         widget_template = {
             {
                 {

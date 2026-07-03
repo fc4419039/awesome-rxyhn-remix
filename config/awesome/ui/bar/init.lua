@@ -64,7 +64,7 @@ awesome.connect_signal("signal::battery", function(value)
 
     for scr, data in pairs(screen_batts) do
         pcall(function()
-            if data and data.batt and data.batt.valid then
+            if data and data.batt then
                 data.batt.colors = {fill_color}
                 data.batt.value = value
             end
@@ -516,9 +516,7 @@ screen.connect_signal("request::desktop_decoration", function(s)
         },
     }
 
-    -- Construcción segura del wibar (con pcall para evitar crasheos)
-    local function build_wibar_content()
-        s.mywibar:setup {
+    s.mywibar:setup {
             {
                 layout = wibox.layout.align.vertical,
                 expand = "none",
@@ -540,58 +538,34 @@ screen.connect_signal("request::desktop_decoration", function(s)
             margins = dpi(8),
             widget = wibox.container.margin
         }
+
+    -- La barra se construye directamente arriba sin pcall
+    local log_init = io.open("/tmp/awesome-wibar-errors.log", "a")
+    if log_init then
+        log_init:write(os.date("%H:%M:%S") .. " Wibar initialized\n")
+        log_init:close()
     end
 
-    local ok, err = pcall(build_wibar_content)
-    if not ok then
-        local log = io.open("/tmp/awesome-wibar-errors.log", "a")
-        if log then
-            log:write(os.date("%H:%M:%S") .. " INIT ERR: " .. tostring(err) .. "\n")
-            log:close()
-        end
-        -- Intento con setup mínimo como fallback
-        pcall(function()
-            s.mywibar:setup {
-                { widget = wibox.widget.textbox, markup = "!", align = "center", valign = "center" },
-                margins = dpi(8),
-                widget = wibox.container.margin
-            }
-        end)
-    end
-
-    -- Timer de salud: verifica cada 30s si la barra tiene widgets, si no, los reconstruye
+    -- Timer de salud: verifica cada 30s si la barra tiene widgets
     local health_timer = gears.timer.start_new(30, function()
         pcall(function()
             if s and s.mywibar and s.mywibar.visible then
-                local ok_check = pcall(function()
+                local ok = pcall(function()
                     local w = s.mywibar:get_widget() or s.mywibar._widget
                     return w ~= nil
                 end)
-                if not ok_check then
+                if not ok then
                     local log = io.open("/tmp/awesome-wibar-errors.log", "a")
                     if log then
-                        log:write(os.date("%H:%M:%S") .. " Wibar corrupted, rebuilding...\n")
+                        log:write(os.date("%H:%M:%S") .. " Wibar lost widgets, restarting...\n")
                         log:close()
                     end
-                    pcall(build_wibar_content)
-                    awful.layout.arrange(s)
+                    awesome.restart()
                 end
             end
         end)
         return true
     end)
-
-    -- Función global de reparación manual (se puede llamar desde keys o terminal)
-    _G["wibar_repair"] = function(scr)
-        scr = scr or awful.screen.focused()
-        if scr and scr.mywibar then
-            pcall(function()
-                scr.mywibar:setup(nil)
-            end)
-            pcall(build_wibar_content)
-            awful.layout.arrange(scr)
-        end
-    end
 
     -- Limpiar timer al desconectar la pantalla
     s._wibar_health_timer = health_timer

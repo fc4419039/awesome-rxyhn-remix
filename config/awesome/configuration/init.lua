@@ -5,6 +5,7 @@ local gfs = gears.filesystem
 
 -- Theme handling library
 local beautiful = require("beautiful")
+local dpi = beautiful.xresources.apply_dpi
 
 -- Helpers
 local helpers = require("helpers")

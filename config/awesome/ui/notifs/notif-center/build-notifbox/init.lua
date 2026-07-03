@@ -62,12 +62,12 @@ naughty.connect_signal(
 	function(n)
 		local notifbox_color = beautiful.xcolor0
 		if n.urgency == 'critical' then
-			notifbox_color = n.bg .. '66'
+			notifbox_color = (n.bg or beautiful.xcolor0) .. '66'
 		end
 
 		local notif_icon = n.icon or n.app_icon
 		if not notif_icon then
-			notif_icon = gears.color.recolor_image(beautiful.notification_icon, beautiful.xcolor4)
+			notif_icon = beautiful.notification_icon and gears.color.recolor_image(beautiful.notification_icon, beautiful.xcolor4)
 		end
 
 		notifbox_add_expired(n, notif_icon, notifbox_color)

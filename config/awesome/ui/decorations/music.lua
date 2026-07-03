@@ -4,6 +4,7 @@ local awful = require("awful")
 
 -- Theme library
 local beautiful = require("beautiful")
+local dpi = beautiful.xresources.apply_dpi
 
 -- Ruled
 local ruled = require("ruled")
@@ -293,9 +294,11 @@ vol_slider:buttons(gears.table.join(
 
 local playerctl = require("module.bling").signal.playerctl.lib()
 local music_length = 0
+local current_album_path = nil
 
 playerctl:connect_signal("metadata", function(_, title, artist, album_path, album, ___, player_name)
     if player_name == "mpd" then
+        current_album_path = album_path
         local m_now = artist .. " - " .. title .. "/" .. album
 
         music_art:set_image(gears.surface.load_uncached(album_path))
@@ -309,7 +312,9 @@ playerctl:connect_signal("position", function(_, interval_sec, length_sec, playe
         local pos_length = tostring(os.date("!%M:%S", math.floor(length_sec)))
         local pos_markup = pos_now .. helpers.colorize_text(" / " .. pos_length, beautiful.xcolor8)
 
-        music_art:set_image(gears.surface.load_uncached(album_path))
+        if current_album_path then
+            music_art:set_image(gears.surface.load_uncached(current_album_path))
+        end
         music_pos:set_markup_silently(pos_markup)
         music_bar.value = (interval_sec / length_sec) * 100
         music_length = length_sec

@@ -286,10 +286,7 @@ awful.keyboard.append_global_keybindings({
     {description = "reload awesome", group = "awesome"}),
     awful.key({modkey, ctrl}, "q",
         awesome.quit,
-    {description = "quit awesome", group = "awesome"}),
-    awful.key({modkey, "Shift"}, "r",
-        function() if _G["wibar_repair"] then _G["wibar_repair"]() end end,
-    {description = "repair wibar", group = "awesome"})
+    {description = "quit awesome", group = "awesome"})
 })
 
 -- Layout Machi
