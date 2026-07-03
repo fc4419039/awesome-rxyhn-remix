@@ -203,7 +203,7 @@ theme.dashboard_box_bg = theme.lighter_bg
 theme.dashboard_box_fg = theme.dashboard_fg
 
 -- Playerctl
-theme.playerctl_ignore  = {"qutebrowser", "chromium", "brave", "firefox"}
+theme.playerctl_ignore  = {"qutebrowser", "chromium", "brave"}
 theme.playerctl_player  = {"firefox", "spotify", "%any", "mpd"}
 theme.playerctl_update_on_activity = true
 theme.playerctl_position_update_interval = 1

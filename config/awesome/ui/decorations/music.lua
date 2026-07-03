@@ -289,8 +289,10 @@ vol_slider:buttons(gears.table.join(
     awful.button({}, 5, function() helpers.volume_control(-5) end)
 ))
 
--- Playerctl (instancia compartida desde signal/playerctl.lua)
-local playerctl = require("signal.playerctl")
+-- Playerctl (instancia propia solo para MPD)
+local playerctl = require("module.bling").signal.playerctl.lib({
+    player = {"mpd"}
+})
 local music_length = 0
 
 local function load_album_art(album_path)

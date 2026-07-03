@@ -97,7 +97,8 @@ awful.keyboard.append_global_keybindings({
 -- Client and Tabs Bindings
 awful.keyboard.append_global_keybindings({
     awful.key({alt}, "a", function()
-        bling.module.tabbed.pick_with_dmenu()
+        local theme = os.getenv("HOME") .. "/.config/awesome/theme/tabbed.rasi"
+        bling.module.tabbed.pick_with_dmenu("rofi -dmenu -i -theme " .. theme)
     end,
     {description = "pick client to add to tab group", group = "tabs"}),
     awful.key({alt}, "s", function()
