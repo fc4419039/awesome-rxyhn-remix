@@ -62,21 +62,37 @@ echo ""
 # =====================================================================
 # 2️⃣ INSTALAR DEPENDENCIAS
 # =====================================================================
-echo -e "${YELLOW}📦 Instalando dependencias...${NC}"
+echo -e "${YELLOW}📦 Verificando dependencias...${NC}"
 
-$AUR_HELPER -Sy --needed awesome-git picom-git kitty rofi todo-bin acpi acpid \
-    wireless_tools jq inotify-tools polkit-gnome xdotool xclip maim \
-    brightnessctl alsa-utils alsa-tools pipewire pipewire-pulse wireplumber \
-    qt5-imageformats qt6-imageformats \
-    playerctl spotify onlyoffice-bin mpd ncmpcpp mpd-mpris blueman pasystray \
-    touchegg redshift networkmanager bluez libnotify curl ffmpeg gpick \
-    imagemagick thunar firefox krita xorg-xrdb yad \
-    nerd-fonts-jetbrains-mono ttf-iosevka-nerd ttf-font-awesome ttf-material-design-icons ttf-weather-icons \
-    zsh-syntax-highlighting zsh-autosuggestions zoxide feh zsh neovim \
-    btop lsd bat python-gobject pipewire-alsa \
-    powerlevel10k sound-theme-freedesktop --needed
+PKGS="
+    awesome-git picom-git kitty rofi todo-bin acpi acpid
+    wireless_tools jq inotify-tools polkit-gnome xdotool xclip maim
+    brightnessctl alsa-utils alsa-tools pipewire pipewire-pulse wireplumber
+    qt5-imageformats qt6-imageformats
+    playerctl spotify onlyoffice-bin mpd ncmpcpp mpd-mpris blueman pasystray
+    touchegg redshift networkmanager bluez libnotify curl ffmpeg gpick
+    imagemagick thunar firefox krita xorg-xrdb yad
+    nerd-fonts-jetbrains-mono ttf-iosevka-nerd ttf-font-awesome ttf-material-design-icons ttf-weather-icons
+    zsh-syntax-highlighting zsh-autosuggestions zsh-sudo zoxide feh zsh neovim
+    btop lsd bat python-gobject python-pip python-pyqt5 pipewire-alsa
+    powerlevel10k fzf starship autorandr xorg-xrandr pamixer gtk3 sound-theme-freedesktop
+"
 
-echo -e "${GREEN}✓ Dependencias instaladas${NC}"
+# Filtrar solo los paquetes que faltan
+MISSING=""
+for pkg in $PKGS; do
+    if ! pacman -Qi "$pkg" &>/dev/null && ! pacman -Qg "$pkg" &>/dev/null; then
+        MISSING="$MISSING $pkg"
+    fi
+done
+
+if [ -n "$MISSING" ]; then
+    echo -e "${YELLOW}  Paquetes faltantes detectados. Instalando...${NC}"
+    $AUR_HELPER -S --needed $MISSING
+    echo -e "${GREEN}✓ Dependencias instaladas${NC}"
+else
+    echo -e "${GREEN}✓ Todas las dependencias ya estan instaladas${NC}"
+fi
 
 echo ""
 
@@ -100,14 +116,16 @@ echo ""
 # =====================================================================
 echo -e "${YELLOW}🔄 Habilitando servicios...${NC}"
 
-sudo systemctl enable acpid.service
-sudo systemctl start acpid.service
+sudo systemctl enable acpid.service 2>/dev/null || echo -e "${YELLOW}  ⚠ No se pudo habilitar acpid.service${NC}"
+sudo systemctl start acpid.service 2>/dev/null || echo -e "${YELLOW}  ⚠ No se pudo iniciar acpid.service${NC}"
 
 echo -e "${GREEN}✓ Servicios habilitados${NC}"
 
 # Configurar hooks de git (validación sintaxis Lua al commitear)
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-git config core.hooksPath "$SCRIPT_DIR/.githooks" 2>/dev/null && echo -e "${GREEN}✓ Git hooks configurados${NC}"
+if [ -d "$SCRIPT_DIR/.githooks" ]; then
+    git config core.hooksPath "$SCRIPT_DIR/.githooks" 2>/dev/null && echo -e "${GREEN}✓ Git hooks configurados${NC}"
+fi
 
 echo ""
 
@@ -189,21 +207,33 @@ echo ""
 echo -e "${YELLOW}🔤 Instalando fuentes...${NC}"
 
 if [ -d "fonts" ] && [ "$(ls -A fonts)" ]; then
-    # Instalar en ~/.local/share/fonts/ (usuario actual)
-    cp -r fonts/* ~/.local/share/fonts/
-    echo -e "${GREEN}✓ Fuentes instaladas en ~/.local/share/fonts/${NC}"
+    local_fonts=0
+    for f in fonts/*; do
+        if [ ! -f "$HOME/.local/share/fonts/$(basename "$f")" ]; then
+            cp "$f" "$HOME/.local/share/fonts/" 2>/dev/null || true
+            local_fonts=$((local_fonts + 1))
+        fi
+    done
+    [ "$local_fonts" -gt 0 ] && echo -e "${GREEN}✓ $local_fonts fuentes nuevas en ~/.local/share/fonts/${NC}" \
+        || echo -e "${GREEN}✓ Fuentes de usuario ya instaladas${NC}"
 
-    # Instalar en /usr/share/fonts/ (sistema completo)
-    echo -e "${YELLOW}⚠️  Instalando fuentes en /usr/share/fonts/ (requiere sudo)...${NC}"
-    sudo mkdir -p /usr/share/fonts
-    sudo cp -r fonts/* /usr/share/fonts/
-    echo -e "${GREEN}✓ Fuentes instaladas en /usr/share/fonts/${NC}"
+    sys_fonts=0
+    sudo mkdir -p /usr/share/fonts 2>/dev/null || true
+    for f in fonts/*; do
+        if [ ! -f "/usr/share/fonts/$(basename "$f")" ]; then
+            sudo cp "$f" /usr/share/fonts/ 2>/dev/null || true
+            sys_fonts=$((sys_fonts + 1))
+        fi
+    done
+    [ "$sys_fonts" -gt 0 ] && echo -e "${GREEN}✓ $sys_fonts fuentes nuevas en /usr/share/fonts/${NC}" \
+        || echo -e "${GREEN}✓ Fuentes del sistema ya instaladas${NC}"
 
-    # Actualizar cache de fuentes
-    echo -e "${YELLOW}🔄 Actualizando cache de fuentes...${NC}"
-    fc-cache -fv
-    sudo fc-cache -fv
-    echo -e "${GREEN}✓ Cache de fuentes actualizado${NC}"
+    if [ "$local_fonts" -gt 0 ] || [ "$sys_fonts" -gt 0 ]; then
+        echo -e "${YELLOW}🔄 Actualizando cache de fuentes...${NC}"
+        fc-cache -f 2>/dev/null || true
+        sudo fc-cache -f 2>/dev/null || true
+        echo -e "${GREEN}✓ Cache de fuentes actualizado${NC}"
+    fi
 else
     echo -e "${YELLOW}⚠️  Carpeta fonts vacía o no encontrada${NC}"
 fi
@@ -269,44 +299,165 @@ if ! grep -q "TODO_PATH" ~/.zshrc 2>/dev/null; then
     echo -e "${GREEN}✓ TODO_PATH agregada a .zshrc${NC}"
 fi
 
+BACKUP_DIR="$HOME/.zsh-backup-$(date +%s)"
+
+# Backup de configuraciones existentes del usuario
+echo -e "${YELLOW}💾 Respaldando configuraciones existentes...${NC}"
+mkdir -p "$BACKUP_DIR"
+
+for f in "$HOME/.p10k.zsh" "$HOME/powerlevel10k" "$HOME/.fzf.zsh" "$HOME/.fzf"; do
+    if [ -e "$f" ] && [ ! -L "$f" ]; then
+        if cp -r "$f" "$BACKUP_DIR/" 2>/dev/null; then
+            echo -e "${GREEN}  ✓ Respaldado: $f${NC}"
+        else
+            echo -e "${YELLOW}  ⚠ No se pudo respaldar: $f${NC}"
+        fi
+    fi
+done
+
+# Asegurar que ~/powerlevel10k exista (symlink al paquete del sistema o clonar)
+if [ ! -d ~/powerlevel10k ]; then
+    if [ -d /usr/share/zsh-theme-powerlevel10k ]; then
+        ln -s /usr/share/zsh-theme-powerlevel10k ~/powerlevel10k
+        echo -e "${GREEN}✓ ~/powerlevel10k -> /usr/share/zsh-theme-powerlevel10k${NC}"
+    else
+        echo -e "${YELLOW}⏬ Clonando powerlevel10k en ~/powerlevel10k...${NC}"
+        git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ~/powerlevel10k
+        echo -e "${GREEN}✓ powerlevel10k clonado en ~/powerlevel10k${NC}"
+    fi
+fi
+
+# Asegurar que fzf.zsh exista
+if [ ! -f ~/.fzf.zsh ] && [ -f /usr/share/fzf/key-bindings.zsh ]; then
+    echo "source /usr/share/fzf/key-bindings.zsh" > ~/.fzf.zsh
+    echo "source /usr/share/fzf/completion.zsh" >> ~/.fzf.zsh
+    echo -e "${GREEN}✓ ~/.fzf.zsh creado${NC}"
+fi
+
 echo ""
 
 # =====================================================================
-# 🔟 INSTALAR MSCDOWN (Music Searcher & Downloader)
+# 🔟 CONFIGURAR ZSH PARA ROOT (symlinks)
+# =====================================================================
+echo -e "${YELLOW}👑 Configurando zsh para root...${NC}"
+
+# Verificar que root tenga zsh como shell
+ROOT_SHELL=$(sudo -u root sh -c 'echo "$SHELL"' 2>/dev/null || echo "")
+if [ -n "$ROOT_SHELL" ] && [ "$ROOT_SHELL" != "/usr/bin/zsh" ] && [ "$ROOT_SHELL" != "/bin/zsh" ]; then
+    echo -e "${YELLOW}⚠️  Cambiando shell de root a zsh...${NC}"
+    sudo chsh -s /usr/bin/zsh root
+    echo -e "${GREEN}✓ Shell de root cambiada a zsh${NC}"
+fi
+
+# Backup de configuraciones existentes de root
+ROOT_BACKUP_DIR="/root/.zsh-backup-$(date +%s)"
+echo -e "${YELLOW}💾 Respaldando configuraciones existentes de root...${NC}"
+sudo mkdir -p "$ROOT_BACKUP_DIR" 2>/dev/null || true
+for rf in "/root/.zshrc" "/root/.p10k.zsh" "/root/powerlevel10k" "/root/.fzf.zsh" "/root/.fzf"; do
+    if sudo test -e "$rf" 2>/dev/null && ! sudo test -L "$rf" 2>/dev/null; then
+        if sudo cp -r "$rf" "$ROOT_BACKUP_DIR/" 2>/dev/null; then
+            echo -e "${GREEN}  ✓ Respaldado: $rf${NC}"
+        else
+            echo -e "${YELLOW}  ⚠ No se pudo respaldar: $rf${NC}"
+        fi
+    fi
+done
+
+echo -e "${YELLOW}🔗 Creando symlinks de zsh para root (apuntando a config del usuario)...${NC}"
+
+USER_HOME="$HOME"
+
+# .zshrc
+if [ -f "$USER_HOME/.zshrc" ]; then
+    sudo rm -f /root/.zshrc 2>/dev/null || true
+    sudo ln -sf "$USER_HOME/.zshrc" /root/.zshrc
+    echo -e "${GREEN}  ✓ /root/.zshrc -> $USER_HOME/.zshrc${NC}"
+fi
+
+# .p10k.zsh
+if [ -f "$USER_HOME/.p10k.zsh" ]; then
+    sudo rm -f /root/.p10k.zsh 2>/dev/null || true
+    sudo ln -sf "$USER_HOME/.p10k.zsh" /root/.p10k.zsh
+    echo -e "${GREEN}  ✓ /root/.p10k.zsh -> $USER_HOME/.p10k.zsh${NC}"
+fi
+
+# powerlevel10k
+if [ -d "$USER_HOME/powerlevel10k" ]; then
+    sudo rm -rf /root/powerlevel10k 2>/dev/null || true
+    sudo ln -sfT "$USER_HOME/powerlevel10k" /root/powerlevel10k
+    echo -e "${GREEN}  ✓ /root/powerlevel10k -> $USER_HOME/powerlevel10k${NC}"
+fi
+
+# .fzf.zsh
+if [ -f "$USER_HOME/.fzf.zsh" ]; then
+    sudo rm -f /root/.fzf.zsh 2>/dev/null || true
+    sudo ln -sf "$USER_HOME/.fzf.zsh" /root/.fzf.zsh
+    echo -e "${GREEN}  ✓ /root/.fzf.zsh -> $USER_HOME/.fzf.zsh${NC}"
+fi
+
+# .fzf (directorio de fzf)
+if [ -d "$USER_HOME/.fzf" ]; then
+    sudo rm -rf /root/.fzf 2>/dev/null || true
+    sudo ln -sfT "$USER_HOME/.fzf" /root/.fzf
+    echo -e "${GREEN}  ✓ /root/.fzf -> $USER_HOME/.fzf${NC}"
+fi
+
+echo -e "${GREEN}✓ Zsh de root configurada con los mismos archivos que el usuario${NC}"
+
+echo ""
+
+# =====================================================================
+# 1️⃣1️⃣ INSTALAR MSCDOWN (Music Searcher & Downloader)
 # =====================================================================
 echo -e "${YELLOW}🎵 Instalando MSCDown (Music Searcher & Downloader)...${NC}"
 
 # Inicializar submodulos (mscdown)
-if [ -f "$(dirname "$0")/mscdown/install.sh" ]; then
+MSCDOWN_DIR="$(dirname "$0")/mscdown"
+if [ -f "$MSCDOWN_DIR/install.sh" ]; then
     echo -e "${YELLOW}📦 Ejecutando instalador de mscdown...${NC}"
-    chmod +x "$(dirname "$0")/mscdown/install.sh"
-    cd "$(dirname "$0")/mscdown"
-    ./install.sh
-    cd "$(dirname "$0")"
-    echo -e "${GREEN}✓ MSCDown instalado${NC}"
+    chmod +x "$MSCDOWN_DIR/install.sh"
+
+    # Copiar mscdown a $HOME/mscdown para que el alias funcione
+    if [ ! -d "$HOME/mscdown" ]; then
+        cp -r "$MSCDOWN_DIR" "$HOME/mscdown"
+        echo -e "${GREEN}✓ mscdown copiado a $HOME/mscdown${NC}"
+    fi
+
+    # MSCDown install.sh contiene "sudo pacman -Syu" (full upgrade).
+    # Parcheamos para evitar eso y solo instalar dependencias.
+    sed -i 's/sudo pacman -Syu --noconfirm/sudo pacman -S --noconfirm --needed/' "$HOME/mscdown/install.sh"
+
+    # Ejecutar instalador con "musica" como alias por defecto
+    echo "musica" | bash "$HOME/mscdown/install.sh"
+    echo -e "${GREEN}✓ MSCDown instalado (alias: musica)${NC}"
 else
     echo -e "${YELLOW}⚠️  Submódulo mscdown no encontrado. Inicializando...${NC}"
     git submodule update --init --recursive
-    chmod +x "$(dirname "$0")/mscdown/install.sh"
-    cd "$(dirname "$0")/mscdown"
-    ./install.sh
-    cd "$(dirname "$0")"
+    chmod +x "$MSCDOWN_DIR/install.sh"
+
+    if [ ! -d "$HOME/mscdown" ]; then
+        cp -r "$MSCDOWN_DIR" "$HOME/mscdown"
+    fi
+
+    sed -i 's/sudo pacman -Syu --noconfirm/sudo pacman -S --noconfirm --needed/' "$HOME/mscdown/install.sh"
+
+    echo "musica" | bash "$HOME/mscdown/install.sh"
     echo -e "${GREEN}✓ MSCDown instalado${NC}"
 fi
 
 echo ""
 
 # =====================================================================
-# 1️⃣1️⃣ CONFIGURACIÓN DE SDDM (SUGAR-CANDY)
+# 1️⃣2️⃣ CONFIGURACIÓN DE SDDM (SUGAR-CANDY)
 # =====================================================================
 echo -e "${YELLOW}🎨 Configurando tema de inicio de sesión (SDDM)...${NC}"
 
 if command -v sddm &> /dev/null; then
     if [ -d "sddm/sugar-candy" ]; then
         echo -e "${YELLOW}🔒 Copiando tema sugar-candy...${NC}"
-        sudo cp -r sddm/sugar-candy /usr/share/sddm/themes/
+        sudo cp -rf sddm/sugar-candy /usr/share/sddm/themes/
 
-        sudo mkdir -p /etc/sddm.conf.d
+        sudo mkdir -p /etc/sddm.conf.d 2>/dev/null || true
 
         echo -e "${YELLOW}⚙️  Activando Sugar-Candy...${NC}"
         sudo bash -c 'cat << EOF > /etc/sddm.conf.d/theme.conf
@@ -315,7 +466,7 @@ Current=sugar-candy
 EOF'
 
         echo -e "${YELLOW}🔄 Habilitando servicio SDDM...${NC}"
-        sudo systemctl enable sddm.service
+        sudo systemctl enable sddm.service 2>/dev/null || echo -e "${YELLOW}  ⚠ No se pudo habilitar sddm.service${NC}"
 
         echo -e "${GREEN}✓ SDDM configurado${NC}"
     else

@@ -289,38 +289,54 @@ vol_slider:buttons(gears.table.join(
     awful.button({}, 5, function() helpers.volume_control(-5) end)
 ))
 
--- Playerctl
----------------
-
-local playerctl = require("module.bling").signal.playerctl.lib()
+-- Playerctl (instancia compartida desde signal/playerctl.lua)
+local playerctl = require("signal.playerctl")
 local music_length = 0
-local current_album_path = nil
 
-playerctl:connect_signal("metadata", function(_, title, artist, album_path, album, ___, player_name)
-    if player_name == "mpd" then
-        current_album_path = album_path
-        local m_now = artist .. " - " .. title .. "/" .. album
-
+local function load_album_art(album_path)
+    if album_path and album_path ~= "" then
         local ok, img = pcall(gears.surface.load_uncached, album_path)
         if ok and img then
             music_art:set_image(img)
+            return true
+        end
+    end
+    return false
+end
+
+local function fetch_album_art_from_mpd()
+    awful.spawn.easy_async_with_shell(
+        'file=$(mpc --format "%file%" | head -1); [ -n "$file" ] && ffmpeg -y -i "$HOME/Music/$file" -an -vcodec copy /tmp/ncmpcpp-cover.jpg -loglevel quiet 2>/dev/null && echo "/tmp/ncmpcpp-cover.jpg" || echo "FAIL"',
+        function(stdout)
+            local path = stdout:match("(/tmp/ncmpcpp%-cover%.jpg)")
+            if path then
+                load_album_art(path)
+            end
+        end
+    )
+end
+
+local current_album_path = nil
+
+playerctl:connect_signal("metadata", function(_, title, artist, album_path, album, ___, player_name)
+    if player_name and player_name:match("^mpd") then
+        current_album_path = album_path
+        local m_now = artist .. " - " .. title .. "/" .. album
+
+        if not load_album_art(album_path) then
+            fetch_album_art_from_mpd()
         end
         music_now:set_markup_silently(m_now)
     end
 end)
 
 playerctl:connect_signal("position", function(_, interval_sec, length_sec, player_name)
-    if player_name == "mpd" then
+    if player_name and player_name:match("^mpd") then
         local pos_now = tostring(os.date("!%M:%S", math.floor(interval_sec)))
         local pos_length = tostring(os.date("!%M:%S", math.floor(length_sec)))
         local pos_markup = pos_now .. helpers.colorize_text(" / " .. pos_length, beautiful.xcolor8)
 
-        if current_album_path then
-            local ok, img = pcall(gears.surface.load_uncached, current_album_path)
-            if ok and img then
-                music_art:set_image(img)
-            end
-        end
+        load_album_art(current_album_path)
         music_pos:set_markup_silently(pos_markup)
         music_bar.value = (interval_sec / length_sec) * 100
         music_length = length_sec
@@ -328,7 +344,7 @@ playerctl:connect_signal("position", function(_, interval_sec, length_sec, playe
 end)
 
 playerctl:connect_signal("playback_status", function(_, playing, player_name)
-    if player_name == "mpd" then
+    if player_name and player_name:match("^mpd") then
         if playing then
             music_play_pause_textbox:set_markup_silently(helpers.colorize_text("", beautiful.deco_blue))
         else
@@ -338,7 +354,7 @@ playerctl:connect_signal("playback_status", function(_, playing, player_name)
 end)
 
 playerctl:connect_signal("loop_status", function(_, loop_status, player_name)
-    if player_name == "mpd" then
+    if player_name and player_name:match("^mpd") then
         if loop_status == "none" then
             loop_textbox:set_markup_silently("")
         else
@@ -348,7 +364,7 @@ playerctl:connect_signal("loop_status", function(_, loop_status, player_name)
 end)
 
 playerctl:connect_signal("shuffle", function(_, shuffle, player_name)
-    if player_name == "mpd" then
+    if player_name and player_name:match("^mpd") then
         if shuffle then
             shuffle_textbox:set_markup_silently("")
         else

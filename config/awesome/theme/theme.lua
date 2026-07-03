@@ -168,6 +168,7 @@ theme.taglist_shape_volatile = helpers.rrect(theme.bar_radius)
 -- Titlebars
 theme.titlebar_enabled = false
 theme.titlebar_size = dpi(31)
+theme.titlebar_pos = "top"
 theme.titlebar_unfocused = theme.xcolor0
 
 -- Pop up notifications

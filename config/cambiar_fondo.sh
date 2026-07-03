@@ -3,6 +3,14 @@
 DIR_FONDOS="$HOME/fondos"
 QUEUE_DIR="$HOME/.cache"
 QUEUE_FILE="$QUEUE_DIR/fondo_queue.txt"
+MANUAL_FILE="$QUEUE_DIR/wallpaper_fijo.txt"
+
+# Si el usuario eligio un wallpaper manual, mantenerlo
+if [ -f "$MANUAL_FILE" ]; then
+    WALLPAPER=$(<"$MANUAL_FILE")
+    [ -f "$WALLPAPER" ] && feh --bg-fill "$WALLPAPER" && exit 0
+    rm -f "$MANUAL_FILE"
+fi
 
 mkdir -p "$QUEUE_DIR"
 
