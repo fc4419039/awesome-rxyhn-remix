@@ -510,7 +510,7 @@ end
 
 -- Volume Control
 function helpers.volume_control(step)
-    local sink = "system_sink"
+    local sink = "@DEFAULT_SINK@"
     if step == 0 then
         awful.spawn.with_shell("pactl set-sink-mute " .. sink .. " toggle")
     else
