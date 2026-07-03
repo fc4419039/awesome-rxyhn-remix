@@ -55,7 +55,7 @@ local function setup_titlebar(c)
 
     local title_text = wibox.widget {
         text = c.name or "",
-        font = beautiful.font_name .. "Bold 9",
+        font = (beautiful.font_name or "Sans ") .. "Bold 9",
         align = "center",
         valign = "center",
         widget = wibox.widget.textbox
