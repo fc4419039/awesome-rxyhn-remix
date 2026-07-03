@@ -83,7 +83,8 @@ awful.keyboard.append_global_keybindings({
                     timeout = 2, fg = "#ffffff", bg = "#333333"
                 })
             else
-                io.open(state_file, "w"):close()
+                local f = io.open(state_file, "w")
+                if f then f:close() end
                 awful.spawn.with_shell("redshift -O 3500")
                 naughty.notify({
                     text = "Modo noche activado (3500K)",

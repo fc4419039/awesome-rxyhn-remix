@@ -85,7 +85,8 @@ function toggle_window_borders()
     if window_borders_enabled then
         os.remove(border_state_file)
     else
-        io.open(border_state_file, "w"):close()
+        local f = io.open(border_state_file, "w")
+        if f then f:close() end
     end
     naughty.notify({
         text = window_borders_enabled and "Bordes de ventanas activados" or "Bordes de ventanas desactivados",
@@ -118,7 +119,8 @@ function toggle_window_titlebars()
                 n = n + 1
             end
         end
-        io.open(titlebar_state_file, "w"):close()
+        local f = io.open(titlebar_state_file, "w")
+        if f then f:close() end
     end
     naughty.notify({
         text = (titlebars_enabled and "Titlebars activados" or "Titlebars desactivados")

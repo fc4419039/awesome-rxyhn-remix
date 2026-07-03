@@ -19,6 +19,9 @@ local update_interval = 1200
 local temp_file = "/tmp/awesomewm-signal-weather-"..units
 
 local function city_param()
+    if not city_id then
+        return "id="
+    end
     if city_id:match("^lat=") then
         return city_id
     else
@@ -85,7 +88,7 @@ local weather_details_script = [[
   ']]
 
 local function parse_weather(stdout)
-    if stdout == "...\n" then
+    if not stdout or stdout == "...\n" then
         awful.spawn.with_shell("rm "..temp_file)
         local icon = weather_icons['_'].icon
         local color = weather_icons['_'].color

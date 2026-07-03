@@ -12,11 +12,11 @@ local function emit_volume_info()
     awful.spawn.easy_async_with_shell("pactl get-sink-volume @DEFAULT_SINK@; pactl get-sink-mute @DEFAULT_SINK@", function(stdout)
 
         -- Extraer el porcentaje de volumen (ej: 50%)
-        local volume = stdout:match("(%d+)%%")
+        local volume = stdout and stdout:match("(%d+)%%")
         local volume_int = tonumber(volume) or 0
 
         -- Extraer si está en mute (Mute: yes / Mute: no)
-        local muted = stdout:match("Mute: yes") ~= nil
+        local muted = stdout and stdout:match("Mute: yes") ~= nil
         local muted_int = muted and 1 or 0
 
         -- Solo enviar la señal si hubo un cambio real

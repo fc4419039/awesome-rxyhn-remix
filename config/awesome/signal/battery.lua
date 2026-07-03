@@ -8,7 +8,7 @@ local last_notified = 0
 
 local function read_battery()
     awful.spawn.easy_async_with_shell("cat /sys/class/power_supply/BAT0/capacity", function(stdout)
-        local val = tonumber(stdout:match("%d+"))
+        local val = stdout and tonumber(stdout:match("%d+"))
         if val then
             awesome.emit_signal("signal::battery", val)
         end

@@ -85,7 +85,7 @@ local function setup_titlebar(c)
         awful.spawn.easy_async_with_shell(
             "ip -o link show 2>/dev/null | awk -F': ' '/tun[0-9]|tap[0-9]|wg[0-9]|vpn/ {print $2; found=1} END {if(!found) print \"disconnected\"}'",
             function(stdout)
-                local iface = stdout:match("^([%w-]+)")
+                local iface = stdout and stdout:match("^([%w-]+)")
                 if iface and iface ~= "disconnected" then
                     vpn_icon.markup = helpers.colorize_text("", beautiful.xcolor2)
                     vpn_tooltip.text = "VPN: Connected (" .. iface .. ")"
@@ -125,7 +125,7 @@ local function setup_titlebar(c)
         awful.spawn.easy_async_with_shell(
             "curl -s --max-time 5 ifconfig.me 2>/dev/null || echo '...'",
             function(stdout)
-                local ip = stdout:match("([%d%.]+)")
+                local ip = stdout and stdout:match("([%d%.]+)")
                 if ip then
                     ip_text.markup = helpers.colorize_text(ip, beautiful.xcolor6)
                     ip_tooltip.text = "Public IP: " .. ip
@@ -166,12 +166,12 @@ local function setup_titlebar(c)
         awful.spawn.easy_async_with_shell(
             "LC_ALL=C nmcli -t -f WIFI radio 2>/dev/null | grep -q enabled && echo 'on' || echo 'off'",
             function(stdout)
-                local radio = stdout:match("(%w+)")
+                local radio = stdout and stdout:match("(%w+)")
                 if radio == "on" then
                     awful.spawn.easy_async_with_shell(
                         "LC_ALL=C nmcli -t -f active,ssid dev wifi 2>/dev/null | grep '^yes' | head -1 | cut -d: -f2-",
                         function(ssid_out)
-                            local ssid = ssid_out:match("^(.+)$")
+                            local ssid = ssid_out and ssid_out:match("^(.+)$")
                             if ssid and ssid ~= "" then
                                 wifi_icon.markup = helpers.colorize_text("", beautiful.deco_cyan)
                                 wifi_tooltip.text = "WiFi: " .. ssid

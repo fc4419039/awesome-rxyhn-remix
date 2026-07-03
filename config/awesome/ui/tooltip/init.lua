@@ -407,7 +407,7 @@ function M.create(s)
         awful.spawn.easy_async_with_shell("nmcli -t -f SSID,SIGNAL,SECURITY device wifi list --rescan yes 2>/dev/null | head -20", function(stdout)
             wifi_rows = {}
             wifi_scroll_pos = 0
-            if stdout == "" then
+            if not stdout or stdout == "" then
                 wifi_networks_list:reset()
                 wifi_networks_list:insert(1, wibox.widget {
                     markup = helpers.colorize_text("No networks found", beautiful.xcolor8),
@@ -573,7 +573,7 @@ function M.create(s)
 
     local function wifi_update_status()
         awful.spawn.easy_async_with_shell("iwgetid -r 2>/dev/null", function(stdout)
-            local ssid = stdout:gsub("^%s*(.-)%s*$", "%1")
+            local ssid = stdout and stdout:gsub("^%s*(.-)%s*$", "%1")
             if ssid and ssid ~= "" then
                 wifi_connected_ssid = ssid
                 wifi_status_text.markup = helpers.colorize_text(ssid, beautiful.xcolor2)
