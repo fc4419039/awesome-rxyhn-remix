@@ -59,3 +59,5 @@ song_status_format  = "$7%t"
 song_list_format    = "$8%a - %t$R  %l"
 song_library_format = "{{%a - %t} (%b)}|{%f}"
 song_window_title_format = "Music"
+
+# fetch_album_art = "yes"

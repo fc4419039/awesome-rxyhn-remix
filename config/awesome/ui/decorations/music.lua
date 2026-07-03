@@ -301,7 +301,10 @@ playerctl:connect_signal("metadata", function(_, title, artist, album_path, albu
         current_album_path = album_path
         local m_now = artist .. " - " .. title .. "/" .. album
 
-        music_art:set_image(gears.surface.load_uncached(album_path))
+        local ok, img = pcall(gears.surface.load_uncached, album_path)
+        if ok and img then
+            music_art:set_image(img)
+        end
         music_now:set_markup_silently(m_now)
     end
 end)
@@ -313,7 +316,10 @@ playerctl:connect_signal("position", function(_, interval_sec, length_sec, playe
         local pos_markup = pos_now .. helpers.colorize_text(" / " .. pos_length, beautiful.xcolor8)
 
         if current_album_path then
-            music_art:set_image(gears.surface.load_uncached(current_album_path))
+            local ok, img = pcall(gears.surface.load_uncached, current_album_path)
+            if ok and img then
+                music_art:set_image(img)
+            end
         end
         music_pos:set_markup_silently(pos_markup)
         music_bar.value = (interval_sec / length_sec) * 100

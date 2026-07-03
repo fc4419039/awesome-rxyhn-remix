@@ -144,6 +144,10 @@ if [ ! -d "bin" ]; then
     exit 1
 fi
 
+# Actualizar módulos externos antes de copiar (para que se copien las versiones frescas)
+echo -e "${YELLOW}📦 Actualizando módulos externos (bling, rubato, layout-machi)...${NC}"
+bash "$(dirname "$0")/update_modules.sh" 2>/dev/null || echo -e "${YELLOW}  ⚠ No se pudieron actualizar, se usan los versionados en el repo${NC}"
+
 cp -r config/* ~/.config/
 cp -r bin/* ~/.local/bin/
 
@@ -165,10 +169,6 @@ if [ -f "misc/.profile" ] && [ ! -f "$HOME/.profile" ]; then
 fi
 
 echo -e "${GREEN}✓ Archivos de configuración copiados${NC}"
-
-# Actualizar módulos externos a sus últimas versiones
-echo -e "${YELLOW}📦 Actualizando módulos externos (bling, rubato, layout-machi)...${NC}"
-bash "$(dirname "$0")/update_modules.sh" 2>/dev/null || echo -e "${YELLOW}  ⚠ No se pudieron actualizar, se usan los versionados en el repo${NC}"
 
 # Activar timer de limpieza automática (cada 3 días)
 systemctl --user daemon-reload 2>/dev/null || true
