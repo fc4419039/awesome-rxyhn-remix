@@ -18,6 +18,22 @@ local units = weather_units
 local update_interval = 1200
 local temp_file = "/tmp/awesomewm-signal-weather-"..units
 
+-- Early exit if no API key or city configured
+if not key or not city_id then
+    local icon = ""
+    local color = beautiful.xcolor2
+    local weather_icon = helpers.colorize_text(icon, color)
+    gears.timer {
+        timeout = update_interval,
+        call_now = true,
+        autostart = true,
+        callback = function()
+            awesome.emit_signal("signal::weather", 999, "Weather unavailable", weather_icon, "None", 0, 0, 0)
+        end
+    }
+    return
+end
+
 local function city_param()
     if not city_id then
         return "id="
