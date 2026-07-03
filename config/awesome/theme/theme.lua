@@ -124,8 +124,8 @@ theme.fg_minimize = theme.xcolor0
 -- Borders
 theme.border_width = 2
 theme.oof_border_width = dpi(1)
-theme.border_normal = "#7c3aed"
-theme.border_focus = "#7c3aed"
+theme.border_normal = "#06b6d4"
+theme.border_focus = "#06b6d4"
 theme.widget_border_width = dpi(2)
 theme.widget_border_color = theme.darker_bg
 
@@ -198,27 +198,28 @@ theme.prompt_bg = theme.transparent
 theme.prompt_fg = theme.xforeground
 
 -- dashboard
-theme.dashboard_width = dpi(300)
+theme.dashboard_width = dpi(280)
 theme.dashboard_box_bg = theme.lighter_bg
 theme.dashboard_box_fg = theme.dashboard_fg
 
 -- Playerctl
-theme.playerctl_ignore  = {"qutebrowser", "chromium", "brave"}
+theme.playerctl_ignore  = {"qutebrowser", "chromium", "brave", "firefox"}
 theme.playerctl_player  = {"firefox", "spotify", "%any", "mpd"}
 theme.playerctl_update_on_activity = true
 theme.playerctl_position_update_interval = 1
 
 -- Mainmenu
 theme.menu_font = theme.font_name .. "medium 10"
-theme.menu_height = dpi(30)
-theme.menu_width = dpi(150)
-theme.menu_bg_normal = theme.xbackground
+theme.menu_height = dpi(34)
+theme.menu_width = dpi(210)
+theme.menu_bg_normal = theme.darker_bg
 theme.menu_bg_focus = theme.lighter_bg
-theme.menu_fg_normal= theme.xforeground
-theme.menu_fg_focus= theme.xcolor4
-theme.menu_border_width = dpi(0)
-theme.menu_border_color = theme.xcolor0
-theme.menu_submenu = "»  "
+theme.menu_fg_normal = theme.xforeground
+theme.menu_fg_focus = "#06b6d4"
+theme.menu_border_width = dpi(1)
+theme.menu_border_color = "#06b6d4"
+theme.menu_shape = helpers.rrect(theme.border_radius)
+theme.menu_submenu = "   "
 theme.menu_submenu_icon = nil
 
 -- Hotkeys Pop Up
@@ -243,7 +244,7 @@ theme = theme_assets.recolor_layout(theme, theme.xforeground)
 theme.useless_gap = dpi(5)
 
 -- Wibar
-theme.wibar_width = dpi(45)
+theme.wibar_width = dpi(39)
 theme.wibar_bg = theme.xbackground
 theme.wibar_position = "left"
 
