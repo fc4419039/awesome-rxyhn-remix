@@ -5,12 +5,11 @@
     fg:                     #e2e8f0;
     fg-dim:                 #94a3b8;
     accent:                 #7c3aed;
-    accent-dim:             #4c1d95;
     surface:                #1a1a2e;
     darker:                 #141428;
     muted:                  #3d3d5c;
-    rad:                    20px;
-    rad-sm:                 12px;
+    rad:                    16px;
+    rad-sm:                 10px;
 
     background-color:       transparent;
     text-color:             @fg;
@@ -18,8 +17,8 @@
 
 window {
     transparency:           "real";
-    width:                  620px;
-    height:                 160px;
+    width:                  280px;
+    height:                 400px;
     location:               center;
     anchor:                 center;
     border-radius:          @rad;
@@ -39,18 +38,18 @@ inputbar {
 }
 
 listview {
-    spacing:                10px;
-    padding:                16px;
+    spacing:                6px;
+    padding:                14px;
     scrollbar:              false;
-    columns:                6;
+    columns:                1;
     layout:                 vertical;
     cursor:                 pointer;
 }
 
 element {
-    padding:                12px 8px 8px 8px;
+    padding:                6px 12px;
     border-radius:          @rad-sm;
-    orientation:            vertical;
+    orientation:            horizontal;
     cursor:                 pointer;
     border:                 1px;
     border-color:           transparent;
@@ -58,47 +57,39 @@ element {
 }
 
 element normal.normal {
-    background-color:       @darker;
+    background-color:       transparent;
     border-color:           transparent;
 }
 
 element selected {
-    background-color:       @surface;
-    border-color:           @accent;
+    background-color:       @darker;
+    border-color:           @muted;
 }
 
 element selected.normal {
-    background-color:       @surface;
+    background-color:       @darker;
 }
 
 element-icon {
-    size:                   36px;
+    size:                   0px;
     padding:                0;
-    horizontal-align:       0.5;
-    vertical-align:         0.5;
     background-color:       transparent;
 }
 
 element-text {
-    padding:                8px 0 0 0;
-    horizontal-align:       0.5;
+    padding:                8px 6px;
+    horizontal-align:       0;
     vertical-align:         0.5;
     background-color:       transparent;
-    text-color:             @fg-dim;
-    font:                   "JetBrainsMono Nerd Font 9";
+    text-color:             @fg;
+    font:                   "JetBrainsMono Nerd Font 11";
+    highlight:              none;
 }
 
-element selected element-text {
-    text-color:             @accent;
-}
-
-element urgent.normal {
+element alternate.normal {
     background-color:       transparent;
-    text-color:             @accent;
 }
 
-element urgent.selected {
-    background-color:       @accent;
-    text-color:             @bg;
-    border:                 0px;
+element selected.alternate {
+    background-color:       @darker;
 }
