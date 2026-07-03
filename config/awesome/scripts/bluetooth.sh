@@ -131,16 +131,16 @@ while true; do
         [ -z "$choice" ] && exit 0
 
         case "$choice" in
-            "Atrás"*)
+            *"Atrás"*)
                 break
                 ;;
-            "Escanear"*)
+            *"Escanear"*)
                 notify-send -i bluetooth "Bluetooth" "Escaneando por 8 segundos..."
                 bluetoothctl --timeout 8 scan on >/dev/null 2>&1
                 notify-send -i bluetooth "Bluetooth" "Escaneo completo"
                 continue
                 ;;
-            "Refrescar"*)
+            *"Refrescar"*)
                 continue
                 ;;
         esac

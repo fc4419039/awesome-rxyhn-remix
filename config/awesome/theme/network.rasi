@@ -3,12 +3,10 @@
 * {
     bg:                     #0d0d1a;
     fg:                     #e2e8f0;
-    accent:                 #7c3aed;
-    accent-dim:             #000000;
+    fg-dim:                 #94a3b8;
+    accent:                 #06b6d4;
     surface:                #1a1a2e;
     darker:                 #141428;
-    active:                 #06b6d4;
-    active-dim:             #0891b2;
     muted:                  #3d3d5c;
     rad:                    16px;
     rad-sm:                 10px;
@@ -19,75 +17,54 @@
 
 window {
     transparency:           "real";
-    width:                  380px;
-    height:                 520px;
+    width:                  340px;
+    height:                 480px;
     location:               center;
     anchor:                 center;
     border-radius:          @rad;
-    border:                 2px;
+    border:                 1px;
     border-color:           @accent;
     background-color:       #0d0d1aF2;
-    padding:                0;
 }
 
 mainbox {
     spacing:                0;
     padding:                0;
-    background-color:       transparent;
+    children:               [listview];
 }
 
 inputbar {
-    enabled:                true;
-    margin:                 20px 20px 0 20px;
-    border-radius:          @rad;
-    background-color:       @darker;
-    border:                 1px;
-    border-color:           @muted;
-    padding:                10px 16px;
-    text-color:             @fg;
-    font:                   "JetBrainsMono Nerd Font 10";
-    placeholder:            "Search...";
-    placeholder-color:      @muted;
-    children:               [entry];
-}
-
-entry {
-    expand:                 true;
-    padding:                0;
-    border-radius:          @rad;
-    background-color:       transparent;
-    text-color:             @fg;
-    font:                   "JetBrainsMono Nerd Font 10";
-    placeholder:            "Search...";
-    placeholder-color:      @muted;
+    enabled:                false;
 }
 
 listview {
     spacing:                4px;
-    padding:                16px 20px 20px 20px;
+    padding:                14px;
     scrollbar:              false;
+    columns:                1;
     layout:                 vertical;
     dynamic:                true;
     cursor:                 pointer;
 }
 
 element {
-    padding:                10px 14px;
+    padding:                8px 12px;
     border-radius:          @rad-sm;
+    orientation:            horizontal;
     cursor:                 pointer;
-    text-color:             @fg;
+    border:                 1px;
+    border-color:           transparent;
     background-color:       transparent;
 }
 
 element normal.normal {
     background-color:       transparent;
+    border-color:           transparent;
 }
 
 element selected {
     background-color:       @darker;
-    text-color:             @active;
-    border:                 1px;
-    border-color:           @active-dim;
+    border-color:           @muted;
 }
 
 element selected.normal {
@@ -95,24 +72,24 @@ element selected.normal {
 }
 
 element-icon {
-    size:                   18px;
-    padding:                0 10px 0 0;
-    horizontal-align:       0;
-    vertical-align:         0.5;
+    size:                   0px;
+    padding:                0;
     background-color:       transparent;
 }
 
 element-text {
-    padding:                0;
+    padding:                8px 6px;
     horizontal-align:       0;
     vertical-align:         0.5;
     background-color:       transparent;
-    text-color:             inherit;
-    font:                   "JetBrainsMono Nerd Font 10";
+    text-color:             @fg;
+    font:                   "JetBrainsMono Nerd Font 11";
 }
 
-scrollbar {
-    handle-color:           @accent-dim;
-    handle-width:           4px;
-    border-radius:          2px;
+element alternate.normal {
+    background-color:       transparent;
+}
+
+element selected.alternate {
+    background-color:       @darker;
 }
