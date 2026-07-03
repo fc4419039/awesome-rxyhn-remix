@@ -17,9 +17,8 @@ SYSTEM_SINK_NAME = "system_sink"
 CSS = """
 window.background {
     background-color: #0d0d1a;
-    border-radius: 12px;
-    border: 2px solid #7c3aed;
-    padding: 4px;
+    border-radius: 16px;
+    border: 1px solid #06b6d4;
 }
 
 box, scrolledwindow, viewport, list {
@@ -28,96 +27,125 @@ box, scrolledwindow, viewport, list {
 
 .app-row {
     background-color: #141428;
-    border-radius: 8px;
-    margin: 3px 0;
-    padding: 5px 8px;
+    border-radius: 10px;
+    margin: 3px 8px;
+    padding: 6px 10px;
+    border: 1px solid transparent;
 }
 
 .app-row:hover {
-    background-color: rgba(124, 58, 237, 0.15);
+    background-color: #1a1a2e;
+    border-color: #3d3d5c;
 }
 
 .app-icon {
-    margin-left: 2px;
-    margin-right: 6px;
+    margin-left: 4px;
+    margin-right: 10px;
 }
 
 .app-name {
-    font-family: "Iosevka Nerd Font Mono";
+    font-family: "JetBrainsMono Nerd Font";
     font-weight: bold;
     font-size: 10pt;
-    color: #d9d7d6;
+    color: #e2e8f0;
 }
 
 .app-source {
-    font-family: "Iosevka Nerd Font Mono";
+    font-family: "JetBrainsMono Nerd Font";
     font-size: 8pt;
-    color: #4a4a6a;
+    color: #64748b;
 }
 
 scale slider {
-    min-height: 14px;
-    min-width: 14px;
+    min-height: 16px;
+    min-width: 16px;
     border-radius: 50%;
-    background-color: #7c3aed;
-    border: 2px solid #0d0d1a;
+    background-color: #06b6d4;
+    border: 3px solid #0d0d1a;
+    box-shadow: 0 0 6px rgba(6, 182, 212, 0.3);
 }
 
 scale slider:hover {
-    background-color: #06b6d4;
+    background-color: #22d3ee;
+    box-shadow: 0 0 10px rgba(6, 182, 212, 0.5);
 }
 
 scale trough {
-    min-height: 4px;
-    border-radius: 2px;
-    background-color: rgba(217, 215, 214, 0.1);
+    min-height: 6px;
+    border-radius: 3px;
+    background-color: #1a1a2e;
 }
 
 scale highlight {
-    border-radius: 2px;
-    background-color: #7c3aed;
+    border-radius: 3px;
+    background-color: #06b6d4;
 }
 
 .vol-label {
-    font-family: "Iosevka Nerd Font Mono";
+    font-family: "JetBrainsMono Nerd Font";
     font-size: 9pt;
     min-width: 36px;
-    color: #d9d7d6;
+    color: #94a3b8;
 }
 
 headerbar {
-    background-color: rgba(13, 13, 26, 0.5);
+    background-color: #141428;
     border: none;
-    border-bottom: 1px solid rgba(124, 58, 237, 0.2);
+    border-bottom: 2px solid #06b6d4;
     box-shadow: none;
-    padding: 2px 4px;
+    padding: 4px 8px;
+    min-height: 42px;
 }
 
 headerbar .title {
-    color: #d9d7d6;
-    font-family: "Iosevka Nerd Font Mono";
+    color: #e2e8f0;
+    font-family: "JetBrainsMono Nerd Font";
     font-weight: bold;
-    font-size: 11pt;
+    font-size: 12pt;
 }
 
 headerbar .subtitle {
-    color: #4a4a6a;
-    font-family: "Iosevka Nerd Font Mono";
+    color: #64748b;
+    font-family: "JetBrainsMono Nerd Font";
     font-size: 8pt;
 }
 
 headerbar button {
     background-color: #141428;
-    border: 1px solid rgba(124, 58, 237, 0.3);
-    border-radius: 6px;
-    color: #d9d7d6;
+    border: 1px solid #3d3d5c;
+    border-radius: 8px;
+    color: #94a3b8;
+    min-height: 28px;
+    min-width: 28px;
+    padding: 2px;
+}
+
+headerbar button:hover {
+    background-color: #1a1a2e;
+    border-color: #06b6d4;
+    color: #e2e8f0;
+}
+
+headerbar button image {
+    -gtk-icon-shadow: none;
+}
+
+headerbar button.titlebutton {
+    background-color: transparent;
+    border: none;
+    color: #94a3b8;
     min-height: 24px;
     min-width: 24px;
 }
 
-headerbar button:hover {
-    background-color: rgba(124, 58, 237, 0.2);
-    border-color: #06b6d4;
+headerbar button.titlebutton:hover {
+    background-color: #06b6d4;
+    color: #0d0d1a;
+    border-radius: 8px;
+}
+
+headerbar button.titlebutton.close:hover {
+    background-color: #ef4444;
 }
 
 scrollbar {
@@ -125,21 +153,26 @@ scrollbar {
 }
 
 scrollbar slider {
-    background-color: rgba(124, 58, 237, 0.2);
+    background-color: #3d3d5c;
     border-radius: 3px;
     min-width: 4px;
 }
 
 scrollbar slider:hover {
-    background-color: rgba(124, 58, 237, 0.4);
+    background-color: #06b6d4;
 }
 
 .notif-row {
-    background-color: rgba(20, 20, 40, 0.8);
-    border-radius: 8px;
-    margin: 3px 0;
-    padding: 5px 8px;
-    border: 1px solid rgba(124, 58, 237, 0.12);
+    background-color: #141428;
+    border-radius: 10px;
+    margin: 3px 8px;
+    padding: 6px 10px;
+    border: 1px solid #3d3d5c;
+}
+
+.notif-row:hover {
+    background-color: #1a1a2e;
+    border-color: #06b6d4;
 }
 
 .mute-btn {
@@ -147,32 +180,32 @@ scrollbar slider:hover {
     min-height: 28px;
     border-radius: 50%;
     padding: 0;
-    background-color: #141428;
-    border: 1px solid rgba(124, 58, 237, 0.2);
+    background-color: #1a1a2e;
+    border: 1px solid #3d3d5c;
 }
 
 .mute-btn:hover {
-    background-color: rgba(124, 58, 237, 0.15);
+    background-color: #141428;
     border-color: #06b6d4;
 }
 
 .mute-btn:checked {
-    background-color: rgba(124, 58, 237, 0.2);
+    background-color: rgba(6, 182, 212, 0.2);
     border-color: #06b6d4;
 }
 
 .no-apps {
-    font-family: "Iosevka Nerd Font Mono";
+    font-family: "JetBrainsMono Nerd Font";
     font-style: italic;
-    color: #4a4a6a;
-    padding: 16px;
+    color: #64748b;
+    padding: 24px;
 }
 """
 
 class VolumeControl(Gtk.Window):
     def __init__(self):
         Gtk.Window.__init__(self, title="Control de Volumen")
-        self.set_default_size(520, 420)
+        self.set_default_size(440, 440)
         self.set_position(Gtk.WindowPosition.CENTER)
         self.set_icon_name("audio-volume-high")
         self.set_type_hint(Gdk.WindowTypeHint.DIALOG)
@@ -215,7 +248,7 @@ class VolumeControl(Gtk.Window):
 
         scrolled = Gtk.ScrolledWindow()
         scrolled.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
-        scrolled.set_size_request(-1, 380)
+        scrolled.set_size_request(-1, 400)
         vbox.pack_start(scrolled, True, True, 0)
 
         self.listbox = Gtk.ListBox()
@@ -249,7 +282,7 @@ class VolumeControl(Gtk.Window):
                     sinks.append(current)
                 current = {'id': line.split('#')[1].strip().rstrip(':')}
             elif current:
-                m = re.match(r'\s+application\.(\w+)\s*=\s*"(.+)"', line)
+                m = re.match(r'\s+application\.([\w.]+)\s*=\s*"(.+)"', line)
                 if m:
                     current[m.group(1)] = m.group(2)
                 m = re.match(r'\s+media\.(\w+)\s*=\s*"(.+)"', line)
@@ -417,16 +450,26 @@ class VolumeControl(Gtk.Window):
         value = int(scale.get_value())
         self.set_vol(target, value)
 
-    def get_app_icon(self, app):
-        icon_name = app.get('icon_name') or app.get('process.binary') or 'audio-x-generic'
-        theme = Gtk.IconTheme.get_default()
-        icon = theme.lookup_icon(icon_name, 28, 0)
-        if icon:
-            return icon.load_icon()
-        icon2 = theme.lookup_icon('audio-x-generic', 28, 0)
-        if icon2:
-            return icon2.load_icon()
-        return None
+    def get_app_icon_name(self, app):
+        icon = app.get('icon_name')
+        binary = app.get('process.binary')
+
+        if binary:
+            base = os.path.basename(binary)
+            for name in [icon, base, binary]:
+                if name:
+                    try:
+                        info = Gio.DesktopAppInfo.new(name + ".desktop")
+                        if info:
+                            gicon = info.get_icon()
+                            if gicon:
+                                ns = gicon.get_names() if hasattr(gicon, 'get_names') else []
+                                if ns:
+                                    return ns[0]
+                    except:
+                        pass
+
+        return icon or (os.path.basename(binary) if binary else None) or 'audio-x-generic'
 
     def add_app_row(self, name, vol, target, muted=False, is_notif=False, media_name=None, icon_name=None):
         row = Gtk.ListBoxRow()
@@ -438,18 +481,18 @@ class VolumeControl(Gtk.Window):
 
         if not is_notif and icon_name:
             img = Gtk.Image.new_from_icon_name(icon_name, Gtk.IconSize.LARGE_TOOLBAR)
-            img.set_pixel_size(28)
+            img.set_pixel_size(32)
             img.get_style_context().add_class("app-icon")
             hbox.pack_start(img, False, False, 4)
         elif is_notif:
             icon = "notifications-disabled-symbolic" if muted else "notifications-symbolic"
             img = Gtk.Image.new_from_icon_name(icon, Gtk.IconSize.LARGE_TOOLBAR)
-            img.set_pixel_size(24)
+            img.set_pixel_size(28)
             img.get_style_context().add_class("app-icon")
             hbox.pack_start(img, False, False, 4)
         else:
             img = Gtk.Image.new_from_icon_name("audio-x-generic", Gtk.IconSize.LARGE_TOOLBAR)
-            img.set_pixel_size(24)
+            img.set_pixel_size(28)
             img.get_style_context().add_class("app-icon")
             hbox.pack_start(img, False, False, 4)
 
@@ -524,7 +567,7 @@ class VolumeControl(Gtk.Window):
             vol = app.get('volume', 100)
             target = app['id']
             muted = app.get('muted', False)
-            icon_name = app.get('icon_name') or app.get('process.binary')
+            icon_name = self.get_app_icon_name(app)
             media_name = app.get('media.name')
             self.add_app_row(name, vol, target, muted,
                            media_name=media_name,
