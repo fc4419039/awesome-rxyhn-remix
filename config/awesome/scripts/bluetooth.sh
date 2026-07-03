@@ -19,11 +19,14 @@ get_devices() {
         connected=$(echo "$info" | grep "Connected:" | awk '{print $2}')
         local paired
         paired=$(echo "$info" | grep "Paired:" | awk '{print $2}')
-        local icon=""
-        [ "$connected" = "yes" ] && icon=""
-        local label=""
-        [ "$paired" != "yes" ] && label=" (unpaired)"
-        echo "$icon $name$label"
+
+        if [ "$connected" = "yes" ]; then
+            echo "<span foreground='#22c55e'>󰂱</span>   $name"
+        elif [ "$paired" = "yes" ]; then
+            echo "<span foreground='#94a3b8'>󰂲</span>   $name"
+        else
+            echo "<span foreground='#64748b'>󰂲</span>   $name <span foreground='#64748b'>(unpaired)</span>"
+        fi
     done
 }
 
@@ -43,22 +46,29 @@ main_menu() {
     status=$(get_status)
 
     if [ "$status" = "yes" ]; then
-        printf " Status: On\n Turn Off\n Devices\n Quit"
+        printf "<span foreground='#22c55e'>󰂯</span>   Encendido\n"
+        printf "<span foreground='#ef4444'></span>   Apagar\n"
     else
-        printf " Status: Off\n Turn On\n Devices\n Quit"
+        printf "<span foreground='#ef4444'>󰂲</span>   Apagado\n"
+        printf "<span foreground='#22c55e'></span>   Encender\n"
     fi
+    printf "<span foreground='#06b6d4'>󰂰</span>   Dispositivos\n"
+    printf "<span foreground='#94a3b8'></span>   Salir"
 }
 
 devices_menu() {
     local devs
     devs=$(get_devices)
-    [ -z "$devs" ] && devs=" No devices found"
-    printf " Back\n Scan\n Refresh\n%s" "$devs"
+    [ -z "$devs" ] && devs="<span foreground='#64748b'>   Sin dispositivos</span>"
+    printf "<span foreground='#f97316'></span>   Atrás\n"
+    printf "<span foreground='#3b82f6'>󰍉</span>   Escanear\n"
+    printf "<span foreground='#a855f7'></span>   Refrescar\n"
+    printf "%s\n" "$devs"
 }
 
 handle_device_action() {
     local name="$1"
-    name=$(echo "$name" | sed 's/^[^ ]* //' | sed 's/ (unpaired)//')
+    name=$(echo "$name" | sed 's/.*   //' | sed 's/ <.*//')
     local mac
     mac=$(get_device_mac "$name")
     [ -z "$mac" ] && return
@@ -91,25 +101,25 @@ handle_device_action() {
 }
 
 while true; do
-    choice=$(main_menu | rofi -dmenu -theme "$theme")
+    choice=$(main_menu | rofi -dmenu -markup-rows -theme "$theme")
     [ -z "$choice" ] && exit 0
 
     case "$choice" in
-        *"Turn Off"*)
+        *"Apagar"*)
             bluetoothctl power off >/dev/null 2>&1
-            notify-send -i bluetooth "Bluetooth" "Turned off"
+            notify-send -i bluetooth "Bluetooth" "Apagado"
             continue
             ;;
-        *"Turn On"*)
+        *"Encender"*)
             rfkill unblock bluetooth >/dev/null 2>&1
             sleep 0.5
             bluetoothctl power on >/dev/null 2>&1
             bluetoothctl agent on >/dev/null 2>&1
             bluetoothctl default-agent >/dev/null 2>&1
-            notify-send -i bluetooth "Bluetooth" "Turned on"
+            notify-send -i bluetooth "Bluetooth" "Encendido"
             continue
             ;;
-        *"Devices"*)
+        *"Dispositivos"*)
             ;;
         *)
             exit 0
@@ -117,20 +127,20 @@ while true; do
     esac
 
     while true; do
-        choice=$(devices_menu | rofi -dmenu -theme "$theme")
+        choice=$(devices_menu | rofi -dmenu -markup-rows -theme "$theme")
         [ -z "$choice" ] && exit 0
 
         case "$choice" in
-            " Back")
+            "Atrás"*)
                 break
                 ;;
-            " Scan")
-                notify-send -i bluetooth "Bluetooth" "Scanning for 8 seconds..."
+            "Escanear"*)
+                notify-send -i bluetooth "Bluetooth" "Escaneando por 8 segundos..."
                 bluetoothctl --timeout 8 scan on >/dev/null 2>&1
-                notify-send -i bluetooth "Bluetooth" "Scan complete"
+                notify-send -i bluetooth "Bluetooth" "Escaneo completo"
                 continue
                 ;;
-            " Refresh")
+            "Refrescar"*)
                 continue
                 ;;
         esac
