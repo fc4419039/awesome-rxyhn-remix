@@ -27,7 +27,7 @@ end
 local wrap_widget = function(widget)
     return {
         widget,
-        margins = dpi(6),
+        margins = dpi(4),
         widget = wibox.container.margin
     }
 end
@@ -136,7 +136,7 @@ screen.connect_signal("request::desktop_decoration", function(s)
             image = beautiful.awesome_logo,
             resize = true
         },
-        margins = dpi(4),
+        margins = dpi(2),
         widget = wibox.container.margin
     }
 
@@ -171,7 +171,7 @@ screen.connect_signal("request::desktop_decoration", function(s)
     ----------
 
     local hour = wibox.widget{
-        font = beautiful.font_name .. "bold 14",
+        font = beautiful.font_name .. "bold 12",
         format = "%I",
         align = "center",
         valign = "center",
@@ -179,7 +179,7 @@ screen.connect_signal("request::desktop_decoration", function(s)
     }
 
     local min = wibox.widget{
-        font = beautiful.font_name .. "bold 14",
+        font = beautiful.font_name .. "bold 12",
         format = "%M",
         align = "center",
         valign = "center",
@@ -191,11 +191,11 @@ screen.connect_signal("request::desktop_decoration", function(s)
             {
                 hour,
                 min,
-                spacing = dpi(5),
+                spacing = dpi(3),
                 layout = wibox.layout.fixed.vertical
             },
-            top = dpi(5),
-            bottom = dpi(5),
+            top = dpi(3),
+            bottom = dpi(3),
             widget = wibox.container.margin
         },
         bg = beautiful.lighter_bg,
@@ -210,7 +210,7 @@ screen.connect_signal("request::desktop_decoration", function(s)
         {
             wrap_widget(batt),
             clock,
-            spacing = dpi(5),
+            spacing = dpi(3),
             layout = wibox.layout.fixed.vertical
         },
         bg = beautiful.xcolor0,
@@ -240,7 +240,7 @@ screen.connect_signal("request::desktop_decoration", function(s)
         type = "dock",
         screen = s,
         height = s.geometry.height - dpi(50),
-        width = dpi(300),
+        width = dpi(280),
         shape = helpers.rrect(beautiful.notif_center_radius),
         ontop = true,
         visible = false
@@ -248,7 +248,7 @@ screen.connect_signal("request::desktop_decoration", function(s)
     notif_center.y = dpi(25)
 
     local slide = rubato.timed{
-        pos = s.geometry.x + dpi(-300),
+        pos = s.geometry.x + dpi(-280),
         rate = 60,
         intro = 0.05,
         duration = 0.4,
@@ -269,7 +269,7 @@ screen.connect_signal("request::desktop_decoration", function(s)
 
     local notif_center_show = function()
         notif_center.visible = true
-        slide:set(s.geometry.x + dpi(10) + dpi(50) + dpi(10))
+        slide:set(s.geometry.x + dpi(10) + dpi(44) + dpi(10))
         notif_center_status = false
         if notif_center_hide_timer then notif_center_hide_timer:stop() end
         notif_center_hide_timer = gears.timer.start_new(2, function()
@@ -283,7 +283,7 @@ screen.connect_signal("request::desktop_decoration", function(s)
             notif_center_hide_timer:stop()
             notif_center_hide_timer = nil
         end
-        slide:set(s.geometry.x + dpi(-375))
+        slide:set(s.geometry.x + dpi(-355))
         notif_center_status = true
     end
 
@@ -321,7 +321,7 @@ screen.connect_signal("request::desktop_decoration", function(s)
 
     local notif_center_button = wibox.widget{
         markup = helpers.colorize_text("", beautiful.xcolor4),
-        font = beautiful.font_name .. "18",
+        font = beautiful.font_name .. "22",
         align = "center",
         valign = "center",
         widget = wibox.widget.textbox
@@ -359,7 +359,7 @@ screen.connect_signal("request::desktop_decoration", function(s)
 
     local layoutbox = wibox.widget{
         s.mylayoutbox,
-        margins = {bottom = dpi(7), left = dpi(8), right = dpi(8)},
+        margins = {bottom = dpi(7), left = dpi(6), right = dpi(6)},
         widget = wibox.container.margin
     }
 
@@ -370,7 +370,7 @@ screen.connect_signal("request::desktop_decoration", function(s)
         position = "left",
         screen = s,
         height = s.geometry.height - dpi(50),
-        width = dpi(50),
+        width = dpi(44),
         shape = helpers.rrect(beautiful.border_radius),
         bg = beautiful.darker_bg,
         ontop = true,
@@ -388,7 +388,7 @@ screen.connect_signal("request::desktop_decoration", function(s)
     -- Ajusta padding del workarea según visibilidad de la barra
     -- bar.x = dpi(10), strut.width = dpi(50) → workarea.left = padding + strut
     local function wibar_update_padding(visible)
-        local p = { right = dpi(5), top = dpi(15), bottom = dpi(15) }
+        local p = { right = dpi(0), top = dpi(15), bottom = dpi(15) }
         p.left = visible and (dpi(10)) or 0
         s.padding = p
         awful.layout.arrange(s)
@@ -401,7 +401,7 @@ screen.connect_signal("request::desktop_decoration", function(s)
         if fs and fs.mywibar then
             fs.wibar_visible = not fs.wibar_visible
             fs.mywibar.visible = fs.wibar_visible
-            local p = { right = dpi(5), top = dpi(15), bottom = dpi(15) }
+            local p = { right = dpi(0), top = dpi(15), bottom = dpi(15) }
             p.left = fs.wibar_visible and (dpi(10)) or 0
             fs.padding = p
             awful.layout.arrange(fs)
@@ -437,7 +437,7 @@ screen.connect_signal("request::desktop_decoration", function(s)
                 if not still_full then
                     s.mywibar.visible = true
                     s.wibar_visible = true
-                    local p = { right = dpi(5), top = dpi(15), bottom = dpi(15) }
+                    local p = { right = dpi(0), top = dpi(15), bottom = dpi(15) }
                     p.left = dpi(10)
                     s.padding = p
                     awful.layout.arrange(s)
@@ -492,7 +492,7 @@ screen.connect_signal("request::desktop_decoration", function(s)
                     widget = wibox.widget.imagebox,
                     resize = true,
                 },
-                margins = dpi(5),
+                margins = dpi(3),
                 widget = wibox.container.margin,
             },
             id = 'background_role',
@@ -523,7 +523,7 @@ screen.connect_signal("request::desktop_decoration", function(s)
                 {
                     awesome_icon,
                     taglist,
-                    spacing = dpi(10),
+                    spacing = dpi(6),
                     layout = wibox.layout.fixed.vertical
                 },
                 nil,
@@ -531,11 +531,11 @@ screen.connect_signal("request::desktop_decoration", function(s)
                     stats,
                     notif_center_button,
                     layoutbox,
-                    spacing = dpi(8),
+                    spacing = dpi(5),
                     layout = wibox.layout.fixed.vertical
                 }
             },
-            margins = dpi(8),
+            margins = dpi(6),
             widget = wibox.container.margin
         }
 

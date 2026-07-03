@@ -16,7 +16,15 @@ local key = openweathermap_key
 local city_id = openweathermap_city_id
 local units = weather_units
 local update_interval = 1200
-local temp_file = "/tmp/awesomewm-signal-weather-"..city_id.."-"..units
+local temp_file = "/tmp/awesomewm-signal-weather-"..units
+
+local function city_param()
+    if city_id:match("^lat=") then
+        return city_id
+    else
+        return "id=" .. city_id
+    end
+end
 
 local sun_icon = ""
 local moon_icon = ""
@@ -56,10 +64,10 @@ local weather_icons = {
 local weather_details_script = [[
     bash -c '
     KEY="]]..key..[["
-    CITY="]]..city_id..[["
+    CITY="]]..city_param()..[["
     UNITS="]]..units..[["
 
-    weather=$(curl -sf "http://api.openweathermap.org/data/2.5/weather?APPID=$KEY&id=$CITY&units=$UNITS")
+    weather=$(curl -sf "http://api.openweathermap.org/data/2.5/weather?APPID=$KEY&$CITY&units=$UNITS")
 
     if [ -n "$weather" ]; then
         weather_temp=$(echo "$weather" | jq ".main.temp" | cut -d "." -f 1)

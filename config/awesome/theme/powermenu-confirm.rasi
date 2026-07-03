@@ -4,8 +4,8 @@
     bg:                     #0d0d1a;
     fg:                     #e2e8f0;
     fg-dim:                 #94a3b8;
-    accent:                 #7c3aed;
-    accent-dim:             #4c1d95;
+    accent:                 #06b6d4;
+    accent-dim:             #155e75;
     surface:                #1a1a2e;
     darker:                 #141428;
     muted:                  #3d3d5c;

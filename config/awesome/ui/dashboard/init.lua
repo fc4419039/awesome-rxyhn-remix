@@ -45,15 +45,15 @@ local function create_boxed_widget(widget_to_be_boxed, width, height, bg_color)
         {
             {
                 widget_to_be_boxed,
-                top = dpi(9),
-                bottom = dpi(9),
-                left = dpi(10),
-                right = dpi(10),
+                    top = dpi(6),
+                    bottom = dpi(6),
+                    left = dpi(5),
+                    right = dpi(5),
                 widget = wibox.container.margin
             },
             widget = box_container,
         },
-        margins = dpi(10),
+        margins = dpi(5),
         color = "#00000000",
         widget = wibox.container.margin
     }
@@ -80,12 +80,12 @@ local M = {}
 function M.create(s)
     local screen_height = s.geometry.height
 
-    local time_boxed    = create_boxed_widget(centered_widget(time), dpi(260), dpi(95), beautiful.transparent)
+    local time_boxed    = create_boxed_widget(centered_widget(time), dpi(250), dpi(90), beautiful.transparent)
     local date_boxed    = create_boxed_widget(date, dpi(120), dpi(50), beautiful.dashboard_box_bg)
     local todo_boxed    = create_boxed_widget(todo, dpi(120), dpi(120), beautiful.dashboard_box_bg)
     local weather_boxed = create_boxed_widget(weather, dpi(120), dpi(120), beautiful.dashboard_box_bg)
-    local stats_boxed   = create_boxed_widget(stats, dpi(120), dpi(190), beautiful.dashboard_box_bg)
-    local notifs_boxed  = create_boxed_widget(notifs, dpi(260), dpi(190), beautiful.dashboard_box_bg)
+    local stats_boxed   = create_boxed_widget(stats, dpi(115), dpi(185), beautiful.dashboard_box_bg)
+    local notifs_boxed  = create_boxed_widget(notifs, dpi(245), dpi(185), beautiful.dashboard_box_bg)
 
     local dashboard = wibox({
         type = "dialog",
@@ -100,7 +100,7 @@ function M.create(s)
     dashboard.y = dpi(25)
 
     local slide = rubato.timed{
-        pos = s.geometry.x + dpi(-300),
+        pos = s.geometry.x + dpi(-290),
         rate = 60,
         intro = 0.05,
         duration = 0.4,
@@ -119,7 +119,7 @@ function M.create(s)
 
     local function dashboard_show()
         dashboard.visible = true
-        slide:set(s.geometry.x + dpi(70))
+        slide:set(s.geometry.x + dpi(64))
         dashboard_status = false
     end
 
@@ -135,6 +135,23 @@ function M.create(s)
             dashboard_show()
         end
     end
+
+    local dashboard_hide_timer = gears.timer {
+        timeout = 2,
+        autostart = false,
+        single_shot = true,
+        callback = function()
+            if dashboard.visible then dashboard_hide() end
+        end
+    }
+
+    dashboard:connect_signal("mouse::enter", function()
+        dashboard_hide_timer:stop()
+    end)
+
+    dashboard:connect_signal("mouse::leave", function()
+        dashboard_hide_timer:again()
+    end)
 
     dashboard:setup {
         {
@@ -166,7 +183,7 @@ function M.create(s)
                 expand = "none",
                 layout = wibox.layout.align.horizontal
             },
-            margins = dpi(10),
+            margins = dpi(5),
             widget = wibox.container.margin
         },
         bg = beautiful.xbackground,

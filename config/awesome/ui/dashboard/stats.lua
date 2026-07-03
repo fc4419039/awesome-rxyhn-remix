@@ -168,7 +168,7 @@ local stats = wibox.widget{
         expand = "none",
         layout = wibox.layout.align.horizontal
     },
-    spacing = dpi(10),
+    spacing = dpi(6),
     layout = wibox.layout.fixed.vertical
 }
 

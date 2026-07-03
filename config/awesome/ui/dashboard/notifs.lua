@@ -36,7 +36,7 @@ local notifs_clear = wibox.widget {
 -- Definición de funciones en el entorno global de forma segura
 local notifs_container = wibox.widget{
     spacing = dpi(10),
-    forced_width = dpi(240),
+    forced_width = dpi(225),
     layout = wibox.layout.fixed.vertical
 }
 
@@ -111,7 +111,7 @@ local create_notif = function(icon, n)
                                         markup = helpers.colorize_text(n.title or "Notification", beautiful.xforeground .. "b3"),
                                         font = beautiful.font_name .. "medium 8",
                                         align = "left",
-                                        forced_width = dpi(140),
+                                        forced_width = dpi(125),
                                         widget = wibox.widget.textbox
                                     },
                                 nil,
@@ -129,7 +129,7 @@ local create_notif = function(icon, n)
                                 markup = helpers.colorize_text(n.message or "", beautiful.dashboard_box_fg),
                                 align = "left",
                                 font = beautiful.font_name .. "medium 8",
-                                forced_width = dpi(165),
+                                forced_width = dpi(150),
                                 widget = wibox.widget.textbox
                             },
                             spacing = dpi(2),
@@ -143,7 +143,7 @@ local create_notif = function(icon, n)
                 },
                 layout = wibox.layout.align.horizontal
             },
-            margins = dpi(8),
+                    margins = dpi(6),
             widget = wibox.container.margin
         },
         bg = beautiful.xcolor0,
@@ -203,7 +203,7 @@ local notifs = wibox.widget {
         widget = wibox.container.margin
     },
     notifs_container,
-    spacing = dpi(10),
+    spacing = dpi(6),
     layout = wibox.layout.fixed.vertical
 }
 

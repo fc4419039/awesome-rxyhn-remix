@@ -87,7 +87,7 @@ local media = wibox.widget{
         forced_height = dpi(120),
         widget = wibox.container.background
     },
-    margins = dpi(10),
+    margins = dpi(5),
     widget = wibox.container.margin
 }
 

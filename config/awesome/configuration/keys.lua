@@ -183,19 +183,28 @@ awful.keyboard.append_global_keybindings({
     end,
     {description = "mute volume", group = "hotkeys"}),
 
--- Music (Controlado nativamente con Bling)
+-- Music (Controlado con playerctl + fallback a mpc)
     awful.key({}, "XF86AudioPlay", function()
-        playerctl:play_pause()
+        local ok = pcall(playerctl.play_pause, playerctl)
+        if not ok then
+            awful.spawn.with_shell("mpc -q toggle")
+        end
     end,
     {description = "reproducir/pausar música", group = "multimedia"}),
 
     awful.key({}, "XF86AudioNext", function()
-        playerctl:next()
+        local ok = pcall(playerctl.next, playerctl)
+        if not ok then
+            awful.spawn.with_shell("mpc -q next")
+        end
     end,
     {description = "siguiente canción", group = "multimedia"}),
 
     awful.key({}, "XF86AudioPrev", function()
-        playerctl:previous()
+        local ok = pcall(playerctl.previous, playerctl)
+        if not ok then
+            awful.spawn.with_shell("mpc -q prev")
+        end
     end,
     {description = "canción anterior", group = "multimedia"}),
 

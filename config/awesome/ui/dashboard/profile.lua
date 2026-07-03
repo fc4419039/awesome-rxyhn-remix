@@ -24,8 +24,8 @@ local profile_pic_img = wibox.widget{
 
 local profile_pic_container = wibox.widget{
     shape = helpers.rrect(5),
-    forced_height = dpi(120),
-    forced_width = dpi(120),
+    forced_height = dpi(115),
+    forced_width = dpi(115),
     widget = wibox.container.background
 }
 
@@ -34,7 +34,7 @@ local profile = wibox.widget{
         profile_pic_img,
         widget = profile_pic_container
     },
-    margins = dpi(10),
+    margins = dpi(5),
     widget = wibox.container.margin
 }
 

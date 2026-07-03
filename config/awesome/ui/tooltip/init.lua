@@ -645,12 +645,12 @@ function M.create(s)
         visible = false
     })
 
-    awful.placement.bottom_left(stats_tooltip, {
-        margins = {
-            left = 82,
-            bottom = dpi(33)
-        }
-    })
+        awful.placement.bottom_left(stats_tooltip, {
+            margins = {
+                left = 64,
+                bottom = dpi(33)
+            }
+        })
 
     stats_tooltip:setup {
         {

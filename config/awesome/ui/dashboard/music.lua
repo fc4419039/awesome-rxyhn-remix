@@ -30,8 +30,8 @@ local music_art = wibox.widget {
 
 local music_art_container = wibox.widget {
     music_art,
-    forced_height = dpi(120),
-    forced_width = dpi(120),
+    forced_height = dpi(115),
+    forced_width = dpi(115),
     widget = wibox.container.background
 }
 
@@ -45,9 +45,9 @@ local filter_color = {
 local music_art_filter = wibox.widget {
     {
         bg = filter_color,
-        forced_height = dpi(120),
-        forced_width = dpi(120),
-        widget = wibox.container.background
+    forced_height = dpi(115),
+    forced_width = dpi(115),
+    widget = wibox.container.background
     },
     direction = "east",
     widget = wibox.container.rotate
@@ -127,7 +127,7 @@ local music = wibox.widget{
                                 {
                                     widget = music_artist,
                                 },
-                                forced_width = dpi(180),
+                                forced_width = dpi(170),
                                 widget = wibox.container.scroll.horizontal
                             },
                             {
@@ -138,7 +138,7 @@ local music = wibox.widget{
                                 {
                                     widget = music_title,
                                 },
-                                forced_width = dpi(180),
+                                forced_width = dpi(170),
                                 widget = wibox.container.scroll.horizontal
                             },
                             layout = wibox.layout.fixed.vertical
@@ -150,21 +150,21 @@ local music = wibox.widget{
                     expand = "none",
                     layout = wibox.layout.align.vertical
                 },
-                top = dpi(9),
-                bottom = dpi(9),
-                left = dpi(10),
-                right = dpi(10),
+                top = dpi(6),
+                bottom = dpi(6),
+                left = dpi(5),
+                right = dpi(5),
                 widget = wibox.container.margin
             },
             layout = wibox.layout.stack
         },
         bg = beautiful.dashboard_box_bg,
         shape = helpers.rrect(dpi(5)),
-        forced_width = dpi(200),
-        forced_height = dpi(120),
+        forced_width = dpi(195),
+        forced_height = dpi(115),
         widget = wibox.container.background
     },
-    margins = dpi(10),
+    margins = dpi(5),
     widget = wibox.container.margin
 }
 
