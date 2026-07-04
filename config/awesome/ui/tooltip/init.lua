@@ -225,47 +225,37 @@ function M.create(s)
         uptime_text.markup = uptime_value
     end)
 
-    local wifi_uptime_icon = wibox.widget{
-        markup = helpers.colorize_text("", beautiful.xcolor2),
-        font = beautiful.icon_font_name .. "Round 14",
-        valign = "center",
-        widget = wibox.widget.textbox
-    }
-
-    wifi_uptime_icon:connect_signal("mouse::enter", function()
-        wifi_uptime_icon.markup = helpers.colorize_text("", beautiful.xcolor15)
+    local settings_bg = wibox.container.background()
+    settings_bg:set_widget(
+        wibox.widget {
+            markup = helpers.colorize_text("", beautiful.xcolor4),
+            font = beautiful.font_name .. "Bold 16",
+            align = "center",
+            valign = "center",
+            forced_width = dpi(28),
+            forced_height = dpi(28),
+            widget = wibox.widget.textbox
+        }
+    )
+    settings_bg.shape = helpers.rrect(dpi(7))
+    settings_bg.bg = beautiful.xcolor0 .. "99"
+    settings_bg.border_width = dpi(1.5)
+    settings_bg.border_color = beautiful.xcolor4 .. "44"
+    settings_bg:connect_signal("mouse::enter", function()
+        settings_bg.bg = beautiful.xcolor0
+        settings_bg.border_color = beautiful.xcolor4
     end)
-    wifi_uptime_icon:connect_signal("mouse::leave", function()
-        local c = wifi_connected_ssid ~= "" and beautiful.xcolor2 or beautiful.xcolor1
-        local icon = wifi_connected_ssid ~= "" and "" or ""
-        wifi_uptime_icon.markup = helpers.colorize_text(icon, c)
+    settings_bg:connect_signal("mouse::leave", function()
+        settings_bg.bg = beautiful.xcolor0 .. "99"
+        settings_bg.border_color = beautiful.xcolor4 .. "44"
     end)
-    wifi_uptime_icon:buttons(gears.table.join(
+    settings_bg:buttons(gears.table.join(
         awful.button({}, 1, function()
-            awful.spawn.with_shell(os.getenv("HOME") .. "/.config/awesome/scripts/network.sh")
+            s.stats_tooltip_hide()
+            s.system_menu_toggle()
         end)
     ))
-    helpers.add_hover_cursor(wifi_uptime_icon, "hand2")
-
-    local bt_uptime_icon = wibox.widget{
-        markup = helpers.colorize_text("", beautiful.xcolor4),
-        font = beautiful.icon_font_name .. "Round 14",
-        valign = "center",
-        widget = wibox.widget.textbox
-    }
-
-    bt_uptime_icon:connect_signal("mouse::enter", function()
-        bt_uptime_icon.markup = helpers.colorize_text("", beautiful.xcolor15)
-    end)
-    bt_uptime_icon:connect_signal("mouse::leave", function()
-        bt_uptime_icon.markup = helpers.colorize_text("", beautiful.xcolor4)
-    end)
-    bt_uptime_icon:buttons(gears.table.join(
-        awful.button({}, 1, function()
-            awful.spawn.with_shell(os.getenv("HOME") .. "/.config/awesome/scripts/bluetooth.sh")
-        end)
-    ))
-    helpers.add_hover_cursor(bt_uptime_icon, "hand2")
+    helpers.add_hover_cursor(settings_bg, "hand2")
 
     local uptime_container = wibox.widget{
         separator,
@@ -274,8 +264,7 @@ function M.create(s)
             nil,
             {
                 uptime_text,
-                wifi_uptime_icon,
-                bt_uptime_icon,
+                settings_bg,
                 spacing = dpi(5),
                 layout = wibox.layout.fixed.horizontal
             },
@@ -578,12 +567,10 @@ function M.create(s)
                 wifi_connected_ssid = ssid
                 wifi_status_text.markup = helpers.colorize_text(ssid, beautiful.xcolor2)
                 wifi_icon_w.markup = helpers.colorize_text("", beautiful.xcolor2)
-                wifi_uptime_icon.markup = helpers.colorize_text("", beautiful.xcolor2)
             else
                 wifi_connected_ssid = ""
                 wifi_status_text.markup = helpers.colorize_text("Disconnected", beautiful.xcolor1)
                 wifi_icon_w.markup = helpers.colorize_text("", beautiful.xcolor1)
-                wifi_uptime_icon.markup = helpers.colorize_text("", beautiful.xcolor1)
             end
         end)
     end

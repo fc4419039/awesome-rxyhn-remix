@@ -218,9 +218,10 @@ screen.connect_signal("request::desktop_decoration", function(s)
         widget = wibox.container.background
     }
 
-    -- Crear dashboard y tooltip por pantalla (antes de los botones que los referencian)
+    -- Crear dashboard, tooltip y system menu por pantalla
     require("ui.dashboard").create(s)
     require("ui.tooltip").create(s)
+    require("ui.system_menu")(s)
 
     stats:connect_signal("mouse::enter", function()
         stats.bg = beautiful.xcolor8
@@ -363,8 +364,6 @@ screen.connect_signal("request::desktop_decoration", function(s)
         widget = wibox.container.margin
     }
 
-    helpers.add_hover_cursor(layoutbox, "hand2")
-
     s.mywibar = awful.wibar({
         type = "dock",
         position = "left",
@@ -372,7 +371,7 @@ screen.connect_signal("request::desktop_decoration", function(s)
         height = s.geometry.height - dpi(50),
         width = dpi(44),
         shape = helpers.rrect(beautiful.border_radius),
-        bg = beautiful.darker_bg,
+        bg = beautiful.wibar_bg,
         ontop = true,
         visible = true,
     })

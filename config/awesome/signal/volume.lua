@@ -31,11 +31,11 @@ end
 -- Ejecutar una vez al inicio para inicializar el widget/notificación
 emit_volume_info()
 
--- Script en bucle que duerme hasta que PipeWire detecte un cambio de volumen
-local volume_script = [[bash -c "LANG=C pactl subscribe 2>/dev/null | grep --line-buffered \"Event 'change' on sink\""]]
+-- Script en bucle que duerme hasta que PipeWire detecte un cambio de volumen o de default sink
+local volume_script = [[bash -c "LANG=C pactl subscribe 2>/dev/null | grep --line-buffered -E \"Event 'change' on (sink|server)\""]]
 
--- Matar procesos antiguos de pactl subscribe para no acumular basura en la RAM
-awful.spawn.easy_async_with_shell("pkill -f 'pactl subscribe'", function()
+-- Matar solo pactl subscribe de monitoreo de volumen (no el de notification-router.sh)
+awful.spawn.easy_async_with_shell("pkill -f 'pactl subscribe.*Event'", function()
     -- Escuchar en tiempo real cada evento de audio
     awful.spawn.with_line_callback(volume_script, {
         stdout = function(line)

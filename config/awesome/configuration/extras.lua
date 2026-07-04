@@ -106,7 +106,7 @@ function toggle_window_titlebars()
     local n = 0
     if titlebars_enabled then
         for _, c in ipairs(client.get()) do
-            if not c.titlebar then
+            if not c.titlebar and not c.custom_decoration then
                 titlebar_builder.setup(c)
                 n = n + 1
             end
@@ -114,7 +114,7 @@ function toggle_window_titlebars()
         os.remove(titlebar_state_file)
     else
         for _, c in ipairs(client.get()) do
-            if c.titlebar then
+            if c.titlebar and not c.custom_decoration then
                 c.titlebar:remove()
                 n = n + 1
             end

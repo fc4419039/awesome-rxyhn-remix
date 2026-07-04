@@ -59,15 +59,23 @@ end
 -- Autostart de servicios base
 awful.spawn(gfs.get_configuration_dir() .. "configuration/autostart")
 awful.spawn(os.getenv("HOME") .. "/.config/awesome/scripts/notif-sink-setup.sh")
-run_once("picom --config " .. os.getenv("HOME") .. "/.config/awesome/theme/picom.conf")
-awful.spawn("pasystray")
+local blur_state = io.open("/tmp/awesome-blur-mode", "r")
+local picom_cfg = os.getenv("HOME") .. "/.config/awesome/theme/picom.conf"
+if blur_state then
+    picom_cfg = os.getenv("HOME") .. "/.config/awesome/theme/picom-blur.conf"
+    blur_state:close()
+end
+run_once("picom --config " .. picom_cfg)
 awful.spawn("setxkbmap latam")
 awful.spawn("touchegg")
 
 -- Import Configuration, Signals and UI
 -- NOTA: Estos deben cargarse después de definir las variables globales y el tema
 require("configuration")
-require("signal")
+-- Deferred para que notif-sink-setup.sh tenga tiempo de crear los sinks
+gears.timer.delayed_call(function()
+    pcall(require, "signal")
+end)
 require("ui")
 
 -- Wallpapers y scripts de sesión
