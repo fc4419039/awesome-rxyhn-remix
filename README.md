@@ -140,6 +140,7 @@ Dropdown on battery/clock click:
 - **System uptime**
 - **Interactive WiFi manager**:
   - Network scanning · Signal-sorted list · Password input · Connected indicator
+- **Settings button** — opens the **System Menu** slide-out panel
 
 ### Notification Center
 - Recent notification list with icon, title, message, timestamp
@@ -232,6 +233,22 @@ YouTube music search & download with interactive menu and direct mode:
 | Network | Status and SSID (30s) |
 | Playerctl | Metadata, status, position |
 
+### System Menu
+Slide-out settings panel (200px) on the right side, toggled from the stats tooltip:
+- **Blur** — toggle picom background blur on/off (reloads AwesomeWM)
+- **Volume** — opens GTK3 per-app volume sliders
+- **Night Mode** — redshift 3500K on/off
+- **Network** — rofi WiFi menu
+- **Bluetooth** — rofi Bluetooth menu
+- **Wallpaper** — pick a custom image with yad file dialog
+- **SDDM Wallpaper** — set lock screen background
+- **Apps** — rofi application launcher
+- **Music** — ncmpcpp music client
+- **Cycle Accent** — switch between 12 accent colors
+- **Titlebar / Borders** — toggle window titlebars or borders on all windows
+- **Power Menu** — shutdown/reboot/lock/suspend
+- Auto-hides after 3 seconds of inactivity
+
 ### Available Layouts
 - **Tile** (default) · **Floating** · **Centered** (bling) · **MSTab** (bling)
 - **Horizontal** (bling) · **Machi** (interactive manual) · **Equalarea** (bling) · **Deck** (bling)
@@ -284,6 +301,7 @@ YouTube music search & download with interactive menu and direct mode:
 - **Better resize** — improved tiled resize
 - **Rounded corners** on windows
 - **OSD notifications** for volume/brightness with progress bars
+- **Blur toggle** — `toggle-blur.sh` switches picom compositor blur on/off with full theme adaptation
 - **Layout selector** with icon preview
 - **Lock screen** uses PAM with `liblua_pam.so` (precompiled for Arch x86_64)
 - **OpenCode** AI agent config included (`opencode.json`)
@@ -334,6 +352,7 @@ Panel desplegable al hacer clic en batería/reloj:
 - **Uptime** del sistema
 - **Gestor WiFi interactivo**:
   - Escaneo de redes · Lista ordenada por señal · Conexión con contraseña · Indicador de red conectada
+- **Botón de ajustes** — abre el **System Menu**
 
 ### Centro de notificaciones
 - Lista con icono, título, mensaje y timestamp
@@ -425,6 +444,22 @@ Buscador y descargador de música desde YouTube:
 | Red | Estado y SSID (c/30s) |
 | Playerctl | Metadatos, estado, posición |
 
+### System Menu
+Panel deslizable de ajustes (200px) en el lateral derecho, abierto desde el tooltip:
+- **Blur** — activa/desactiva el blur de picom (recarga AwesomeWM)
+- **Volumen** — sliders GTK3 por aplicación
+- **Modo noche** — redshift 3500K on/off
+- **Red** — menú rofi WiFi
+- **Bluetooth** — menú rofi Bluetooth
+- **Fondo** — selector de wallpaper con yad
+- **Fondo SDDM** — cambiar fondo de pantalla de bloqueo
+- **Apps** — lanzador rofi
+- **Música** — ncmpcpp
+- **Cycle Accent** — cambia entre 12 colores de acento
+- **Titlebar / Borders** — oculta/muestra barras de título o bordes
+- **Power Menu** — apagado/reinicio/bloqueo/suspensión
+- Se oculta automáticamente tras 3s de inactividad
+
 ### Layouts disponibles
 - **Tile** (default) · **Floating** · **Centered** (bling) · **MSTab** (bling)
 - **Horizontal** (bling) · **Machi** (manual interactivo) · **Equalarea** (bling) · **Deck** (bling)
@@ -477,6 +512,7 @@ Buscador y descargador de música desde YouTube:
 - **Better resize** — redimensionado mejorado
 - **Esquinas redondeadas**
 - **Notificaciones OSD** para volumen/brillo
+- **Toggle Blur** — `toggle-blur.sh` activa/desactiva el blur de picom adaptando el tema completo
 - **Selector de layouts** con vista previa
 - **Lock screen** usa PAM (`liblua_pam.so` para Arch x86_64)
 - **OpenCode** agente de IA incluido (`opencode.json`)
