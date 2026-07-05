@@ -31,7 +31,7 @@ local music_art = wibox.widget {
 local music_art_container = wibox.widget {
     music_art,
     forced_height = dpi(115),
-    forced_width = dpi(115),
+    forced_width = dpi(195),
     widget = wibox.container.background
 }
 
@@ -46,7 +46,7 @@ local music_art_filter = wibox.widget {
     {
         bg = filter_color,
     forced_height = dpi(115),
-    forced_width = dpi(115),
+    forced_width = dpi(195),
     widget = wibox.container.background
     },
     direction = "east",
@@ -72,19 +72,65 @@ local music_pos = wibox.widget{
 }
 
 
+-- helper para redimensionar imagen a 115x115 y asignarla al widget
+local function set_art_image(path)
+    local resized = os.tmpname() .. ".png"
+    awful.spawn.easy_async_with_shell(
+        "magick convert '" .. path .. "' -resize 195x115! '" .. resized .. "' 2>/dev/null",
+        function()
+            music_art:set_image(gears.surface.load_uncached(resized))
+        end
+    )
+end
+
+-- helper para obtener thumbnail de YouTube
+local function get_youtube_thumb(player)
+    awful.spawn.easy_async_with_shell(
+        "playerctl --player='" .. player .. "' metadata xesam:url 2>/dev/null",
+        function(stdout)
+            local video_id = stdout:match("[?&]v=([%w_-]+)")
+            if video_id then
+                local thumb_url = "https://img.youtube.com/vi/" .. video_id .. "/hqdefault.jpg"
+                local art_path = os.tmpname()
+                awful.spawn.with_line_callback(
+                    "curl -L -s '" .. thumb_url .. "' -o '" .. art_path .. "' 2>/dev/null",
+                    {
+                        exit = function()
+                            local f = io.open(art_path, "r")
+                            if f then
+                                local size = f:seek("end")
+                                f:close()
+                                if size and size > 0 then
+                                    set_art_image(art_path)
+                                end
+                            end
+                        end
+                    }
+                )
+            end
+        end
+    )
+end
+
 -- playerctl
 ---------------
 
-local playerctl = require("module.bling").signal.playerctl.lib({
+local playerctl = require("module.bling").signal.playerctl.cli({
   player = {"firefox", "spotify", "%any","mpd"}
 })
 
-playerctl:connect_signal("metadata", function(_, title, artist, album_path, __, ___, ____)
+playerctl:connect_signal("metadata", function(_, title, artist, album_path, __, ___)
     if title == "" then title = "Nothing Playing" end
     if artist == "" then artist = "Nothing Playing" end
-    if album_path == "" then album_path = gears.filesystem.get_configuration_dir() .. "theme/assets/no_music.png" end
 
-    music_art:set_image(gears.surface.load_uncached(album_path))
+    if album_path and album_path ~= "" then
+        set_art_image(album_path)
+    else
+        local no_music = gears.filesystem.get_configuration_dir() .. "theme/assets/no_music.png"
+        set_art_image(no_music)
+        get_youtube_thumb(___ or "firefox")
+    end
+
     music_title:set_markup_silently(helpers.colorize_text(title, beautiful.xforeground .. "b3"))
     music_artist:set_markup_silently(helpers.colorize_text(artist, beautiful.xforeground .. "e6"))
 end)

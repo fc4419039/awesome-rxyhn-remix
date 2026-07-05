@@ -110,7 +110,10 @@ if [ "$EXISTING_NOTIF_LOOPBACK" -eq 0 ]; then
   echo "Creado loopback $NOTIF_SINK_NAME → $HARDWARE_SINK"
 fi
 
-# 8. Lanzar el router de notificaciones si no está corriendo
+# 8. Asegurar volumen del hardware al maximo
+pactl set-sink-volume "$HARDWARE_SINK" 100%
+
+# 9. Lanzar el router de notificaciones si no está corriendo
 ROUTER_SCRIPT="${HOME}/.config/awesome/scripts/notification-router.sh"
 if [ -x "$ROUTER_SCRIPT" ]; then
   if ! pgrep -f "$ROUTER_SCRIPT" > /dev/null 2>&1; then

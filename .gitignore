@@ -24,5 +24,8 @@ config/awesome/ui/notifs/notif-center/dont-disturb/disturb_status
 # Claude / OpenCode (config compartida para IA - ver opencode.json)
 # opencode.json
 
+# Backups del toggle-blur.sh
+config/awesome/.codebak/
+
 # Si no quieres que otros descarguen tus imágenes (descomentar)
 # fondos/
