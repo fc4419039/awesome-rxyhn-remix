@@ -235,7 +235,8 @@ YouTube music search & download with interactive menu and direct mode:
 
 ### System Menu
 Slide-out settings panel (200px) on the right side, toggled from the stats tooltip:
-- **Blur** — toggle picom background blur on/off (reloads AwesomeWM)
+- **Blur** — toggle picom background blur on/off (reloads AwesomeWM, adapts theme)
+- **Transparency** — toggle transparency mode without blur (reloads AwesomeWM, adapts theme)
 - **Volume** — opens GTK3 per-app volume sliders
 - **Night Mode** — redshift 3500K on/off
 - **Network** — rofi WiFi menu
@@ -300,8 +301,13 @@ Slide-out settings panel (200px) on the right side, toggled from the stats toolt
 - **Save floats** — preserves floating window positions across tags
 - **Better resize** — improved tiled resize
 - **Rounded corners** on windows
-- **OSD notifications** for volume/brightness with progress bars
+- **OSD notifications** for volume/brightness with progress bars (no watermark, adaptive bg)
+- **Tooltip fix** — tooltip window is now visible (was transparent due to `beautiful.transparent`)
 - **Blur toggle** — `toggle-blur.sh` switches picom compositor blur on/off with full theme adaptation
+- **Transparency toggle** — `toggle-transparency.sh` enables transparency without blur (lighter picom), adapts theme
+- **Emergency reset** — `reset-theme.sh` restores original theme and removes all state files if something breaks
+- **Solid fallback theme** — `theme_solid.lua` is used when blur/transparency is off, ensuring backgrounds are opaque
+- **Three picom configs** — `picom.conf` (solid), `picom-blur.conf` (blur), `picom-transparency.conf` (transparency); each with `inactive-opacity = 1.0` + `override = false` to respect per-window alpha, `dock = { opacity = 1.0 }` for panels, and custom opacity rules for browsers/media apps
 - **Layout selector** with icon preview
 - **Lock screen** uses PAM with `liblua_pam.so` (precompiled for Arch x86_64)
 - **OpenCode** AI agent config included (`opencode.json`)
@@ -446,7 +452,8 @@ Buscador y descargador de música desde YouTube:
 
 ### System Menu
 Panel deslizable de ajustes (200px) en el lateral derecho, abierto desde el tooltip:
-- **Blur** — activa/desactiva el blur de picom (recarga AwesomeWM)
+- **Blur** — activa/desactiva el blur de picom (recarga AwesomeWM, adapta el tema)
+- **Transparencia** — activa modo transparencia sin blur (recarga AwesomeWM, adapta el tema)
 - **Volumen** — sliders GTK3 por aplicación
 - **Modo noche** — redshift 3500K on/off
 - **Red** — menú rofi WiFi
@@ -511,8 +518,13 @@ Panel deslizable de ajustes (200px) en el lateral derecho, abierto desde el tool
 - **Save floats** — preserva posición flotante entre tags
 - **Better resize** — redimensionado mejorado
 - **Esquinas redondeadas**
-- **Notificaciones OSD** para volumen/brillo
+- **Notificaciones OSD** para volumen/brillo (sin watermark, fondo adaptable)
+- **Tooltip corregido** — la ventana del tooltip ahora es visible (era transparente por `beautiful.transparent`)
 - **Toggle Blur** — `toggle-blur.sh` activa/desactiva el blur de picom adaptando el tema completo
+- **Toggle Transparencia** — `toggle-transparency.sh` activa transparencia sin blur (picom más ligero), adapta el tema
+- **Reset de emergencia** — `reset-theme.sh` restaura el tema original y limpia archivos de estado ante fallos
+- **Tema sólido de respaldo** — `theme_solid.lua` se usa sin blur/transparencia para fondos opacos
+- **Tres configs de picom** — `picom.conf` (sólido), `picom-blur.conf` (blur), `picom-transparency.conf` (transparencia); cada uno con `inactive-opacity = 1.0` + `override = false` para respetar el alpha por ventana, `dock = { opacity = 1.0 }` para paneles, y reglas de opacidad para navegadores/media
 - **Selector de layouts** con vista previa
 - **Lock screen** usa PAM (`liblua_pam.so` para Arch x86_64)
 - **OpenCode** agente de IA incluido (`opencode.json`)
