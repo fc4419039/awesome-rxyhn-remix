@@ -118,4 +118,19 @@ gears.timer({
     end
 })
 
+-- Watchdog: verificar cada 30s que los sinks de audio existan
+-- Si pipewire-pulse se reinicia, los sinks virtuales se pierden
+gears.timer({
+    timeout = 30,
+    autostart = true,
+    call_now = false,
+    callback = function()
+        awful.spawn.easy_async_with_shell(
+            "pactl list sinks short 2>/dev/null | grep -q notifications || "
+            .. os.getenv("HOME") .. "/.config/awesome/scripts/notif-sink-setup.sh",
+            function() end
+        )
+    end
+})
+
 

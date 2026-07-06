@@ -9,7 +9,7 @@ local muted_old = -1
 
 local function emit_volume_info()
     -- Comando moderno y rápido compatible con PipeWire para obtener volumen y mute a la vez
-    awful.spawn.easy_async_with_shell("pactl get-sink-volume @DEFAULT_SINK@; pactl get-sink-mute @DEFAULT_SINK@", function(stdout)
+    awful.spawn.easy_async_with_shell("pactl get-sink-volume @DEFAULT_SINK@ 2>/dev/null; pactl get-sink-mute @DEFAULT_SINK@ 2>/dev/null", function(stdout)
 
         -- Extraer el porcentaje de volumen (ej: 50%)
         local volume = stdout and stdout:match("(%d+)%%")

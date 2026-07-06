@@ -1,18 +1,22 @@
 #!/usr/bin/env bash
 
 SYSTEM_SINK_NAME="system_sink"
-SYSTEM_SINK_DESC="🔊 Sistema"
+SYSTEM_SINK_DESC="Sistema"
 NOTIF_SINK_NAME="notifications"
-NOTIF_SINK_DESC="🔔 Notificaciones"
-
-set -e
+NOTIF_SINK_DESC="Notificaciones"
 
 # 1. Obtener el sink físico (hardware)
-HARDWARE_SINK=$(pactl list sinks short | awk '/alsa_output/ || /bluez/ || /alsa_/ {print $2; exit}')
+HARDWARE_SINK=$(pactl list sinks short 2>/dev/null | awk '/alsa_output/ || /bluez/ || /alsa_/ {print $2; exit}')
 
 if [ -z "$HARDWARE_SINK" ]; then
   echo "ERROR: No se encontró sink de hardware" >&2
-  exit 1
+  # Reintentar en 2 segundos por si pipewire-pulse no está listo
+  sleep 2
+  HARDWARE_SINK=$(pactl list sinks short 2>/dev/null | awk '/alsa_output/ || /bluez/ || /alsa_/ {print $2; exit}')
+  if [ -z "$HARDWARE_SINK" ]; then
+    echo "ERROR: Sink de hardware no disponible incluso después de reintentar" >&2
+    exit 1
+  fi
 fi
 
 echo "Hardware sink: $HARDWARE_SINK"
@@ -111,7 +115,7 @@ if [ "$EXISTING_NOTIF_LOOPBACK" -eq 0 ]; then
 fi
 
 # 8. Asegurar volumen del hardware al maximo
-pactl set-sink-volume "$HARDWARE_SINK" 100%
+pactl set-sink-volume "$HARDWARE_SINK" 100% 2>/dev/null || true
 
 # 9. Lanzar el router de notificaciones si no está corriendo
 ROUTER_SCRIPT="${HOME}/.config/awesome/scripts/notification-router.sh"

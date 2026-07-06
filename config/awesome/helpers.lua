@@ -527,10 +527,10 @@ end
 function helpers.volume_control(step)
     local sink = "@DEFAULT_SINK@"
     if step == 0 then
-        awful.spawn.with_shell("pactl set-sink-mute " .. sink .. " toggle")
+        awful.spawn.with_shell("pactl set-sink-mute " .. sink .. " toggle 2>/dev/null || true")
     else
         local sign = step > 0 and "+" or ""
-        awful.spawn.with_shell("pactl set-sink-mute " .. sink .. " 0 && pactl set-sink-volume " .. sink .. " " .. sign .. tostring(step) .. "%")
+        awful.spawn.with_shell("(pactl set-sink-mute " .. sink .. " 0 2>/dev/null || true) && (pactl set-sink-volume " .. sink .. " " .. sign .. tostring(step) .. "% 2>/dev/null || true)")
     end
 end
 

@@ -3,16 +3,24 @@
 # and non-notification streams out of the 'notifications' sink back to system_sink.
 # This ensures each stream always lands on the correct sink, even if module-stream-restore
 # or similar tools try to restore a wrong route.
-set -e
-
 NOTIF_SINK_NAME="notifications"
 SYSTEM_SINK_NAME="system_sink"
 NOTIF_SINK_ID=$(pactl list sinks short 2>/dev/null | awk -v name="$NOTIF_SINK_NAME" '$2 == name {print $1}')
 SYSTEM_SINK_ID=$(pactl list sinks short 2>/dev/null | awk -v name="$SYSTEM_SINK_NAME" '$2 == name {print $1}')
 
 if [ -z "$NOTIF_SINK_ID" ] || [ -z "$SYSTEM_SINK_ID" ]; then
-  echo "ERROR: notifications or system_sink not found — run notif-sink-setup.sh first" >&2
-  exit 1
+  echo "ERROR: notifications or system_sink not found — recreando sinks..." >&2
+  SETUP_SCRIPT="${HOME}/.config/awesome/scripts/notif-sink-setup.sh"
+  if [ -x "$SETUP_SCRIPT" ]; then
+    nohup "$SETUP_SCRIPT" > /dev/null 2>&1 &
+  fi
+  sleep 1
+  NOTIF_SINK_ID=$(pactl list sinks short 2>/dev/null | awk -v name="$NOTIF_SINK_NAME" '$2 == name {print $1}')
+  SYSTEM_SINK_ID=$(pactl list sinks short 2>/dev/null | awk -v name="$SYSTEM_SINK_NAME" '$2 == name {print $1}')
+  if [ -z "$NOTIF_SINK_ID" ] || [ -z "$SYSTEM_SINK_ID" ]; then
+    echo "ERROR: No se pudieron recrear los sinks" >&2
+    exit 1
+  fi
 fi
 
 is_notification_stream() {
@@ -79,30 +87,45 @@ move_route() {
 move_route
 
 # Subscribe to new sink-inputs and react immediately
-pactl subscribe 2>/dev/null | grep --line-buffered "on sink-input" | while read -r line; do
-  id=$(echo "$line" | sed -n 's/.*#\([0-9]*\).*/\1/p')
-  [ -z "$id" ] && continue
+# Reconnect loop: if pipewire-pulse restarts, pactl subscribe dies and we reconnect
+while true; do
+  pactl subscribe 2>/dev/null | grep --line-buffered "on sink-input" | while read -r line; do
+    id=$(echo "$line" | sed -n 's/.*#\([0-9]*\).*/\1/p')
+    [ -z "$id" ] && continue
 
-  props=$(pactl list sink-inputs 2>/dev/null | awk -v id="$id" '
-    BEGIN { found = 0 }
-    /^Sink Input #/ {
-      s = $0; sub(/^Sink Input #/, "", s); sub(/:$/, "", s); gsub(/[ \t]/, "", s)
-      found = (s == id)
-      if (found) { block = $0 "\n"; next }
-    }
-    found { block = block $0 "\n" }
-    END { if (found) print block }
-  ')
+    props=$(pactl list sink-inputs 2>/dev/null | awk -v id="$id" '
+      BEGIN { found = 0 }
+      /^Sink Input #/ {
+        s = $0; sub(/^Sink Input #/, "", s); sub(/:$/, "", s); gsub(/[ \t]/, "", s)
+        found = (s == id)
+        if (found) { block = $0 "\n"; next }
+      }
+      found { block = block $0 "\n" }
+      END { if (found) print block }
+    ')
 
-  sink=$(echo "$props" | awk '/^[ \t]*Sink: / {gsub(/.*Sink: /, "", $0); print $0; exit}')
-  owner=$(echo "$props" | awk '/^[ \t]*Owner Module: / {gsub(/.*Owner Module: /, "", $0); print $0; exit}')
+    sink=$(echo "$props" | awk '/^[ \t]*Sink: / {gsub(/.*Sink: /, "", $0); print $0; exit}')
+    owner=$(echo "$props" | awk '/^[ \t]*Owner Module: / {gsub(/.*Owner Module: /, "", $0); print $0; exit}')
 
-  # Skip module-created streams (loopbacks)
-  echo "$owner" | grep -qE '^[0-9]+$' && continue
+    # Skip module-created streams (loopbacks)
+    echo "$owner" | grep -qE '^[0-9]+$' && continue
 
-  if [ "$sink" != "$NOTIF_SINK_ID" ] && is_notification_stream "$props"; then
-    pactl move-sink-input "$id" "$NOTIF_SINK_NAME" 2>/dev/null
-  elif [ "$sink" = "$NOTIF_SINK_ID" ] && ! is_notification_stream "$props"; then
-    pactl move-sink-input "$id" "$SYSTEM_SINK_NAME" 2>/dev/null
+    if [ "$sink" != "$NOTIF_SINK_ID" ] && is_notification_stream "$props"; then
+      pactl move-sink-input "$id" "$NOTIF_SINK_NAME" 2>/dev/null || true
+    elif [ "$sink" = "$NOTIF_SINK_ID" ] && ! is_notification_stream "$props"; then
+      pactl move-sink-input "$id" "$SYSTEM_SINK_NAME" 2>/dev/null || true
+    fi
+  done
+  # Si llegamos aquí, pactl subscribe terminó (pipewire reiniciado)
+  # Re-verificar sinks y reintentar
+  sleep 1
+  NOTIF_SINK_ID=$(pactl list sinks short 2>/dev/null | awk -v name="$NOTIF_SINK_NAME" '$2 == name {print $1}')
+  SYSTEM_SINK_ID=$(pactl list sinks short 2>/dev/null | awk -v name="$SYSTEM_SINK_NAME" '$2 == name {print $1}')
+  if [ -z "$NOTIF_SINK_ID" ] || [ -z "$SYSTEM_SINK_ID" ]; then
+    SETUP_SCRIPT="${HOME}/.config/awesome/scripts/notif-sink-setup.sh"
+    if [ -x "$SETUP_SCRIPT" ]; then
+      "$SETUP_SCRIPT" > /dev/null 2>&1
+    fi
+    sleep 2
   fi
 done
