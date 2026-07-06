@@ -3,6 +3,8 @@
 # and non-notification streams out of the 'notifications' sink back to system_sink.
 # This ensures each stream always lands on the correct sink, even if module-stream-restore
 # or similar tools try to restore a wrong route.
+set -e
+
 NOTIF_SINK_NAME="notifications"
 SYSTEM_SINK_NAME="system_sink"
 NOTIF_SINK_ID=$(pactl list sinks short 2>/dev/null | awk -v name="$NOTIF_SINK_NAME" '$2 == name {print $1}')

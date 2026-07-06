@@ -1,13 +1,13 @@
 #!/bin/bash
 
-STATE_FILE="/tmp/awesome-blur-mode"
+STATE_FILE="/tmp/awesome-transparency-mode"
+BLUR_STATE="/tmp/awesome-blur-mode"
 THEME_DIR="$HOME/.config/awesome/theme"
 THEME_LUA="$THEME_DIR/theme.lua"
 THEME_SOLID="$THEME_DIR/theme_solid.lua"
 PICOM_CONF="$THEME_DIR/picom.conf"
-PICOM_BLUR="$THEME_DIR/picom-blur.conf"
+PICOM_TRANS="$THEME_DIR/picom-transparency.conf"
 BACKUP="$THEME_DIR/theme.lua.bak"
-THEME_SOLID="$THEME_DIR/theme_solid.lua"
 NOTIFS_INIT="$HOME/.config/awesome/ui/notifs/init.lua"
 NOTIFS_POPUP="$HOME/.config/awesome/ui/notifs/popup.lua"
 LOCKSCREEN="$HOME/.config/awesome/ui/lockscreen/lockscreen.lua"
@@ -27,16 +27,18 @@ TOOLTIP_BAK="$CODE_BAK/tooltip_init.lua"
 
 if [ -f "$STATE_FILE" ]; then
     rm -f "$STATE_FILE"
-    TRANSPARENCY_STATE="/tmp/awesome-transparency-mode"
-    if [ -f "$TRANSPARENCY_STATE" ]; then
-        rm -f "$TRANSPARENCY_STATE"
+    if [ -f "$BLUR_STATE" ]; then
+        rm -f "$BLUR_STATE"
     fi
+
     pkill picom
+
     if [ -f "$BACKUP" ]; then
         cp "$BACKUP" "$THEME_LUA"
         rm -f "$BACKUP"
     fi
-    for f in init.lua popup.lua lockscreen.lua sys_menu.lua titlebar.lua; do
+
+    for f in init.lua popup.lua lockscreen.lua sys_menu.lua titlebar.lua tooltip_init.lua; do
         if [ -f "$CODE_BAK/$f" ]; then
             case "$f" in
                 init.lua) cp "$CODE_BAK/$f" "$NOTIFS_INIT" ;;
@@ -44,12 +46,10 @@ if [ -f "$STATE_FILE" ]; then
                 lockscreen.lua) cp "$CODE_BAK/$f" "$LOCKSCREEN" ;;
                 sys_menu.lua) cp "$CODE_BAK/$f" "$SYS_MENU" ;;
                 titlebar.lua) cp "$CODE_BAK/$f" "$TITLEBAR" ;;
+                tooltip_init.lua) cp "$CODE_BAK/$f" "$TOOLTIP" ;;
             esac
         fi
     done
-    if [ -f "$TOOLTIP_BAK" ]; then
-        cp "$TOOLTIP_BAK" "$TOOLTIP"
-    fi
     for rf in "${ROFI_FILES[@]}"; do
         bname=$(basename "$rf")
         if [ -f "$CODE_BAK/$bname" ]; then
@@ -58,7 +58,7 @@ if [ -f "$STATE_FILE" ]; then
     done
     rm -rf "$CODE_BAK"
 
-    # Restaurar theme sólido desde theme_solid.lua
+    # Restaurar tema sólido desde theme_solid.lua
     cp "$THEME_SOLID" "$THEME_LUA"
 
     # Restaurar tooltip a transparente (sin fondo hardcodeado)
@@ -69,7 +69,7 @@ if [ -f "$STATE_FILE" ]; then
 
     picom -b --dbus --config "$PICOM_CONF" &>/dev/null &
     awesome-client 'awesome.restart()'
-    notify-send -t 1500 "Blur" "Desactivado"
+    notify-send -t 1500 "Transparency" "Desactivado"
 else
     touch "$STATE_FILE"
     cp "$THEME_LUA" "$BACKUP"
@@ -92,22 +92,19 @@ else
         -e 's/beautiful\.xbackground \.\. "22"/"#0a141922"/' \
         "$NOTIFS_INIT" "$NOTIFS_POPUP" "$LOCKSCREEN"
 
-    # System menu (35%) y notif center (60%)
     sed -i 's/bg = beautiful\.xbackground/bg = "#0a141959"/g' "$SYS_MENU"
     sed -i 's/bg = beautiful\.xbackground/bg = "#0a141999"/g' "$NOTIFS_INIT"
-    # Titlebar (90%)
     sed -i 's/bg = beautiful\.bg_secondary/bg = "#0a1419e6"/g' "$TITLEBAR"
-    # Volume/Brightness popup (80% - más transparente en blur)
+    # Volume/Brightness popup (80% - más transparente en transparencia)
     sed -i 's/bg = "#0a1419e6"/bg = "#0a141999"/g' "$NOTIFS_POPUP"
 
     # Tooltip (60% - match notif center)
     sed -i 's/bg = "#0a1419[0-9a-f]\{2\}"/bg = "#0a141999"/g' "$TOOLTIP"
 
-    # Todos los rofi menus (70%)
     sed -i 's/background-color: *#0d0d1aF2/background-color: #0d0d1ab3/' "${ROFI_FILES[@]}"
 
     pkill picom
-    picom -b --dbus --config "$PICOM_BLUR" &>/dev/null &
+    picom -b --dbus --config "$PICOM_TRANS" &>/dev/null &
     awesome-client 'awesome.restart()'
-    notify-send -t 1500 "Blur" "Activado"
+    notify-send -t 1500 "Transparency" "Activado"
 fi

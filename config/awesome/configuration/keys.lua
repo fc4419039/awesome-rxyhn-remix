@@ -48,7 +48,7 @@ awful.keyboard.append_global_keybindings({
         end,
         {description = "open file manager", group = "launcher"}),
         awful.key({ctrl}, "f", function()
-            wibar_toggle()
+            if wibar_toggle then wibar_toggle() end
         end,
         {description = "toggle wibar", group = "launcher"}),
         awful.key({modkey}, "w", function()
@@ -412,8 +412,9 @@ client.connect_signal("request::default_keybindings", function()
             c:kill()
         end,
         {description = "close", group = "client"}),
-        awful.key({modkey, "Control"}, "space",
-            awful.client.floating.toggle,
+        awful.key({modkey, "Control"}, "space", function(c)
+            c.floating = not c.floating
+        end,
         {description = "toggle floating", group = "client"}),
         awful.key({modkey, "Control"}, "Return", function(c)
             c:swap(awful.client.getmaster())

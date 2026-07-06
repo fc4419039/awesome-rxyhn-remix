@@ -127,6 +127,8 @@ screen.connect_signal("request::desktop_decoration", function(s)
     -- Si ya existe wibar, salir (evita recreación en hotplug)
     if s.mywibar then return end
 
+    local ok_init, err_init = pcall(function()
+
     -- Launcher
     -------------
 
@@ -219,9 +221,24 @@ screen.connect_signal("request::desktop_decoration", function(s)
     }
 
     -- Crear dashboard, tooltip y system menu por pantalla
-    require("ui.dashboard").create(s)
-    require("ui.tooltip").create(s)
-    require("ui.system_menu")(s)
+    local ok_dash, err_dash = pcall(function() require("ui.dashboard").create(s) end)
+    if not ok_dash then
+        local f = io.open("/tmp/awesome-wibar-errors.log", "a")
+        if f then f:write(os.date("%H:%M:%S") .. " DASHBOARD ERROR: " .. tostring(err_dash) .. "\n"); f:close() end
+        error(err_dash)
+    end
+    local ok_tip, err_tip = pcall(function() require("ui.tooltip").create(s) end)
+    if not ok_tip then
+        local f = io.open("/tmp/awesome-wibar-errors.log", "a")
+        if f then f:write(os.date("%H:%M:%S") .. " TOOLTIP ERROR: " .. tostring(err_tip) .. "\n"); f:close() end
+        error(err_tip)
+    end
+    local ok_menu, err_menu = pcall(function() require("ui.system_menu")(s) end)
+    if not ok_menu then
+        local f = io.open("/tmp/awesome-wibar-errors.log", "a")
+        if f then f:write(os.date("%H:%M:%S") .. " SYSTEM_MENU ERROR: " .. tostring(err_menu) .. "\n"); f:close() end
+        error(err_menu)
+    end
 
     stats:connect_signal("mouse::enter", function()
         stats.bg = beautiful.xcolor8
@@ -314,11 +331,12 @@ screen.connect_signal("request::desktop_decoration", function(s)
     s.notif_center = require('ui.notifs.notif-center')(s)
     s.notif_center_wibox = notif_center
 
-    notif_center:setup {
+    local nc_content = wibox.widget{
         s.notif_center,
         margins = dpi(15),
         widget = wibox.container.margin
     }
+    notif_center:set_widget(nc_content)
 
     local notif_center_button = wibox.widget{
         markup = helpers.colorize_text("", beautiful.xcolor4),
@@ -538,7 +556,17 @@ screen.connect_signal("request::desktop_decoration", function(s)
             widget = wibox.container.margin
         }
 
-    -- La barra se construye directamente arriba sin pcall
+    end) -- pcall wrapper
+
+    if not ok_init then
+        local log_init = io.open("/tmp/awesome-wibar-errors.log", "a")
+        if log_init then
+            log_init:write(os.date("%H:%M:%S") .. " WIBAR ERROR: " .. tostring(err_init) .. "\n")
+            log_init:close()
+        end
+        return
+    end
+
     local log_init = io.open("/tmp/awesome-wibar-errors.log", "a")
     if log_init then
         log_init:write(os.date("%H:%M:%S") .. " Wibar initialized\n")

@@ -22,7 +22,7 @@ local function saturate(color, amount)
     if d == 0 then return color end
     local hh = mx == r and 60 * ((g - b) / d % 6)
              or mx == g and 60 * ((b - r) / d + 2)
-             or mx == b and 60 * ((r - g) / d + 4)
+             or 60 * ((r - g) / d + 4)
     local ss, vv = d / mx, mx
     ss = math.min(1, ss * (1 + amount))
     vv = math.min(1, vv + (1 - vv) * amount * 0.6)
@@ -55,7 +55,7 @@ theme.deco_fg     = saturate(xrdb.foreground, 0.5)
 -- Theme
 ----------
 
--- Load ~/.Xresources colors (SÓLIDOS - sin transparencia)
+-- Load ~/.Xresources colors
 theme.xbackground = "#0a141973"
 theme.xforeground = xrdb.foreground
 theme.xcolor0 = "#1c252c73"
@@ -184,7 +184,7 @@ theme.pop_fg = theme.xforeground
 theme.pop_border_radius = theme.border_radius
 
 -- Tooltip
-theme.tooltip_bg = "#0a141980"
+theme.tooltip_bg = "#0a1419cc"
 theme.tooltip_height = dpi(245)
 theme.tooltip_width = dpi(200)
 theme.tooltip_gap = dpi(10)

@@ -155,6 +155,21 @@ function helpers.pango_escape(s)
                         {["&"] = "&amp;", ["<"] = "&lt;", [">"] = "&gt;"}))
 end
 
+function helpers.brand_watermark(opacity)
+    if not beautiful.brand_logo then return nil end
+    return wibox.widget{
+        image = beautiful.brand_logo,
+        resize = true,
+        upscale = false,
+        opacity = opacity or 0.7,
+        halign = "center",
+        valign = "center",
+        forced_width = dpi(200),
+        forced_height = dpi(200),
+        widget = wibox.widget.imagebox
+    }
+end
+
 function helpers.vertical_pad(height)
     return wibox.widget {
         forced_height = height,

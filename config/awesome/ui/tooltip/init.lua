@@ -4,6 +4,10 @@ local beautiful = require("beautiful")
 local xresources = require("beautiful.xresources")
 local dpi = xresources.apply_dpi
 local wibox = require("wibox")
+require("wibox.layout.fixed")
+require("wibox.layout.align")
+require("wibox.layout.stack")
+require("wibox.layout.flex")
 local rubato = require("module.rubato")
 local helpers = require("helpers")
 local naughty = require("naughty")
@@ -37,6 +41,7 @@ end
 local M = {}
 
 function M.create(s)
+    local ok_tooltip, err_tooltip = xpcall(function()
     -- Battery
     -------------
 
@@ -181,7 +186,6 @@ function M.create(s)
         layout = wibox.layout.align.vertical
     }
 
-
     -- Separator
     ---------------
 
@@ -195,7 +199,6 @@ function M.create(s)
         right = dpi(5),
         widget = wibox.container.margin
     }
-
 
     -- Analog clock
     ------------------
@@ -264,15 +267,18 @@ function M.create(s)
             nil,
             {
                 uptime_text,
-                settings_bg,
-                spacing = dpi(5),
-                layout = wibox.layout.fixed.horizontal
+                nil,
+                {
+                    settings_bg,
+                    right = dpi(4),
+                    widget = wibox.container.margin
+                },
+                layout = wibox.layout.align.horizontal
             },
             layout = wibox.layout.align.vertical
         },
         layout = wibox.layout.align.horizontal
     }
-
 
     -- WiFi interactivo
     --------------------
@@ -609,12 +615,11 @@ function M.create(s)
 
     local wifi_boxed = create_boxed_widget(wifi_content, dpi(180), dpi(220), true)
 
-
     -- Stats tooltip (Wired)
     --------------------------
 
     local batt_boxed = create_boxed_widget(batt, dpi(50), dpi(110))
-    local uptime_boxed = create_boxed_widget(uptime_container, dpi(170), dpi(50), true)
+    local uptime_boxed = create_boxed_widget(uptime_container, dpi(180), dpi(52), true)
     local analog_clock_boxed = create_boxed_widget(analog_clock, dpi(110), dpi(110), true)
 
     -- Tooltip size
@@ -627,7 +632,7 @@ function M.create(s)
         height = tooltip_height,
         width = tooltip_width,
         shape = helpers.rrect(beautiful.tooltip_border_radius),
-        bg = beautiful.transparent,
+        bg = beautiful.tooltip_bg,
         ontop = true,
         visible = false
     })
@@ -639,7 +644,7 @@ function M.create(s)
             }
         })
 
-    stats_tooltip:setup {
+    local tooltip_content = wibox.widget{
         {
             {
                 {
@@ -668,6 +673,8 @@ function M.create(s)
         bg = beautiful.tooltip_bg,
         widget = wibox.container.background
     }
+
+    stats_tooltip:set_widget(tooltip_content)
 
     local inactivity_timer = gears.timer {
         timeout = 1,
@@ -739,6 +746,25 @@ function M.create(s)
         else
             s.stats_tooltip_show()
         end
+    end
+
+    end, function(err)
+        local f = io.open("/tmp/awesome-wibar-errors.log", "a")
+        if f then
+            f:write(os.date("%H:%M:%S") .. " TOOLTIP_TRACEBACK:\n")
+            f:write(debug.traceback(err, 3) .. "\n")
+            f:close()
+        end
+        return err
+    end) -- xpcall wrapper
+
+    if not ok_tooltip then
+        local f = io.open("/tmp/awesome-wibar-errors.log", "a")
+        if f then
+            f:write(os.date("%H:%M:%S") .. " TOOLTIP_CREATE ERROR: " .. tostring(err_tooltip) .. "\n")
+            f:close()
+        end
+        error(err_tooltip)
     end
 end
 

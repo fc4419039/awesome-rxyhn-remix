@@ -138,7 +138,7 @@ end
 local var_count = 0
 for i, m in pairs(time_char) do
     -- local text = helpers.colorize_text(m, "#162026")
-    local text = helpers.colorize_text(m, beautiful.lighter_bg .. "55")
+    local text = helpers.colorize_text(m, beautiful.lighter_bg:sub(1, 7) .. "55")
 
     var_count = var_count + 1
     local create_dummy_text = true
@@ -176,7 +176,7 @@ local function deactivate_word(w)
     for i, m in pairs(char_map[w]) do
         local text = m.text
 
-        m.markup = helpers.colorize_text(text, beautiful.lighter_bg .. "55")
+        m.markup = helpers.colorize_text(text, beautiful.lighter_bg:sub(1, 7) .. "55")
 
     end
 end

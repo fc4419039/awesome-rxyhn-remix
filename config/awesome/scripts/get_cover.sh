@@ -16,7 +16,7 @@ TARGET_PLAYER=${PLAYING_PLAYER:-$PLAYER}
 
 # Si no hay ningún reproductor abierto, salir
 if [ -z "$TARGET_PLAYER" ]; then
-        echo ""
+    echo "/ruta/a/una/imagen/por/defecto.png"
     exit 0
 fi
 
@@ -24,7 +24,7 @@ fi
 if [[ "$TARGET_PLAYER" == *"mpd"* ]]; then
     # Para MPD, extraemos la carátula usando ffmpeg o mpc (asumiendo que está en tu música)
     # Ajusta la ruta de tu librería de música si es necesario
-    MUSIC_DIR="$HOME/Music"
+    MUSIC_DIR="$HOME/Música"
     FILE=$(mpc current -f "%file%" 2>/dev/null)
 
     if [ -n "$FILE" ]; then
@@ -32,7 +32,7 @@ if [[ "$TARGET_PLAYER" == *"mpd"* ]]; then
         ffmpeg -y -i "$MUSIC_DIR/$FILE" -an -vcodec copy /tmp/mpd_cover.jpg &>/dev/null
         echo "/tmp/mpd_cover.jpg"
     else
-        echo ""
+        echo "/ruta/a/una/imagen/por/defecto.png"
     fi
 else
     # Para Spotify, Firefox (Youtube), etc., usamos la URL de mpris:artUrl
@@ -46,6 +46,6 @@ else
         curl -s "$ART_URL" -o /tmp/web_cover.jpg
         echo "/tmp/web_cover.jpg"
     else
-        echo ""
+        echo "/ruta/a/una/imagen/por/defecto.png"
     fi
 fi

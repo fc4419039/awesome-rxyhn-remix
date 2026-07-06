@@ -153,39 +153,41 @@ function M.create(s)
         dashboard_hide_timer:again()
     end)
 
-    dashboard:setup {
+    local content = wibox.widget{
         {
+            nil,
             {
-                nil,
                 {
                     {
-                        {
-                            profile,
-                            stats_boxed,
-                            layout = wibox.layout.fixed.vertical
-                        },
-                        {
-                            date_boxed,
-                            todo_boxed,
-                            weather_boxed,
-                            layout = wibox.layout.fixed.vertical
-                        },
-                        layout = wibox.layout.fixed.horizontal
+                        profile,
+                        stats_boxed,
+                        layout = wibox.layout.fixed.vertical
                     },
                     {
-                        music,
-                        media,
-                        layout = wibox.layout.fixed.horizontal
+                        date_boxed,
+                        todo_boxed,
+                        weather_boxed,
+                        layout = wibox.layout.fixed.vertical
                     },
-                    notifs_boxed,
-                    layout = wibox.layout.fixed.vertical
+                    layout = wibox.layout.fixed.horizontal
                 },
-                expand = "none",
-                layout = wibox.layout.align.horizontal
+                {
+                    music,
+                    media,
+                    layout = wibox.layout.fixed.horizontal
+                },
+                notifs_boxed,
+                layout = wibox.layout.fixed.vertical
             },
-            margins = dpi(5),
-            widget = wibox.container.margin
+            expand = "none",
+            layout = wibox.layout.align.horizontal
         },
+        margins = dpi(5),
+        widget = wibox.container.margin
+    }
+
+    dashboard:setup {
+        content,
         bg = beautiful.xbackground,
         shape = helpers.rrect(beautiful.dashboard_radius),
         widget = wibox.container.background

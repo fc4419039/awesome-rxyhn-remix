@@ -12,7 +12,7 @@
     rad-sm:                 10px;
 
     background-color:       transparent;
-    text-color:             @fg;
+    text-color:             var(fg);
 }
 
 window {
@@ -21,9 +21,9 @@ window {
     height:                 300px;
     location:               center;
     anchor:                 center;
-    border-radius:          @rad;
+    border-radius:          var(rad);
     border:                 1px;
-    border-color:           @accent;
+    border-color:           var(accent);
     background-color:       #0d0d1aF2;
 }
 
@@ -49,7 +49,7 @@ listview {
 
 element {
     padding:                10px 14px;
-    border-radius:          @rad-sm;
+    border-radius:          var(rad-sm);
     background-color:       transparent;
     cursor:                 pointer;
     border:                 1px;
@@ -62,13 +62,13 @@ element normal.normal {
 }
 
 element selected {
-    background-color:       @darker;
-    border-color:           @muted;
+    background-color:       var(darker);
+    border-color:           var(muted);
 }
 
 element selected.normal {
-    background-color:       @darker;
-    border-color:           @muted;
+    background-color:       var(darker);
+    border-color:           var(muted);
 }
 
 element-icon {
@@ -82,10 +82,10 @@ element-text {
     horizontal-align:       0;
     vertical-align:         0.5;
     background-color:       transparent;
-    text-color:             @fg;
+    text-color:             var(fg);
     font:                   "JetBrainsMono Nerd Font 11";
 }
 
 element selected element-text {
-    text-color:             @accent;
+    text-color:             var(accent);
 }

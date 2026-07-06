@@ -1,95 +1,132 @@
 @theme "/dev/null"
 
 * {
-    bg:                     #0d0d1a;
-    fg:                     #e2e8f0;
-    fg-dim:                 #94a3b8;
-    accent:                 #8b5cf6;
-    surface:                #1a1a2e;
-    darker:                 #141428;
-    muted:                  #3d3d5c;
-    rad:                    16px;
-    rad-sm:                 10px;
-
-    background-color:       transparent;
-    text-color:             @fg;
+    background: #0d0d1a;
+    foreground: #e2e8f0;
+    accent: #06b6d4;
+    surface: #1a1a2e;
+    darker: #141428;
+    muted: #3d3d5c;
+    rad: 24px;
+    rad-sm: 14px;
+    background-color: transparent;
+    text-color: var(foreground);
 }
 
 window {
-    transparency:           "real";
-    width:                  300px;
-    height:                 380px;
-    location:               center;
-    anchor:                 center;
-    border-radius:          @rad;
-    border:                 1px;
-    border-color:           @accent;
+    transparency: "real";
+    width: 300px;
+    height: 380px;
+    location: center;
+    anchor: center;
+    border-radius: var(rad);
+    border: 1px;
+    border-color: var(accent);
     background-color: #0d0d1ab3;
 }
 
 mainbox {
-    spacing:                0;
-    padding:                0;
-    children:               [listview];
+    children: [listview];
+    spacing: 0;
+    padding: 0;
 }
 
 inputbar {
-    enabled:                false;
+    enabled: false;
 }
 
 listview {
-    spacing:                4px;
-    padding:                14px;
-    scrollbar:              false;
-    columns:                1;
-    layout:                 vertical;
-    dynamic:                true;
-    cursor:                 pointer;
+    spacing: 4px;
+    padding: 14px;
+    dynamic: true;
+    columns: 1;
+    scrollbar: false;
+    layout: vertical;
+    cursor: pointer;
 }
 
 element {
-    padding:                8px 12px;
-    border-radius:          @rad-sm;
-    orientation:            horizontal;
-    cursor:                 pointer;
-    border:                 1px;
-    border-color:           transparent;
-    background-color:       transparent;
+    padding: 8px 12px;
+    border-radius: var(rad-sm);
+    background-color: transparent;
+    cursor: pointer;
+    border: 1px;
+    border-color: transparent;
 }
 
 element normal.normal {
-    background-color:       transparent;
-    border-color:           transparent;
+    background-color: transparent;
+    border-color: transparent;
 }
 
 element selected {
-    background-color:       @darker;
-    border-color:           @muted;
+    background-color: var(darker);
+    text-color: var(accent);
+    border-color: var(muted);
 }
 
 element selected.normal {
-    background-color:       @darker;
+    background-color: var(darker);
+    border-color: var(muted);
 }
 
 element-icon {
-    size:                   0px;
-    padding:                0;
-    background-color:       transparent;
+    size: 38px;
+    padding: 0 12px 0 0;
+    horizontal-align: 0;
+    vertical-align: 0.5;
+    background-color: transparent;
 }
 
 element-text {
-    padding:                8px 6px;
-    horizontal-align:       0;
-    vertical-align:         0.5;
-    background-color:       transparent;
-    text-color:             @fg;
-    font:                   "JetBrainsMono Nerd Font 11";
+    padding: 2px 0;
+    horizontal-align: 0;
+    vertical-align: 0.5;
+    background-color: transparent;
+    text-color: var(foreground);
+    font: "JetBrainsMono Nerd Font 11";
+    highlight: inherit;
+}
+
+element selected element-text {
+    text-color: var(accent);
 }
 
 element alternate.normal {
-    background-color:       transparent;
+    background-color: transparent;
+    border-color: transparent;
 }
 
 element selected.alternate {
-    background-color:       @darker;
+    background-color: var(darker);
+    border-color: var(muted);
+}
+
+element-icon, element-text {
+    background-color: transparent;
+}
+
+scrollbar {
+    handle-color: var(muted);
+    handle-width: 4px;
+    border-radius: 2px;
+}
+
+button {
+    background-color: var(darker);
+    text-color: var(foreground);
+    border-radius: var(rad-sm);
+    cursor: pointer;
+}
+
+button selected {
+    background-color: var(accent);
+    text-color: var(background);
+}
+
+error-message {
+    background-color: var(background);
+    text-color: var(accent);
+    border-radius: var(rad);
+    padding: 40px;
 }

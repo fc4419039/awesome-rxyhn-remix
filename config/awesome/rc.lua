@@ -60,10 +60,21 @@ end
 awful.spawn(gfs.get_configuration_dir() .. "configuration/autostart")
 awful.spawn(os.getenv("HOME") .. "/.config/awesome/scripts/notif-sink-setup.sh")
 local blur_state = io.open("/tmp/awesome-blur-mode", "r")
+local transparency_state = io.open("/tmp/awesome-transparency-mode", "r")
 local picom_cfg = os.getenv("HOME") .. "/.config/awesome/theme/picom.conf"
 if blur_state then
     picom_cfg = os.getenv("HOME") .. "/.config/awesome/theme/picom-blur.conf"
     blur_state:close()
+elseif transparency_state then
+    picom_cfg = os.getenv("HOME") .. "/.config/awesome/theme/picom-transparency.conf"
+    transparency_state:close()
+else
+    -- Sin state files → verificar si .codebak persiste (reinicio con efecto activo)
+    local codebak = io.open(os.getenv("HOME") .. "/.config/awesome/.codebak", "r")
+    if codebak then
+        codebak:close()
+        awful.spawn.with_shell(os.getenv("HOME") .. "/.config/awesome/scripts/reset-theme.sh")
+    end
 end
 run_once("picom --config " .. picom_cfg)
 awful.spawn("setxkbmap latam")

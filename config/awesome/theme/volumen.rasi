@@ -12,7 +12,7 @@
     purple:            #c678dd;
 
     background-color:  transparent;
-    text-color:        @fg;
+    text-color:        var(fg);
 }
 
 window {
@@ -21,9 +21,9 @@ window {
     location:          center;
     anchor:            center;
     border-radius:     16px;
-    background-color:  @bg;
+    background-color:  var(bg);
     border:            1px;
-    border-color:      @cyan;
+    border-color:      var(cyan);
     padding:           6px;
 }
 
@@ -38,11 +38,11 @@ inputbar {
 }
 
 message {
-    background-color:  @bg-alt;
+    background-color:  var(bg)-alt;
     border-radius:     10px;
     padding:           10px 14px;
     margin:           4px 4px 0 4px;
-    text-color:        @fg;
+    text-color:        var(fg);
     font:              "Iosevka Nerd Font Mono 11";
     horizontal-align:  0.5;
 }
@@ -60,14 +60,14 @@ element {
     padding:           8px 14px;
     border-radius:     10px;
     cursor:            pointer;
-    text-color:        @fg;
+    text-color:        var(fg);
     background-color:  transparent;
     font:              "Iosevka Nerd Font Mono 10";
 }
 
 element selected {
-    background-color:  @cyan;
-    text-color:        @bg;
+    background-color:  var(cyan);
+    text-color:        var(bg);
     font:              "Iosevka Nerd Font Mono 10";
 }
 

@@ -22,7 +22,7 @@ local function saturate(color, amount)
     if d == 0 then return color end
     local hh = mx == r and 60 * ((g - b) / d % 6)
              or mx == g and 60 * ((b - r) / d + 2)
-             or 60 * ((r - g) / d + 4)
+             or mx == b and 60 * ((r - g) / d + 4)
     local ss, vv = d / mx, mx
     ss = math.min(1, ss * (1 + amount))
     vv = math.min(1, vv + (1 - vv) * amount * 0.6)
@@ -55,10 +55,10 @@ theme.deco_fg     = saturate(xrdb.foreground, 0.5)
 -- Theme
 ----------
 
--- Load ~/.Xresources colors
-theme.xbackground = xrdb.background
+-- Load ~/.Xresources colors (SÓLIDOS - sin transparencia)
+theme.xbackground = "#0a141973"
 theme.xforeground = xrdb.foreground
-theme.xcolor0 = xrdb.color0
+theme.xcolor0 = "#1c252c73"
 theme.xcolor1 = xrdb.color1
 theme.xcolor2 = xrdb.color2
 theme.xcolor3 = xrdb.color3
@@ -74,8 +74,8 @@ theme.xcolor12 = xrdb.color12
 theme.xcolor13 = xrdb.color13
 theme.xcolor14 = xrdb.color14
 theme.xcolor15 = xrdb.color15
-theme.darker_bg = "#0a1419"
-theme.lighter_bg = "#162026"
+theme.darker_bg = "#0a141973"
+theme.lighter_bg = "#16202673"
 theme.dashboard_fg = "#666c79"
 theme.transparent = "#00000000"
 
@@ -87,6 +87,9 @@ theme.wallpaper = gears.surface.load_uncached(gfs.get_configuration_dir() .. "th
 
 -- Awesome Logo
 theme.awesome_logo = gears.surface.load_uncached(gfs.get_configuration_dir() .. "theme/assets/icons/awesome.png")
+
+-- Brand logo (watermark for menus)
+theme.brand_logo = gears.surface.load_uncached(gfs.get_configuration_dir() .. "theme/img/brand_logo.png")
 
 -- Notifications bell icon
 theme.notification_bell_icon = gears.surface.load_uncached(gfs.get_configuration_dir() .. "theme/assets/icons/notification-bell.png")
@@ -124,8 +127,8 @@ theme.fg_minimize = theme.xcolor0
 -- Borders
 theme.border_width = 2
 theme.oof_border_width = dpi(1)
-theme.border_normal = "#8b5cf6"
-theme.border_focus = "#8b5cf6"
+theme.border_normal = "#06b6d4"
+theme.border_focus = "#06b6d4"
 theme.widget_border_width = dpi(2)
 theme.widget_border_color = theme.darker_bg
 
@@ -181,7 +184,7 @@ theme.pop_fg = theme.xforeground
 theme.pop_border_radius = theme.border_radius
 
 -- Tooltip
-theme.tooltip_bg = theme.xbackground
+theme.tooltip_bg = "#0a141980"
 theme.tooltip_height = dpi(245)
 theme.tooltip_width = dpi(200)
 theme.tooltip_gap = dpi(10)
@@ -199,7 +202,7 @@ theme.prompt_fg = theme.xforeground
 
 -- dashboard
 theme.dashboard_width = dpi(280)
-theme.dashboard_box_bg = theme.lighter_bg
+theme.dashboard_box_bg = "#16202673"
 theme.dashboard_box_fg = theme.dashboard_fg
 
 -- Playerctl
@@ -245,7 +248,7 @@ theme.useless_gap = dpi(5)
 
 -- Wibar
 theme.wibar_width = dpi(39)
-theme.wibar_bg = theme.xbackground
+theme.wibar_bg = "#0a1419cc"
 theme.wibar_position = "left"
 
 -- Tabs

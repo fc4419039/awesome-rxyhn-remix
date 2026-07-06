@@ -43,31 +43,35 @@ local pop = wibox({
     height = beautiful.pop_size,
     width = beautiful.pop_size,
     shape = helpers.rrect(beautiful.pop_border_radius - 1),
-    bg = beautiful.transparent,
+    bg = "#0a141999",
     ontop = true,
     visible = false
 })
 
-pop:setup {
+local pop_content = wibox.widget{
     {
         {
-            {
-                layout = wibox.layout.align.horizontal,
-                expand = 'none',
-                nil,
-                pop_icon,
-                nil
-            },
-            layout = wibox.layout.fixed.vertical
+            layout = wibox.layout.align.horizontal,
+            expand = 'none',
+            nil,
+            pop_icon,
+            nil
         },
-        {
-            pop_bar,
-            margins = dpi(28),
-            widget = wibox.container.margin
-        },
-        layout = wibox.layout.align.vertical
+        layout = wibox.layout.fixed.vertical
     },
-    bg = "#0a1419cc",
+    {
+        pop_bar,
+        margins = dpi(28),
+        widget = wibox.container.margin
+    },
+    layout = wibox.layout.align.vertical
+}
+
+local pop_stack = pop_content
+
+pop:setup {
+    pop_stack,
+    bg = "#0a141999",
     shape = helpers.rrect(beautiful.pop_border_radius),
     widget = wibox.container.background
 }
@@ -164,19 +168,22 @@ local layout_list = awful.widget.layoutlist {
     }
 }
 
+local lp_list = wibox.widget{
+    {layout_list, margins = dpi(24), widget = wibox.container.margin},
+    bg = "#0a141999",
+    shape = helpers.rrect(beautiful.border_radius),
+    border_color = beautiful.widget_border_color,
+    border_width = beautiful.widget_border_width,
+    widget = wibox.container.background
+}
+local lp_widget = lp_list
+
 local layout_popup = awful.popup {
-    widget = wibox.widget {
-        {layout_list, margins = dpi(24), widget = wibox.container.margin},
-        bg = "#0a1419cc",
-        shape = helpers.rrect(beautiful.border_radius),
-        border_color = beautiful.widget_border_color,
-        border_width = beautiful.widget_border_width,
-        widget = wibox.container.background
-    },
+    widget = lp_widget,
     placement = awful.placement.centered,
     ontop = true,
     visible = false,
-    bg = "#00000000"
+    bg = "#0a141999"
 }
 
 function gears.table.iterate_value(t, value, step_size, filter, start_at)

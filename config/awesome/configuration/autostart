@@ -15,6 +15,8 @@ start mpd-mpris # add playerctl support to mpd
 PICOM_CONF="$HOME/.config/awesome/theme/picom.conf"
 if [ -f /tmp/awesome-blur-mode ]; then
     PICOM_CONF="$HOME/.config/awesome/theme/picom-blur.conf"
+elif [ -f /tmp/awesome-transparency-mode ]; then
+    PICOM_CONF="$HOME/.config/awesome/theme/picom-transparency.conf"
 fi
 start picom -b --dbus --config "$PICOM_CONF"
 
