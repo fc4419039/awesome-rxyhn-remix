@@ -124,8 +124,15 @@ screen.connect_signal("request::desktop_decoration", function(s)
         end
     end
 
-    -- Si ya existe wibar, salir (evita recreación en hotplug)
-    if s.mywibar then return end
+    -- Si ya existe wibar funcional, salir (evita recreación en hotplug)
+    if s.mywibar then
+        local ok, w = pcall(s.mywibar.get_widget, s.mywibar)
+        if ok and w then return end
+        -- Wibar existe pero no tiene widgets → limpiar y recrear
+        pcall(function() s.mywibar.visible = false end)
+        pcall(function() s.mywibar:remove() end)
+        s.mywibar = nil
+    end
 
     local ok_init, err_init = pcall(function()
 
@@ -454,10 +461,7 @@ screen.connect_signal("request::desktop_decoration", function(s)
                 if not still_full then
                     s.mywibar.visible = true
                     s.wibar_visible = true
-                    local p = { right = dpi(0), top = dpi(15), bottom = dpi(15) }
-                    p.left = dpi(10)
-                    s.padding = p
-                    awful.layout.arrange(s)
+                    wibar_update_padding(true)
                 end
             end
         end)
@@ -533,28 +537,30 @@ screen.connect_signal("request::desktop_decoration", function(s)
         },
     }
 
-    s.mywibar:setup {
+    s._wibar_setup = {
+        {
+            layout = wibox.layout.align.vertical,
+            expand = "none",
             {
-                layout = wibox.layout.align.vertical,
-                expand = "none",
-                {
-                    awesome_icon,
-                    taglist,
-                    spacing = dpi(6),
-                    layout = wibox.layout.fixed.vertical
-                },
-                nil,
-                {
-                    stats,
-                    notif_center_button,
-                    layoutbox,
-                    spacing = dpi(5),
-                    layout = wibox.layout.fixed.vertical
-                }
+                awesome_icon,
+                taglist,
+                spacing = dpi(6),
+                layout = wibox.layout.fixed.vertical
             },
-            margins = dpi(6),
-            widget = wibox.container.margin
-        }
+            nil,
+            {
+                stats,
+                notif_center_button,
+                layoutbox,
+                spacing = dpi(5),
+                layout = wibox.layout.fixed.vertical
+            }
+        },
+        margins = dpi(6),
+        widget = wibox.container.margin
+    }
+
+    s.mywibar:setup(s._wibar_setup)
 
     end) -- pcall wrapper
 
@@ -564,6 +570,14 @@ screen.connect_signal("request::desktop_decoration", function(s)
             log_init:write(os.date("%H:%M:%S") .. " WIBAR ERROR: " .. tostring(err_init) .. "\n")
             log_init:close()
         end
+        -- Limpiar wibar parcialmente creado
+        pcall(function()
+            if s.mywibar then
+                s.mywibar.visible = false
+                s.mywibar:remove()
+                s.mywibar = nil
+            end
+        end)
         return
     end
 
@@ -574,21 +588,35 @@ screen.connect_signal("request::desktop_decoration", function(s)
     end
 
     -- Timer de salud: verifica cada 30s si la barra tiene widgets
+    local health_attempts = 0
     local health_timer = gears.timer.start_new(30, function()
         pcall(function()
-            if s and s.mywibar and s.mywibar.visible then
-                local ok = pcall(function()
-                    local w = s.mywibar:get_widget() or s.mywibar._widget
-                    return w ~= nil
-                end)
-                if not ok then
-                    local log = io.open("/tmp/awesome-wibar-errors.log", "a")
-                    if log then
-                        log:write(os.date("%H:%M:%S") .. " Wibar lost widgets, restarting...\n")
-                        log:close()
-                    end
-                    awesome.restart()
+            if not (s and s.mywibar) then return true end
+            local ok, w = pcall(s.mywibar.get_widget, s.mywibar)
+            if ok and w then health_attempts = 0; return true end
+            ok, w = pcall(function() return s.mywibar._widget end)
+            if ok and w then health_attempts = 0; return true end
+            -- Si llegamos aquí, la barra perdió sus widgets
+            health_attempts = health_attempts + 1
+            local log = io.open("/tmp/awesome-wibar-errors.log", "a")
+            if log then
+                log:write(os.date("%H:%M:%S") .. " Wibar lost widgets (attempt " .. health_attempts .. ")\n")
+                log:close()
+            end
+            -- Intentar recuperar la barra re-configurándola
+            pcall(function()
+                if s._wibar_setup then
+                    s.mywibar:setup(s._wibar_setup)
                 end
+            end)
+            -- Si falla 3 veces seguidas, reiniciar
+            if health_attempts >= 3 then
+                local log2 = io.open("/tmp/awesome-wibar-errors.log", "a")
+                if log2 then
+                    log2:write(os.date("%H:%M:%S") .. " Wibar recovery failed 3 times, restarting...\n")
+                    log2:close()
+                end
+                awesome.restart()
             end
         end)
         return true

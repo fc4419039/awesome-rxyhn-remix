@@ -51,10 +51,15 @@ end)
 
 -- Screen Padding and Tags
 screen.connect_signal("request::desktop_decoration", function(s)
-    -- Screen padding
-    s.padding = {left = dpi(40), right = dpi(15), top = dpi(15), bottom = dpi(15)}
-    -- Each screen has its own tag table.
-    awful.tag({"1", "2", "3", "4", "5"}, s, awful.layout.layouts[1])
+    -- La barra ajusta left/right padding dinámicamente en ui/bar/init.lua
+    -- Este padding se aplica solo como valor inicial antes que la barra lo sobreescriba
+    if not s.padding then
+        s.padding = {left = dpi(40), right = dpi(15), top = dpi(15), bottom = dpi(15)}
+    end
+    -- Each screen has its own tag table (solo si no tiene tags aún)
+    if #s.tags == 0 then
+        awful.tag({"1", "2", "3", "4", "5"}, s, awful.layout.layouts[1])
+    end
 end)
 
 -- Wallpapers (lo establece ~/.config/cambiar_fondo.sh)
