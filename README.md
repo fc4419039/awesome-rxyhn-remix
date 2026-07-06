@@ -18,7 +18,7 @@
 <br>
 
 <div align="center">
-  <img src=".github/assets/awesome.png" alt="Rice Preview" width="85%" style="border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.5);">
+  <img src=".github/assets/aw1.png" alt="Rice Preview" width="85%" style="border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.5);">
 </div>
 
 <br>
