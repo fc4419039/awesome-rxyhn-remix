@@ -26,6 +26,7 @@ config/awesome/ui/notifs/notif-center/dont-disturb/disturb_status
 
 # Backups del toggle-blur.sh
 config/awesome/.codebak/
+*.backup
 
 # Si no quieres que otros descarguen tus imágenes (descomentar)
 # fondos/
