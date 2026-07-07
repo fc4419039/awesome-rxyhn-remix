@@ -38,6 +38,7 @@ end
 -- Variables globales por pantalla (para los handlers de señal que actualizan widgets)
 local screen_batts = setmetatable({}, {__mode = "k"})
 local screen_chargers = setmetatable({}, {__mode = "k"})
+local screen_nets = setmetatable({}, {__mode = "k"})
 
 -- Función de lerp para color de batería
 local function lerp_color(a, b, t)
@@ -68,6 +69,9 @@ awesome.connect_signal("signal::battery", function(value)
                 data.batt.colors = {fill_color}
                 data.batt.value = value
             end
+            if data and data.pct then
+                data.pct.markup = helpers.colorize_text(value, beautiful.deco_cyan)
+            end
         end)
     end
 end)
@@ -77,6 +81,25 @@ awesome.connect_signal("signal::charger", function(state)
         pcall(function()
             if data and data.charge_icon and data.charge_icon.visible ~= nil then
                 data.charge_icon.visible = state
+            end
+        end)
+    end
+end)
+
+awesome.connect_signal("signal::network_speed", function(dl_bytes, ul_bytes)
+    local function fmt(b)
+        if b == 0 then return "0"
+        elseif b < 1024 then return string.format("%.0fB", b)
+        elseif b < 1024 * 10 then return string.format("%.1fK", b / 1024)
+        elseif b < 1024 * 1024 then return string.format("%.0fK", b / 1024)
+        else return string.format("%.1fM", b / 1024 / 1024)
+        end
+    end
+    local color = beautiful.deco_cyan
+    for scr, data in pairs(screen_nets) do
+        pcall(function()
+            if data and data.dl then
+                data.dl.markup = helpers.colorize_text("↓ " .. fmt(dl_bytes), color)
             end
         end)
     end
@@ -124,6 +147,17 @@ screen.connect_signal("request::desktop_decoration", function(s)
         end
     end
 
+    -- GC anchoring: evitar que los widgets sean recolectados
+    s.anchors = s.anchors or {}
+    s.anchors.widgets = {}
+
+    local function anchor(k, v)
+        if s.anchors then
+            s.anchors.widgets[k] = v
+        end
+        return v
+    end
+
     -- Si ya existe wibar funcional, salir (evita recreación en hotplug)
     if s.mywibar then
         local ok, w = pcall(s.mywibar.get_widget, s.mywibar)
@@ -150,6 +184,7 @@ screen.connect_signal("request::desktop_decoration", function(s)
     }
 
     helpers.add_hover_cursor(awesome_icon, "hand2")
+    anchor("awesome_icon", awesome_icon)
 
     -- Battery
     -------------
@@ -159,8 +194,17 @@ screen.connect_signal("request::desktop_decoration", function(s)
         widget = wibox.container.background,
         visible = false
     }
+    anchor("charge_icon", charge_icon)
 
-    local batt = wibox.widget{
+    local batt_pct_text = wibox.widget{
+        font = beautiful.font_name .. "bold 8",
+        align = "center",
+        valign = "center",
+        markup = helpers.colorize_text("50", beautiful.deco_cyan),
+        widget = wibox.widget.textbox
+    }
+
+    local batt_arc = wibox.widget{
         charge_icon,
         colors = {beautiful.xcolor2},
         bg = beautiful.xcolor8 .. "88",
@@ -173,7 +217,17 @@ screen.connect_signal("request::desktop_decoration", function(s)
         widget = wibox.container.arcchart
     }
 
-    screen_batts[s] = {batt = batt}
+    local batt = wibox.widget{
+        batt_arc,
+        {
+            batt_pct_text,
+            widget = wibox.container.place
+        },
+        layout = wibox.layout.stack
+    }
+    anchor("batt", batt)
+
+    screen_batts[s] = {batt = batt_arc, pct = batt_pct_text}
     screen_chargers[s] = {charge_icon = charge_icon}
 
     -- Time
@@ -186,6 +240,7 @@ screen.connect_signal("request::desktop_decoration", function(s)
         valign = "center",
         widget = wibox.widget.textclock
     }
+    anchor("hour", hour)
 
     local min = wibox.widget{
         font = beautiful.font_name .. "bold 12",
@@ -194,6 +249,7 @@ screen.connect_signal("request::desktop_decoration", function(s)
         valign = "center",
         widget = wibox.widget.textclock
     }
+    anchor("min", min)
 
     local clock = wibox.widget{
         {
@@ -211,6 +267,18 @@ screen.connect_signal("request::desktop_decoration", function(s)
         shape = helpers.rrect(beautiful.bar_radius),
         widget = wibox.container.background
     }
+    anchor("clock", clock)
+
+    -- Network speed widgets
+    local net_dl = wibox.widget{
+        font = beautiful.font_name .. "bold 7",
+        align = "center",
+        valign = "center",
+        markup = helpers.colorize_text("↓ 0", beautiful.xcolor8),
+        widget = wibox.widget.textbox
+    }
+    anchor("net_dl", net_dl)
+    screen_nets[s] = {dl = net_dl}
 
     -- Stats
     -----------
@@ -226,6 +294,7 @@ screen.connect_signal("request::desktop_decoration", function(s)
         shape = helpers.rrect(beautiful.bar_radius),
         widget = wibox.container.background
     }
+    anchor("stats", stats)
 
     -- Crear dashboard, tooltip y system menu por pantalla
     local ok_dash, err_dash = pcall(function() require("ui.dashboard").create(s) end)
@@ -271,6 +340,7 @@ screen.connect_signal("request::desktop_decoration", function(s)
         visible = false
     })
     notif_center.y = dpi(25)
+    anchor("notif_center", notif_center)
 
     local slide = rubato.timed{
         pos = s.geometry.x + dpi(-280),
@@ -281,6 +351,7 @@ screen.connect_signal("request::desktop_decoration", function(s)
         awestore_compat = true,
         subscribed = function(pos) notif_center.x = pos end
     }
+    anchor("slide", slide)
 
     local notif_center_status = false
 
@@ -367,6 +438,7 @@ screen.connect_signal("request::desktop_decoration", function(s)
         end)
     ))
     helpers.add_hover_cursor(notif_center_button, "hand2")
+    anchor("notif_center_button", notif_center_button)
 
     -- Setup wibar
     -----------------
@@ -388,6 +460,7 @@ screen.connect_signal("request::desktop_decoration", function(s)
         margins = {bottom = dpi(7), left = dpi(6), right = dpi(6)},
         widget = wibox.container.margin
     }
+    anchor("layoutbox", layoutbox)
 
     s.mywibar = awful.wibar({
         type = "dock",
@@ -478,6 +551,7 @@ screen.connect_signal("request::desktop_decoration", function(s)
         bg = beautiful.xcolor0,
         widget = wibox.container.background
     }
+    anchor("taglist", taglist)
 
     -- Tasklist (client icons)
     local tasklist_buttons = gears.table.join(
@@ -536,6 +610,7 @@ screen.connect_signal("request::desktop_decoration", function(s)
             end,
         },
     }
+    anchor("mytasklist", s.mytasklist)
 
     s._wibar_setup = {
         {
@@ -549,6 +624,7 @@ screen.connect_signal("request::desktop_decoration", function(s)
             },
             nil,
             {
+                net_dl,
                 stats,
                 notif_center_button,
                 layoutbox,

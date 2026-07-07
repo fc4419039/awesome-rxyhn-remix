@@ -38,8 +38,8 @@ local music_art_container = wibox.widget {
 local filter_color = {
     type = 'linear',
     from = {0, 0},
-    to = {0, 120},
-    stops = {{0, beautiful.dashboard_box_bg .. "cc"}, {1, beautiful.dashboard_box_bg}}
+    to = {0, 115},
+    stops = {{0, beautiful.dashboard_box_bg:sub(1, 7) .. "00"}, {1, beautiful.dashboard_box_bg:sub(1, 7) .. "99"}}
 }
 
 local music_art_filter = wibox.widget {

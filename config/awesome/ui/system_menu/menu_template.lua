@@ -132,7 +132,7 @@ local function create_menu(s, style)
         }
     end
 
-    local count_rows = 8
+    local count_rows = 9
     local menu_h = count_rows * btn_h + (count_rows - 1) * row_spacing + margin * 2
 
     local menu = wibox({
@@ -269,6 +269,11 @@ local function create_menu(s, style)
         awful.spawn.with_shell(terminal .. " -e " .. opencode_bin)
     end)
 
+    local resources_btn = create_btn("", "Resources", beautiful.xcolor2, function()
+        hide()
+        require("ui.widgets.resources").toggle()
+    end)
+
     local powermenu_btn = create_btn("⏻", "Power", beautiful.xcolor1, function()
         hide()
         awful.spawn.with_shell(os.getenv("HOME") .. "/.config/awesome/scripts/powermenu.sh")
@@ -282,7 +287,7 @@ local function create_menu(s, style)
         row(accent_btn, titlebar_btn),
         row(border_btn, sddm_btn),
         row(apps_btn, opencode_btn),
-        row(powermenu_btn),
+        row(resources_btn, powermenu_btn),
         spacing = row_spacing,
         layout = wibox.layout.fixed.vertical
     }

@@ -66,7 +66,7 @@ local music   = require("ui.dashboard.music")
 local media   = require("ui.dashboard.mediakeys")
 local time    = require("ui.dashboard.time")
 local date    = require("ui.dashboard.date")
-local todo    = require("ui.dashboard.todo")
+local disk    = require("ui.dashboard.disk")
 local weather = require("ui.dashboard.weather")
 local stats   = require("ui.dashboard.stats")
 local notifs  = require("ui.dashboard.notifs")
@@ -82,7 +82,7 @@ function M.create(s)
 
     local time_boxed    = create_boxed_widget(centered_widget(time), dpi(250), dpi(90), beautiful.transparent)
     local date_boxed    = create_boxed_widget(date, dpi(120), dpi(50), beautiful.dashboard_box_bg)
-    local todo_boxed    = create_boxed_widget(todo, dpi(120), dpi(120), beautiful.dashboard_box_bg)
+    local disk_boxed    = create_boxed_widget(disk, dpi(120), dpi(120), beautiful.dashboard_box_bg)
     local weather_boxed = create_boxed_widget(weather, dpi(120), dpi(120), beautiful.dashboard_box_bg)
     local stats_boxed   = create_boxed_widget(stats, dpi(115), dpi(185), beautiful.dashboard_box_bg)
     local notifs_boxed  = create_boxed_widget(notifs, dpi(245), dpi(185), beautiful.dashboard_box_bg)
@@ -165,7 +165,7 @@ function M.create(s)
                     },
                     {
                         date_boxed,
-                        todo_boxed,
+                        disk_boxed,
                         weather_boxed,
                         layout = wibox.layout.fixed.vertical
                     },
