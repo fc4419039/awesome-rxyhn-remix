@@ -7,6 +7,25 @@ local helpers = require("helpers")
 
 local desktop_widget = {}
 
+local function unaccent(str)
+    local map = {
+        [0xC1] = "A", [0xC9] = "E", [0xCD] = "I", [0xD3] = "O", [0xDA] = "U",
+        [0xC0] = "A", [0xC8] = "E", [0xCC] = "I", [0xD2] = "O", [0xD9] = "U",
+        [0xC2] = "A", [0xCA] = "E", [0xCE] = "I", [0xD4] = "O", [0xDB] = "U",
+        [0xC3] = "A", [0xD5] = "O", [0xC7] = "C", [0xD1] = "N",
+        [0xE1] = "a", [0xE9] = "e", [0xED] = "i", [0xF3] = "o", [0xFA] = "u",
+        [0xE0] = "a", [0xE8] = "e", [0xEC] = "i", [0xF2] = "o", [0xF9] = "u",
+        [0xE2] = "a", [0xEA] = "e", [0xEE] = "i", [0xF4] = "o", [0xFB] = "u",
+        [0xE3] = "a", [0xF5] = "o", [0xE7] = "c", [0xF1] = "n",
+    }
+    local chars = {}
+    for codepoint in str:gmatch(utf8.charpattern) do
+        local cp = utf8.codepoint(codepoint)
+        chars[#chars+1] = map[cp] or codepoint
+    end
+    return table.concat(chars)
+end
+
 local function create_widget(s)
     local screen_geo = s.geometry
 
@@ -65,13 +84,13 @@ local function create_widget(s)
     end
 
     local function render_all()
-        local ds = math.max(8, math.floor(16 * current_scale + 0.5))
+        local ds = math.max(6, math.floor(12 * current_scale + 0.5))
         local das = math.max(4, math.floor(5 * current_scale + 0.5))
         local ts = math.max(4, math.floor(5 * current_scale + 0.5))
 
-        local day = string.upper(os.date("%A"))
+        local day = string.upper(unaccent(os.date("%A")))
         day = day:gsub(".", "%1 "):gsub(" $", "")
-        day_w:set_markup_silently("<span font='Anurati " .. ds .. "' foreground='" .. text_color .. "' letter_spacing='1200'>" .. day .. "</span>")
+        day_w:set_markup_silently("<span font='Anurati " .. ds .. "' foreground='" .. text_color .. "' letter_spacing='400'>" .. day .. "</span>")
         date_w:set_markup_silently("<span font='Quicksand Light " .. das .. "' foreground='" .. text_color .. "'>" .. os.date("%d %B %Y") .. "</span>")
         date_w.visible = show_date
         time_w:set_markup_silently("<span font='Quicksand Light " .. ts .. "' foreground='" .. text_color .. "'>- " .. os.date("%I:%M %p") .. " -</span>")

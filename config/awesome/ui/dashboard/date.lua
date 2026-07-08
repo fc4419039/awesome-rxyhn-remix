@@ -17,14 +17,14 @@ local helpers = require("helpers")
 
 local date_day = wibox.widget{
     font = beautiful.font_name .. "medium 8",
-    format = helpers.colorize_text("%A", beautiful.xforeground .. "c6"),
+    format = "%A",
     valign = "center",
     widget = wibox.widget.textclock
 }
 
 local date_month = wibox.widget{
     font = beautiful.font_name .. "medium 11",
-    format = "%d %B",
+    format = "%d de %B",
     valign = "center",
     widget = wibox.widget.textclock
 }
