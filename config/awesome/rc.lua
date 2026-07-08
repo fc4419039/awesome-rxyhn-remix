@@ -95,7 +95,7 @@ awful.spawn(os.getenv("HOME") .. "/.config/cambiar_fondo.sh")
 -- Temperatura de color ligeramente fría (7000K)
 awful.spawn(os.getenv("HOME") .. "/.config/awesome/scripts/color_temp.sh")
 
-os.setlocale("es_MX.utf8")
+os.setlocale(os.getenv("LANG") or "")
 
 -- Auto-detectar monitores al inicio
 awful.spawn.with_shell("autorandr --change")
