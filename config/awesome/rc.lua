@@ -126,7 +126,7 @@ gears.timer({
     call_now = false,
     callback = function()
         awful.spawn.easy_async_with_shell(
-            "pactl list sinks short 2>/dev/null | grep -q notifications || "
+            "wpctl status 2>/dev/null | grep -q notifications || "
             .. os.getenv("HOME") .. "/.config/awesome/scripts/notif-sink-setup.sh",
             function() end
         )

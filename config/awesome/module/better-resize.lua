@@ -12,6 +12,7 @@ local function mouse_resize_handler(m, c)
     local x, y = start.x, start.y
     local wa = m(c.screen.workarea)
     local idx = awful.client.idx(c)
+    if not idx then return false end
     local c_above, c_below
     local idx_above, idx_below
     local wfact_above, wfact_below

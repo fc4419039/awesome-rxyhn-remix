@@ -69,9 +69,9 @@ PKGS="
     wireless_tools jq inotify-tools polkit-gnome xdotool xclip maim
     brightnessctl alsa-utils alsa-tools pipewire pipewire-pulse wireplumber
     qt5-imageformats qt6-imageformats
-    playerctl spotify onlyoffice-bin mpd ncmpcpp mpd-mpris blueman pasystray
+    playerctl spotify mpd ncmpcpp mpd-mpris blueman pasystray
     touchegg redshift networkmanager bluez libnotify curl ffmpeg gpick
-    imagemagick thunar firefox krita xorg-xrdb yad
+    imagemagick thunar firefox xorg-xrdb yad xcolor-pick
     nerd-fonts-jetbrains-mono ttf-iosevka-nerd ttf-font-awesome ttf-material-design-icons ttf-weather-icons
     zsh-syntax-highlighting zsh-autosuggestions zsh-sudo zoxide feh zsh neovim
     btop lsd bat python-gobject python-pip python-pyqt5 pipewire-alsa

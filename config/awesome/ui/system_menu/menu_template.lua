@@ -132,7 +132,7 @@ local function create_menu(s, style)
         }
     end
 
-    local count_rows = 9
+    local count_rows = 10
     local menu_h = count_rows * btn_h + (count_rows - 1) * row_spacing + margin * 2
 
     local menu = wibox({
@@ -274,6 +274,19 @@ local function create_menu(s, style)
         require("ui.widgets.resources").toggle()
     end)
 
+    local function toggle_osd_widgets()
+        for s in screen do
+            if s.datetime_widget then
+                s.datetime_widget.visible = not s.datetime_widget.visible
+            end
+        end
+    end
+
+    local widgets_btn = create_btn("", "Widgets", beautiful.xcolor3, function()
+        hide()
+        toggle_osd_widgets()
+    end)
+
     local powermenu_btn = create_btn("⏻", "Power", beautiful.xcolor1, function()
         hide()
         awful.spawn.with_shell(os.getenv("HOME") .. "/.config/awesome/scripts/powermenu.sh")
@@ -288,6 +301,7 @@ local function create_menu(s, style)
         row(border_btn, sddm_btn),
         row(apps_btn, opencode_btn),
         row(resources_btn, powermenu_btn),
+        row(widgets_btn),
         spacing = row_spacing,
         layout = wibox.layout.fixed.vertical
     }

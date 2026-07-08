@@ -1,16 +1,37 @@
 #!/usr/bin/env bash
+# Setup script for system_sink and notifications sinks + loopbacks
+# Also manages the notification-router.sh process
 
 SYSTEM_SINK_NAME="system_sink"
 SYSTEM_SINK_DESC="Sistema"
 NOTIF_SINK_NAME="notifications"
 NOTIF_SINK_DESC="Notificaciones"
 
+ROUTER_SCRIPT="${HOME}/.config/awesome/scripts/notification-router.sh"
+ROUTER_PID_FILE="/tmp/notification-router.pid"
+
+# Function to kill existing router process
+kill_existing_router() {
+    if [ -f "$ROUTER_PID_FILE" ]; then
+        local old_pid=$(cat "$ROUTER_PID_FILE" 2>/dev/null)
+        if [ -n "$old_pid" ] && kill -0 "$old_pid" 2>/dev/null; then
+            kill "$old_pid" 2>/dev/null
+            sleep 0.5
+            # Force kill if still alive
+            if kill -0 "$old_pid" 2>/dev/null; then
+                kill -9 "$old_pid" 2>/dev/null
+            fi
+        fi
+    fi
+    # Also kill any other instances by name (fallback)
+    pkill -f "notification-router.sh" 2>/dev/null
+}
+
 # 1. Obtener el sink físico (hardware)
 HARDWARE_SINK=$(pactl list sinks short 2>/dev/null | awk '/alsa_output/ || /bluez/ || /alsa_/ {print $2; exit}')
 
 if [ -z "$HARDWARE_SINK" ]; then
   echo "ERROR: No se encontró sink de hardware" >&2
-  # Reintentar en 2 segundos por si pipewire-pulse no está listo
   sleep 2
   HARDWARE_SINK=$(pactl list sinks short 2>/dev/null | awk '/alsa_output/ || /bluez/ || /alsa_/ {print $2; exit}')
   if [ -z "$HARDWARE_SINK" ]; then
@@ -55,7 +76,6 @@ pactl list sink-inputs short 2>/dev/null | awk '{print $1}' | while read -r id; 
     }
   ')
   if [ "$sink_id" = "$HARDWARE_SINK" ]; then
-    # No mover el loopback de system_sink ni de notifications
     owner_mod=$(pactl list sink-inputs 2>/dev/null | awk -v id="$id" '
       /^Sink Input #/ {
         s = $0; sub(/^Sink Input #/, "", s); sub(/:$/, "", s); gsub(/[ \t]/, "", s)
@@ -65,7 +85,6 @@ pactl list sink-inputs short 2>/dev/null | awk '{print $1}' | while read -r id; 
         gsub(/.*Owner Module: /, "", $0); print $0; exit
       }
     ')
-    # Saltar loopbacks (no tienen clientId normal y son internos)
     is_loopback=$(pactl list sink-inputs 2>/dev/null | awk -v id="$id" '
       /^Sink Input #/ {
         s = $0; sub(/^Sink Input #/, "", s); sub(/:$/, "", s); gsub(/[ \t]/, "", s)
@@ -88,19 +107,16 @@ if ! pactl list sinks short 2>/dev/null | awk '{print $2}' | grep -qx "$NOTIF_SI
 fi
 
 # 7. Loopback notifications → hardware (NUNCA a @DEFAULT_SINK@)
-#    Primero limpiar loopbacks viejos de notifications que apunten a otro lado
 pactl list modules short 2>/dev/null | \
   grep "module-loopback" | \
   grep "source=${NOTIF_SINK_NAME}.monitor" | \
   while read -r mod_id rest; do
-    # Verificar si apunta al hardware o a otro sink
     if echo "$rest" | grep -qv "sink=${HARDWARE_SINK}"; then
       pactl unload-module "$mod_id" 2>/dev/null || true
       echo "Limpiado loopback viejo de $NOTIF_SINK_NAME (module $mod_id)"
     fi
   done
 
-# Crear loopback nuevo si no existe al hardware
 EXISTING_NOTIF_LOOPBACK=$(pactl list modules short 2>/dev/null | \
   grep "module-loopback" | \
   grep "source=${NOTIF_SINK_NAME}.monitor.*sink=${HARDWARE_SINK}" | \
@@ -117,11 +133,12 @@ fi
 # 8. Asegurar volumen del hardware al maximo
 pactl set-sink-volume "$HARDWARE_SINK" 100% 2>/dev/null || true
 
-# 9. Lanzar el router de notificaciones si no está corriendo
-ROUTER_SCRIPT="${HOME}/.config/awesome/scripts/notification-router.sh"
+# 9. Matar router anterior y lanzar uno nuevo
+kill_existing_router
+
 if [ -x "$ROUTER_SCRIPT" ]; then
-  if ! pgrep -f "$ROUTER_SCRIPT" > /dev/null 2>&1; then
-    nohup "$ROUTER_SCRIPT" > /dev/null 2>&1 &
-    echo "Lanzado notification-router.sh"
-  fi
+  nohup "$ROUTER_SCRIPT" > /dev/null 2>&1 &
+  ROUTER_PID=$!
+  echo "$ROUTER_PID" > "$ROUTER_PID_FILE"
+  echo "Lanzado notification-router.sh (PID: $ROUTER_PID)"
 fi

@@ -63,15 +63,7 @@ awful.keyboard.append_global_keybindings({
           awful.spawn.with_shell(spotify)
         end,
         {description = "open spotify", group = "launcher"}),
-        awful.key({modkey}, "o", function()
-          awful.spawn.with_shell("onlyoffice-desktopeditors --xdg-desktop-portal=default")
-        end,
-        {description = "open office", group = "launcher"}),
 
-        awful.key({modkey}, "p", function()
-            awful.spawn.with_shell("krita")
-        end,
-        {description = "open krita", group = "launcher"}),
         awful.key({modkey, ctrl}, "t", function()
             local state_file = "/tmp/awesome-night-mode"
             local night_mode = io.open(state_file, "r") and true or false

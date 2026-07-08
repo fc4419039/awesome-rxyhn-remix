@@ -523,14 +523,14 @@ function helpers.remote_watch(command, interval, output_file, callback)
     tick()
 end
 
--- Volume Control
+-- Volume Control via wpctl (WirePlumber)
 function helpers.volume_control(step)
-    local sink = "@DEFAULT_SINK@"
     if step == 0 then
-        awful.spawn.with_shell("pactl set-sink-mute " .. sink .. " toggle 2>/dev/null || true")
+        awful.spawn.with_shell("wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle 2>/dev/null || true")
     else
-        local sign = step > 0 and "+" or ""
-        awful.spawn.with_shell("(pactl set-sink-mute " .. sink .. " 0 2>/dev/null || true) && (pactl set-sink-volume " .. sink .. " " .. sign .. tostring(step) .. "% 2>/dev/null || true)")
+        local abs_step = math.abs(step)
+        local sign = step > 0 and "+" or "-"
+        awful.spawn.with_shell("wpctl set-volume @DEFAULT_AUDIO_SINK@ " .. abs_step .. "%" .. sign .. " 2>/dev/null || true")
     end
 end
 

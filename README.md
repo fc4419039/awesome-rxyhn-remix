@@ -223,7 +223,7 @@ YouTube music search & download with interactive menu and direct mode:
 | Signal | Description |
 |---|---|
 | Battery | Percentage and status (30s) |
-| Volume | Level and mute (pactl events) |
+| Volume | Level and mute (wpctl polling every 0.5s) |
 | Brightness | Level (inotify events) |
 | CPU | Usage percentage (5s) |
 | RAM | Used/total (20s) |
@@ -247,6 +247,7 @@ Slide-out settings panel (200px) on the right side, toggled from the stats toolt
 - **Music** — ncmpcpp music client
 - **Cycle Accent** — switch between 12 accent colors
 - **Titlebar / Borders** — toggle window titlebars or borders on all windows
+- **Widgets** — toggle the desktop datetime widget visibility on/off
 - **Power Menu** — shutdown/reboot/lock/suspend
 - Auto-hides after 3 seconds of inactivity
 
@@ -311,6 +312,7 @@ Slide-out settings panel (200px) on the right side, toggled from the stats toolt
 - **Layout selector** with icon preview
 - **Lock screen** uses PAM with `liblua_pam.so` (precompiled for Arch x86_64)
 - **OpenCode** AI agent config included (`opencode.json`)
+- **Desktop widget configurable menu** — click the datetime widget on the desktop to open a settings menu with color presets, visibility toggles, and size controls
 
 <br>
 
@@ -440,7 +442,7 @@ Buscador y descargador de música desde YouTube:
 | Señal | Descripción |
 |---|---|
 | Batería | Porcentaje y estado (c/30s) |
-| Volumen | Nivel y mute (eventos pactl) |
+| Volumen | Nivel y mute (wpctl polling c/0.5s) |
 | Brillo | Nivel (eventos inotify) |
 | CPU | Uso porcentual (c/5s) |
 | RAM | Usada/total (c/20s) |
@@ -464,6 +466,7 @@ Panel deslizable de ajustes (200px) en el lateral derecho, abierto desde el tool
 - **Música** — ncmpcpp
 - **Cycle Accent** — cambia entre 12 colores de acento
 - **Titlebar / Borders** — oculta/muestra barras de título o bordes
+- **Widgets** — mostrar/ocultar el widget de escritorio (fecha/hora)
 - **Power Menu** — apagado/reinicio/bloqueo/suspensión
 - Se oculta automáticamente tras 3s de inactividad
 
@@ -528,6 +531,7 @@ Panel deslizable de ajustes (200px) en el lateral derecho, abierto desde el tool
 - **Selector de layouts** con vista previa
 - **Lock screen** usa PAM (`liblua_pam.so` para Arch x86_64)
 - **OpenCode** agente de IA incluido (`opencode.json`)
+- **Menú configurable del widget de escritorio** — haz clic en el widget de fecha/hora para abrir un menú de ajustes con colores preseleccionados, alternar visibilidad y controles de tamaño
 
 <br>
 
@@ -571,7 +575,7 @@ chmod +x install.sh
 yay -Sy awesome-git picom-git kitty rofi todo-bin acpi acpid \
 wireless_tools jq inotify-tools polkit-gnome xdotool xclip maim \
 brightnessctl alsa-utils alsa-tools pipewire pipewire-pulse wireplumber \
-playerctl feh zsh neovim btop lsd bat python-gobject pipewire-alsa --needed
+playerctl feh zsh neovim btop lsd bat python-gobject pipewire-alsa xcolor-pick --needed
 ```
 
 **Fonts / Fuentes:** Iosevka Nerd Font, Material Design Icons, Weather Icons + icomoon fonts in `fonts/`

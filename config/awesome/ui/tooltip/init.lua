@@ -67,8 +67,22 @@ function M.create(s)
         widget = wibox.widget.textbox
     }
 
+    local batt_pct_text = wibox.widget{
+        font = beautiful.font_name .. "bold 8",
+        align = "center",
+        valign = "bottom",
+        widget = wibox.widget.textbox
+    }
+
+    local batt_pct_on_icon = wibox.widget{
+        batt_pct_text,
+        bottom = dpi(2),
+        widget = wibox.container.margin
+    }
+
     local batt_icon = wibox.widget{
         batt_glyph,
+        batt_pct_on_icon,
         layout = wibox.layout.stack
     }
 
@@ -142,6 +156,7 @@ function M.create(s)
 
         batt_bar.value = batt_val
         batt_glyph.markup = helpers.colorize_text(b, fill_color)
+        batt_pct_text.markup = helpers.colorize_text(batt_val .. "%", beautiful.xforeground)
     end)
 
 
