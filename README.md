@@ -70,7 +70,7 @@
   <table>
     <tr>
       <td width="50%" align="center">
-        <img src=".github/assets/preview-dashboard.png" alt="Dashboard" style="border-radius: 12px; box-shadow: 0 4px 24px rgba(0,0,0,0.6);">
+        <img src=".github/assets/123.png" alt="Dashboard" style="border-radius: 12px; box-shadow: 0 4px 24px rgba(0,0,0,0.6);">
         <br>
         <sub><b>Dashboard</b></sub>
       </td>
