@@ -45,15 +45,15 @@ local function create_boxed_widget(widget_to_be_boxed, width, height, bg_color)
         {
             {
                 widget_to_be_boxed,
-                    top = dpi(6),
-                    bottom = dpi(6),
-                    left = dpi(5),
-                    right = dpi(5),
+                    top = dpi(4),
+                    bottom = dpi(4),
+                    left = dpi(4),
+                    right = dpi(4),
                 widget = wibox.container.margin
             },
             widget = box_container,
         },
-        margins = dpi(5),
+        margins = dpi(2),
         color = "#00000000",
         widget = wibox.container.margin
     }
@@ -70,6 +70,7 @@ local disk    = require("ui.dashboard.disk")
 local weather = require("ui.dashboard.weather")
 local stats   = require("ui.dashboard.stats")
 local notifs  = require("ui.dashboard.notifs")
+local todo    = require("ui.dashboard.todo")
 
 -----------------------------------------------------------------------
 -- Factory per-screen
@@ -83,8 +84,9 @@ function M.create(s)
     local time_boxed    = create_boxed_widget(centered_widget(time), dpi(250), dpi(90), beautiful.transparent)
     local date_boxed    = create_boxed_widget(date, dpi(120), dpi(50), beautiful.dashboard_box_bg)
     local disk_boxed    = create_boxed_widget(disk, dpi(120), dpi(120), beautiful.dashboard_box_bg)
-    local weather_boxed = create_boxed_widget(weather, dpi(120), dpi(120), beautiful.dashboard_box_bg)
+    local weather_boxed = create_boxed_widget(weather, dpi(120), dpi(140), beautiful.dashboard_box_bg)
     local stats_boxed   = create_boxed_widget(stats, dpi(115), dpi(185), beautiful.dashboard_box_bg)
+    local todo_boxed    = create_boxed_widget(todo, dpi(120), dpi(120), beautiful.dashboard_box_bg)
     local notifs_boxed  = create_boxed_widget(notifs, dpi(245), dpi(185), beautiful.dashboard_box_bg)
 
     local dashboard = wibox({
@@ -159,14 +161,33 @@ function M.create(s)
             {
                 {
                     {
-                        profile,
-                        stats_boxed,
+                        {
+                            profile,
+                            top = dpi(0),
+                            bottom = dpi(0),
+                            left = dpi(0),
+                            right = dpi(0),
+                            widget = wibox.container.margin
+                        },
+                        {
+                            todo_boxed,
+                            top = dpi(-4),
+                            left = dpi(0),
+                            right = dpi(0),
+                            widget = wibox.container.margin
+                        },
+                        weather_boxed,
+                        spacing = dpi(-2),
                         layout = wibox.layout.fixed.vertical
                     },
                     {
-                        date_boxed,
+                        {
+                            date_boxed,
+                            top = dpi(6),
+                            widget = wibox.container.margin
+                        },
                         disk_boxed,
-                        weather_boxed,
+                        stats_boxed,
                         layout = wibox.layout.fixed.vertical
                     },
                     layout = wibox.layout.fixed.horizontal
@@ -182,7 +203,7 @@ function M.create(s)
             expand = "none",
             layout = wibox.layout.align.horizontal
         },
-        margins = dpi(5),
+        margins = dpi(0),
         widget = wibox.container.margin
     }
 

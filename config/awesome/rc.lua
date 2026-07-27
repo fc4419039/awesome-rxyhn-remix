@@ -44,7 +44,7 @@ end
 
 -- Garbage Collector Settings (Valores estables para AwesomeWM)
 collectgarbage("setpause", 110)
-collectgarbage("setstepmul", 1000)
+collectgarbage("setstepmul", 200)
 
 -- Función para ejecutar aplicaciones solo si no están corriendo
 local function run_once(cmd)
@@ -77,17 +77,26 @@ else
     end
 end
 run_once("picom --config " .. picom_cfg)
-awful.spawn("setxkbmap latam")
-awful.spawn("touchegg")
+-- Leer layout guardado de localectl (persiste entre sesiones)
+awful.spawn.with_shell('layout=$(localectl status 2>/dev/null | grep "X11 Layout:" | awk \'{print $NF}\'); [ -n "$layout" ] && setxkbmap "$layout" || setxkbmap latam')
+-- Matar todos los touchegg viejos antes de iniciar uno nuevo
+-- (evita acumulación de procesos que atrapan eventos del mouse)
+awful.spawn.with_shell("pkill -u $(whoami) -x touchegg; sleep 0.2; pgrep -x touchegg > /dev/null 2>&1 || touchegg &")
 
 -- Import Configuration, Signals and UI
 -- NOTA: Estos deben cargarse después de definir las variables globales y el tema
 require("configuration")
--- Deferred para que notif-sink-setup.sh tenga tiempo de crear los sinks
-gears.timer.delayed_call(function()
-    pcall(require, "signal")
-end)
-require("ui")
+ -- Deferred para que notif-sink-setup.sh tenga tiempo de crear los sinks
+ gears.timer.delayed_call(function()
+     pcall(require, "signal")
+ end)
+ require("ui")
+ require("ui.reload")
+
+ -- Global UI Watchdog (inicia después de que UI esté lista)
+ gears.timer.delayed_call(function()
+     pcall(require, "configuration.watchdog").start()
+ end)
 
 -- Wallpapers y scripts de sesión
 awful.spawn(os.getenv("HOME") .. "/.config/cambiar_fondo.sh")
@@ -95,30 +104,51 @@ awful.spawn(os.getenv("HOME") .. "/.config/cambiar_fondo.sh")
 -- Temperatura de color ligeramente fría (7000K)
 awful.spawn(os.getenv("HOME") .. "/.config/awesome/scripts/color_temp.sh")
 
+-- Leer locale de /etc/locale.conf y propagarlo a toda la sesión
+do
+    local f = io.open("/etc/locale.conf", "r")
+    if f then
+        local lang = f:read("*l"):match("^LANG=(.+)")
+        f:close()
+        if lang and lang ~= "" then
+            local ok, lgi = pcall(require, "lgi")
+            if ok then
+                local GLib = lgi.GLib
+                GLib.setenv("LANG", lang, true)
+                for _, var in ipairs({"LC_CTYPE", "LC_NUMERIC", "LC_TIME", "LC_COLLATE", "LC_MONETARY", "LC_MESSAGES", "LC_PAPER", "LC_NAME", "LC_ADDRESS", "LC_TELEPHONE", "LC_IDENTIFICATION"}) do
+                    GLib.setenv(var, lang, true)
+                end
+            end
+        end
+    end
+end
 os.setlocale(os.getenv("LANG") or "")
 
 -- Auto-detectar monitores al inicio
 awful.spawn.with_shell("autorandr --change")
 
+-- Debounced autorandr: evita cascada de signals que destruyen la wibar
+local autorandr_timer = nil
+local function debounced_autorandr()
+    if autorandr_timer then autorandr_timer:stop() end
+    autorandr_timer = gears.timer.start_new(2, function()
+        awful.spawn.with_shell("autorandr --change")
+        autorandr_timer = nil
+        return false
+    end)
+end
+
 -- Auto-detectar monitores externos y re-aplicar temperatura
 screen.connect_signal("added", function()
-    awful.spawn.with_shell("autorandr --change")
+    debounced_autorandr()
     awful.spawn.with_shell(os.getenv("HOME") .. "/.config/awesome/scripts/color_temp.sh")
 end)
 screen.connect_signal("removed", function()
-    awful.spawn.with_shell("autorandr --change")
+    debounced_autorandr()
     awful.spawn.with_shell(os.getenv("HOME") .. "/.config/awesome/scripts/color_temp.sh")
 end)
 
--- Auto-cambiar wallpaper cada 30 minutos
-gears.timer({
-    timeout = 1800,
-    autostart = true,
-    call_now = false,
-    callback = function()
-        awful.spawn.with_shell(os.getenv("HOME") .. "/.config/cambiar_fondo.sh")
-    end
-})
+
 
 -- Watchdog: verificar cada 30s que los sinks de audio existan
 -- Si pipewire-pulse se reinicia, los sinks virtuales se pierden

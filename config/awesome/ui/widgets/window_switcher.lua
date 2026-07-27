@@ -106,27 +106,43 @@ local function draw_widget(
                     id = "bg_role",
                     forced_width = dpi(450),
                     create_callback = function(self, c, _, __)
-                        if c and c.valid and c.content then
-                            local content = gears.surface(c.content)
-                            local geo = c:geometry()
-                            local scale = 1
-                            if geo and geo.width and geo.width > 0 then
-                                scale = math.min(1, dpi(450) / geo.width)
+                        if c and c.valid then
+                            local content_source = nil
+                            local ok1, content_raw = pcall(function() return c.content end)
+                            if ok1 and content_raw then
+                                content_source = content_raw
+                            else
+                                local ok2, prev_raw = pcall(function() return c.prev_content end)
+                                if ok2 and prev_raw then
+                                    content_source = prev_raw
+                                end
                             end
-                            local img = cairo.ImageSurface.create(
-                                cairo.Format.ARGB32,
-                                math.floor(geo.width * scale),
-                                math.floor(geo.height * scale)
-                            )
-                            local thumb_cr = cairo.Context(img)
-                            thumb_cr:scale(scale, scale)
-                            thumb_cr:set_source_surface(content, 0, 0)
-                            thumb_cr.operator = cairo.Operator.SOURCE
-                            thumb_cr:paint()
-                            self:get_children_by_id("thumbnail")[1].image =
-                                gears.surface.load(img)
-                            content:finish()
-                            img:finish()
+                            if content_source then
+                                local ok, err = pcall(function()
+                                    local content = gears.surface(content_source)
+                                    local geo = c:geometry()
+                                    local scale = 1
+                                    if geo and geo.width and geo.width > 0 then
+                                        scale = math.min(1, dpi(450) / geo.width)
+                                    end
+                                    local img = cairo.ImageSurface.create(
+                                        cairo.Format.ARGB32,
+                                        math.floor(geo.width * scale),
+                                        math.floor(geo.height * scale)
+                                    )
+                                    local thumb_cr = cairo.Context(img)
+                                    thumb_cr:scale(scale, scale)
+                                    thumb_cr:set_source_surface(content, 0, 0)
+                                    thumb_cr.operator = cairo.Operator.SOURCE
+                                    thumb_cr:paint()
+                                    local thumbnail = self:get_children_by_id("thumbnail")[1]
+                                    if thumbnail then
+                                        thumbnail.image = gears.surface.load(img)
+                                    end
+                                    content:finish()
+                                    img:finish()
+                                end)
+                            end
                         end
                     end,
                     {

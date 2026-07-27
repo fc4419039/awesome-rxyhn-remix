@@ -60,7 +60,7 @@ local music_title = wibox.widget{
 }
 
 local music_artist = wibox.widget{
-    font = beautiful.font_name .. "medium 12",
+    font = "Anurati 9",
     valign = "center",
     widget = wibox.widget.textbox
 }
@@ -132,7 +132,7 @@ playerctl:connect_signal("metadata", function(_, title, artist, album_path, __, 
     end
 
     music_title:set_markup_silently(helpers.colorize_text(title, beautiful.xforeground .. "b3"))
-    music_artist:set_markup_silently(helpers.colorize_text(artist, beautiful.xforeground .. "e6"))
+    music_artist:set_markup_silently('<span letter_spacing="2000">' .. helpers.colorize_text(helpers.upper_no_accents(artist), beautiful.xforeground .. "e6") .. '</span>')
 end)
 
 playerctl:connect_signal("playback_status", function(_, playing, __)

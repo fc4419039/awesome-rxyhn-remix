@@ -23,7 +23,7 @@ local parse_to_seconds = function(time)
 	return (hourInSec + minInSec + getSec)
 end
 
-notifbox_box = function(notif, icon, title, message, app, bgcolor)
+local notifbox_box = function(notif, icon, title, message, app, bgcolor)
 
 	local time_of_pop = return_date_time('%H:%M:%S')
 	local exact_time = return_date_time('%I:%M %p')

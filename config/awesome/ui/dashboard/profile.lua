@@ -34,7 +34,7 @@ local profile = wibox.widget{
         profile_pic_img,
         widget = profile_pic_container
     },
-    margins = dpi(5),
+    margins = dpi(0),
     widget = wibox.container.margin
 }
 

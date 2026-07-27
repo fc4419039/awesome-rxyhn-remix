@@ -71,8 +71,8 @@ PKGS="
     qt5-imageformats qt6-imageformats
     playerctl spotify mpd ncmpcpp mpd-mpris blueman pasystray
     touchegg redshift networkmanager bluez libnotify curl ffmpeg gpick
-    imagemagick thunar firefox xorg-xrdb yad xcolor-pick
-    nerd-fonts-jetbrains-mono ttf-iosevka-nerd ttf-font-awesome ttf-material-design-icons ttf-weather-icons
+    imagemagick thunar firefox xorg-xrdb yad xcolor-pick cliphist
+    nerd-fonts-jetbrains-mono ttf-iosevka-nerd ttf-hack-nerd ttf-font-awesome ttf-material-design-icons ttf-weather-icons
     zsh-syntax-highlighting zsh-autosuggestions zsh-sudo zoxide feh zsh neovim
     btop lsd bat python-gobject python-pip python-pyqt5 pipewire-alsa
     powerlevel10k fzf starship autorandr xorg-xrandr pamixer gtk3 sound-theme-freedesktop
@@ -103,8 +103,7 @@ echo -e "${YELLOW}🤖 Instalando OpenCode (AI Agent)...${NC}"
 
 if ! command -v opencode &> /dev/null; then
     echo -e "${YELLOW}📦 Instalando opencode...${NC}"
-    curl -fsSL https://opencode.ai/install | bash
-    echo -e "${GREEN}✓ OpenCode instalado${NC}"
+    curl -fsSL https://opencode.ai/install | bash 2>/dev/null && echo -e "${GREEN}✓ OpenCode instalado${NC}" || echo -e "${YELLOW}⚠️  No se pudo instalar OpenCode (se puede instalar después con: curl -fsSL https://opencode.ai/install | bash)${NC}"
 else
     echo -e "${GREEN}✓ OpenCode ya está instalado${NC}"
 fi
@@ -169,18 +168,13 @@ bash "$(dirname "$0")/update_modules.sh" 2>/dev/null || echo -e "${YELLOW}  ⚠ 
 cp -r config/* ~/.config/
 cp -r bin/* ~/.local/bin/
 
-# Copiar .profile si existe
-if [ -f ".profile" ]; then
-    cp .profile ~/
-fi
-
 # Copiar .Xresources si existe
 if [ -f "misc/.Xresources" ]; then
     cp misc/.Xresources ~/.Xresources
     echo -e "${GREEN}✓ .Xresources instalado${NC}"
 fi
 
-# Copiar .profile desde misc/ si no se copió antes
+# Copiar .profile desde misc/ si no existe
 if [ -f "misc/.profile" ] && [ ! -f "$HOME/.profile" ]; then
     cp misc/.profile ~/
     echo -e "${GREEN}✓ .profile instalado desde misc/${NC}"
@@ -198,6 +192,23 @@ if [ ! -f "$HOME/.config/awesome/secrets.lua" ]; then
     echo -e "${YELLOW}🔑 Edita ~/.config/awesome/secrets.lua con tu API key de OpenWeather${NC}"
     echo -e "${YELLOW}   (consíguela gratis en https://openweathermap.org/api)${NC}"
 fi
+
+echo ""
+
+# =====================================================================
+# 5b️⃣ CONFIGURAR TOUCHEGG (Gestos del touchpad)
+# =====================================================================
+echo -e "${YELLOW}🖐️  Configurando touchegg...${NC}"
+
+mkdir -p ~/.config/touchegg
+if [ -f "config/touchegg/touchegg.conf" ]; then
+    cp config/touchegg/touchegg.conf ~/.config/touchegg/touchegg.conf
+    echo -e "${GREEN}✓ touchegg.conf instalado${NC}"
+fi
+
+# Habilitar e iniciar servicio touchegg (corre como root)
+sudo systemctl enable touchegg.service 2>/dev/null && echo -e "${GREEN}✓ touchegg.service habilitado${NC}" || echo -e "${YELLOW}  ⚠ No se pudo habilitar touchegg.service${NC}"
+sudo systemctl start touchegg.service 2>/dev/null && echo -e "${GREEN}✓ touchegg.service iniciado${NC}" || echo -e "${YELLOW}  ⚠ No se pudo iniciar touchegg.service${NC}"
 
 echo ""
 

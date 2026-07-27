@@ -13,21 +13,24 @@ local disk_container = nil
 local cached_disks = {}
 local cached_batt = nil
 
+local pos_file = "/tmp/awesome-resources-pos"
+
 local colors = {
     cpu    = beautiful.xcolor6,
     ram    = beautiful.xcolor2,
-    net    = beautiful.xcolor4,
+    temp   = beautiful.xcolor1,
     disk   = beautiful.xcolor5,
     batt   = beautiful.deco_green or beautiful.xcolor2,
 }
 
-local function fmt_net(b)
-    if b == 0 then return "0"
-    elseif b < 1024 then return string.format("%.0f B", b)
-    elseif b < 1024 * 10 then return string.format("%.1f K", b / 1024)
-    elseif b < 1024 * 1024 then return string.format("%.0f K", b / 1024)
-    else return string.format("%.1f M", b / 1024 / 1024)
+local function read_temp()
+    local f = io.open("/sys/class/thermal/thermal_zone0/temp", "r")
+    if f then
+        local val = tonumber(f:read("*a"))
+        f:close()
+        if val then return math.floor(val / 1000) end
     end
+    return 0
 end
 
 local function circular_gauge(icon, color, initial_value, max_value)
@@ -110,7 +113,7 @@ awesome.connect_signal("signal::disk", function(disks)
             local color = colors.disk
             if d.used_pct > 90 then color = beautiful.deco_red or beautiful.xcolor1
             elseif d.used_pct > 75 then color = beautiful.deco_yellow or beautiful.xcolor3 end
-            local box, arc, txt, lbl = circular_gauge("", color, d.used_pct, 100)
+            local box, arc, txt, lbl = circular_gauge("", color, d.used_pct, 100)
             local short = d.mount == "/" and "SYSTEM" or (d.mount:match("/([^/]+)$") or d.mount)
             lbl.markup = helpers.colorize_text(short:upper(), beautiful.dashboard_fg)
             txt.markup = helpers.colorize_text(d.used_pct .. "%", color)
@@ -129,7 +132,45 @@ awesome.connect_signal("signal::disk", function(disks)
 end)
 
 local function get_bg_color()
-    return "#0d0d1a80"
+    return "#0d0d1a"
+end
+
+local function save_pos(w)
+    if not w then return end
+    local g = w:geometry()
+    local f = io.open(pos_file, "w")
+    if f then
+        f:write(g.x .. "," .. g.y .. "," .. g.width .. "," .. g.height)
+        f:close()
+    end
+end
+
+local function load_pos()
+    local f = io.open(pos_file, "r")
+    if f then
+        local saved = f:read("*a")
+        f:close()
+        local sx, sy, sw, sh = saved:match("(-?%d+),(-?%d+),(-?%d+),(-?%d+)")
+        if sx then
+            return {x = tonumber(sx), y = tonumber(sy), width = tonumber(sw), height = tonumber(sh)}
+        end
+    end
+    return nil
+end
+
+local function start_move(w)
+    local g = w:geometry()
+    local mx, my = mouse.coords().x, mouse.coords().y
+    local ox, oy = g.x - mx, g.y - my
+    mousegrabber.run(function(m)
+        if not m.buttons[1] then
+            save_pos(w)
+            return false
+        end
+        w.x = ox + m.x
+        w.y = oy + m.y
+        return true
+    end, "fleur")
 end
 
 local function create()
@@ -140,17 +181,17 @@ local function create()
     local cpu_value = 0
     local ram_used = 0
     local ram_total = 0
-    local net_value = 0
 
     local batt_init = cached_batt or 50
-    local cpu_box, cpu_arc, cpu_text, cpu_label = circular_gauge("", colors.cpu, 0, 100)
-    local ram_box, ram_arc, ram_text, ram_label = circular_gauge("", colors.ram, 0, 100)
-    local net_box, net_arc, net_text, net_label = circular_gauge("", colors.net, 0, 100)
-    local batt_box, batt_arc, batt_text, batt_label = circular_gauge("", colors.batt, batt_init, 100)
+    local temp_init = read_temp()
+    local cpu_box, cpu_arc, cpu_text, cpu_label = circular_gauge("", colors.cpu, 0, 100)
+    local ram_box, ram_arc, ram_text, ram_label = circular_gauge("", colors.ram, 0, 100)
+    local temp_box, temp_arc, temp_text, temp_label = circular_gauge("", colors.temp, temp_init, 100)
+    local batt_box, batt_arc, batt_text, batt_label = circular_gauge("", colors.batt, batt_init, 100)
 
     cpu_label.markup = helpers.colorize_text("CPU", beautiful.dashboard_fg)
     ram_label.markup = helpers.colorize_text("RAM", beautiful.dashboard_fg)
-    net_label.markup = helpers.colorize_text("NET", beautiful.dashboard_fg)
+    temp_label.markup = helpers.colorize_text("TEMP", beautiful.dashboard_fg)
     batt_label.markup = helpers.colorize_text("BATT", beautiful.dashboard_fg)
 
     if cached_batt then
@@ -177,12 +218,23 @@ local function create()
         ram_text.markup = helpers.colorize_text(text, colors.ram)
     end)
 
-    awesome.connect_signal("signal::network_speed", function(dl_bytes)
-        net_value = dl_bytes or 0
-        local val = math.min(100, math.floor(net_value / 1024))
-        net_arc.value = val
-        net_text.markup = helpers.colorize_text(fmt_net(net_value), colors.net)
-    end)
+    local temp_timer = gears.timer{
+        timeout = 2,
+        autostart = false,
+        callback = function()
+            local t = read_temp()
+            local color = colors.temp
+            if t > 80 then color = beautiful.deco_red or beautiful.xcolor1
+            elseif t > 65 then color = beautiful.deco_yellow or beautiful.xcolor3 end
+            temp_arc.value = math.min(100, t)
+            temp_arc.colors = {color}
+            temp_text.markup = helpers.colorize_text(t .. "°C", color)
+        end
+    }
+
+    temp_timer:start()
+    temp_arc.value = math.min(100, temp_init)
+    temp_text.markup = helpers.colorize_text(temp_init .. "°C", colors.temp)
 
     awesome.connect_signal("signal::battery", function(value)
         if not value or type(value) ~= "number" then return end
@@ -195,13 +247,13 @@ local function create()
         batt_text.markup = helpers.colorize_text(value .. "%", c)
     end)
 
-    disk_container = wibox.widget{layout = wibox.layout.fixed.horizontal}
+    disk_container = wibox.widget{spacing = dpi(10), layout = wibox.layout.fixed.horizontal}
 
     for _, d in ipairs(cached_disks) do
         local color = colors.disk
         if d.used_pct > 90 then color = beautiful.deco_red or beautiful.xcolor1
         elseif d.used_pct > 75 then color = beautiful.deco_yellow or beautiful.xcolor3 end
-        local box, arc, txt, lbl = circular_gauge("", color, d.used_pct, 100)
+        local box, arc, txt, lbl = circular_gauge("", color, d.used_pct, 100)
         local short = d.mount == "/" and "SYSTEM" or (d.mount:match("/([^/]+)$") or d.mount)
         lbl.markup = helpers.colorize_text(short:upper(), beautiful.dashboard_fg)
         txt.markup = helpers.colorize_text(d.used_pct .. "%", color)
@@ -211,62 +263,64 @@ local function create()
 
     local content = wibox.widget{
         {
-            nil,
             {
-                {
-                    text = "System Resources",
-                    font = beautiful.font_name .. "bold 10",
-                    align = "center",
-                    valign = "center",
-                    widget = wibox.widget.textbox
-                },
-                {
-                    cpu_box,
-                    ram_box,
-                    net_box,
-                    spacing = dpi(6),
-                    layout = wibox.layout.fixed.horizontal
-                },
-                {
-                    disk_container,
-                    batt_box,
-                    spacing = dpi(6),
-                    layout = wibox.layout.fixed.horizontal
-                },
-                spacing = dpi(4),
-                layout = wibox.layout.fixed.vertical
+                text = "System Resources",
+                font = beautiful.font_name .. "bold 12",
+                align = "center",
+                valign = "center",
+                widget = wibox.widget.textbox
             },
-            expand = "none",
-            layout = wibox.layout.align.horizontal
+            {
+                cpu_box,
+                ram_box,
+                temp_box,
+                batt_box,
+                spacing = dpi(8),
+                layout = wibox.layout.fixed.horizontal
+            },
+            {
+                disk_container,
+                spacing = dpi(8),
+                layout = wibox.layout.fixed.horizontal
+            },
+            spacing = dpi(6),
+            layout = wibox.layout.fixed.vertical
         },
-        margins = dpi(8),
+        margins = dpi(12),
         widget = wibox.container.margin
     }
 
     resources_wibox = wibox({
-        type = "notification",
+        type = "dialog",
         screen = screen,
         height = dpi(300),
         width = dpi(340),
         shape = helpers.rrect(dpi(14)),
-        bg = bg_color,
+        bg = "#0d0d1a",
         ontop = true,
         visible = false,
         border_width = dpi(2),
         border_color = "#06b6d4",
     })
 
-    awful.placement.centered(resources_wibox, {honor_workarea = true})
+    local saved_pos = load_pos()
+    if saved_pos then
+        resources_wibox:geometry(saved_pos)
+    else
+        awful.placement.centered(resources_wibox, {honor_workarea = true})
+        save_pos(resources_wibox)
+    end
 
     resources_wibox:setup{
-        {
-            content,
-            widget = wibox.container.background
-        },
-        bg = bg_color,
+        content,
+        bg = "#0d0d1a",
         shape = helpers.rrect(dpi(14)),
         widget = wibox.container.background
     }
+
+    resources_wibox:buttons(gears.table.join(
+        awful.button({"Mod4"}, 1, function() start_move(resources_wibox) end)
+    ))
 
     resources_wibox:connect_signal("mouse::enter", function()
         if hide_timer then
@@ -287,7 +341,22 @@ end
 
 function toggle_resources()
     if not resources_wibox then
-        create()
+        local ok, err = pcall(create)
+        if not ok then
+            local naughty = require("naughty")
+            naughty.notify({
+                title = "Resources Error",
+                text = tostring(err),
+                timeout = 10,
+            })
+            local f = io.open("/tmp/awesome-resources-error.log", "a")
+            if f then
+                f:write(os.date("%H:%M:%S") .. " " .. tostring(err) .. "\n")
+                f:write(debug.traceback() .. "\n\n")
+                f:close()
+            end
+            return
+        end
     end
 
     if resources_visible then
@@ -300,7 +369,12 @@ function toggle_resources()
     else
         local s = awful.screen.focused()
         if not s then return end
-        awful.placement.centered(resources_wibox, {honor_workarea = true})
+        local saved_pos = load_pos()
+        if saved_pos then
+            resources_wibox:geometry(saved_pos)
+        else
+            awful.placement.centered(resources_wibox, {honor_workarea = true})
+        end
         resources_wibox.visible = true
         resources_visible = true
         hide_timer = gears.timer.start_new(5, function()

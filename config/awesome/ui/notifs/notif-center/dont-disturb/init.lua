@@ -10,7 +10,7 @@ local button_container = require('ui.widgets.button')
 local config_dir = gears.filesystem.get_configuration_dir()
 local widget_dir = config_dir .. 'ui/notifs/notif-center/dont-disturb/'
 
-_G.dont_disturb = false
+local dont_disturb = false
 
 local dont_disturb_icon = wibox.widget {
 	{
@@ -26,15 +26,12 @@ local dont_disturb_icon = wibox.widget {
 
 local function update_icon()
 
-	local widget_icon_name = nil
 	local dd_icon = dont_disturb_icon.icon
 
 	if dont_disturb then
-		widget_icon_name = 'toggled-on'
-		dd_icon:set_markup_silently("")
+		dd_icon:set_markup_silently("")
 	else
-		widget_icon_name = 'toggled-off'
-		dd_icon:set_markup_silently("")
+		dd_icon:set_markup_silently("")
 	end
 end
 

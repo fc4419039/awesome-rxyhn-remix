@@ -132,7 +132,7 @@ local function create_menu(s, style)
         }
     end
 
-    local count_rows = 10
+    local count_rows = 13
     local menu_h = count_rows * btn_h + (count_rows - 1) * row_spacing + margin * 2
 
     local menu = wibox({
@@ -227,7 +227,7 @@ local function create_menu(s, style)
 
     local wallpaper_btn = create_btn("", "Wallpaper", beautiful.xcolor4, function()
         hide()
-        awful.spawn.with_shell('file=$(yad --file --add-preview --file-filter="*.png *.jpg *.jpeg *.bmp *.webp" 2>/dev/null) && [ -n "$file" ] && echo "$file" > $HOME/.cache/wallpaper_fijo.txt && feh --bg-fill "$file"')
+        require("ui.system_menu.wallpaper_picker").toggle()
     end)
 
     local volume_btn = create_btn("", "Volume", beautiful.xcolor4, function()
@@ -256,7 +256,7 @@ local function create_menu(s, style)
 
     local sddm_btn = create_btn("", "SDDM", beautiful.xcolor6, function()
         hide()
-        awful.spawn.with_shell(os.getenv("HOME") .. "/.config/awesome/scripts/set-sddm-bg.sh")
+        require("ui.system_menu.sddm_picker").toggle()
     end)
 
     local apps_btn = create_btn("", "Apps", beautiful.xcolor2, function()
@@ -274,11 +274,23 @@ local function create_menu(s, style)
         require("ui.widgets.resources").toggle()
     end)
 
+    local calculator_btn = create_btn("", "Calculator", beautiful.xcolor6, function()
+        hide()
+        require("ui.widgets.calculator").toggle()
+    end)
+
     local function toggle_osd_widgets()
         for s in screen do
             if s.datetime_widget then
                 s.datetime_widget.visible = not s.datetime_widget.visible
             end
+            if s.desktop_sysmon then
+                s.desktop_sysmon.visible = not s.desktop_sysmon.visible
+            end
+            if s.desktop_music then
+                s.desktop_music.visible = not s.desktop_music.visible
+            end
+
         end
     end
 
@@ -292,6 +304,26 @@ local function create_menu(s, style)
         awful.spawn.with_shell(os.getenv("HOME") .. "/.config/awesome/scripts/powermenu.sh")
     end)
 
+    local timezone_btn = create_btn("", "Timezone", beautiful.xcolor6, function()
+        hide()
+        awful.spawn.with_shell(os.getenv("HOME") .. "/.config/awesome/scripts/change-timezone.sh")
+    end)
+
+    local keyboard_btn = create_btn("", "Keyboard", beautiful.xcolor4, function()
+        hide()
+        awful.spawn.with_shell(os.getenv("HOME") .. "/.config/awesome/scripts/change-keyboard.sh")
+    end)
+
+    local locale_btn = create_btn("", "Language", beautiful.xcolor3, function()
+        hide()
+        awful.spawn.with_shell(os.getenv("HOME") .. "/.config/awesome/scripts/change-locale.sh")
+    end)
+
+    local clean_btn = create_btn("", "Clean", beautiful.xcolor2, function()
+        hide()
+        awful.spawn.with_shell(os.getenv("HOME") .. "/.config/awesome/scripts/clean-orphans.sh")
+    end)
+
     local rows = wibox.widget{
         row(network_btn, bluetooth_btn),
         row(blur_btn, transparency_btn),
@@ -300,8 +332,10 @@ local function create_menu(s, style)
         row(accent_btn, titlebar_btn),
         row(border_btn, sddm_btn),
         row(apps_btn, opencode_btn),
-        row(resources_btn, powermenu_btn),
-        row(widgets_btn),
+        row(timezone_btn, keyboard_btn),
+        row(locale_btn, clean_btn),
+        row(resources_btn, calculator_btn),
+        row(widgets_btn, powermenu_btn),
         spacing = row_spacing,
         layout = wibox.layout.fixed.vertical
     }

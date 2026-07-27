@@ -61,7 +61,7 @@ end
 
 -- Notification actions container
 ui_notif_builder.notifbox_actions = function(n)
-	actions_template = wibox.widget {
+	local actions_template = wibox.widget {
 		notification = n,
 		base_layout = wibox.widget {
 			spacing        = dpi(0),

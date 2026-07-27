@@ -14,7 +14,7 @@ local naughty = require("naughty")
 
 local function create_boxed_widget(widget_to_be_boxed, width, height, inner_pad)
     local box_container = wibox.container.background()
-    box_container.bg = beautiful.xcolor0
+    box_container.bg = beautiful.darker_bg
     box_container.forced_height = height
     box_container.forced_width = width
     box_container.shape = helpers.rrect(beautiful.tooltip_box_border_radius)
@@ -164,20 +164,26 @@ function M.create(s)
     ---------
 
     local date_day = wibox.widget{
-        font = beautiful.font_name .. "bold 10",
-        format = helpers.colorize_text("%A", beautiful.xcolor4),
+        font = "Anurati 10",
         align = "center",
         valign = "center",
-        widget = wibox.widget.textclock
+        markup = helpers.colorize_text(helpers.upper_no_accents(os.date("%A")), beautiful.xcolor4),
+        widget = wibox.widget.textbox
     }
 
     local date_month = wibox.widget{
-        font = beautiful.font_name .. "bold 14",
-        format = "%d %B %Y",
+        font = "Anurati 10",
         align = "center",
         valign = "center",
-        widget = wibox.widget.textclock
+        markup = helpers.upper_no_accents(os.date("%d %B %Y")),
+        widget = wibox.widget.textbox
     }
+
+    gears.timer.start_new(1, function()
+        date_day:set_markup_silently(helpers.colorize_text(helpers.upper_no_accents(os.date("%A")), beautiful.xcolor4))
+        date_month:set_markup_silently(helpers.upper_no_accents(os.date("%d %B %Y")))
+        return true
+    end)
 
     local date = wibox.widget{
         date_day,

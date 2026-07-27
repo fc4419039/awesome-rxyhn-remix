@@ -19,6 +19,11 @@ config/mpd/log
 config/mpd/pid
 config/mpd/state
 config/awesome/ui/notifs/notif-center/dont-disturb/disturb_status
+
+# State files (se regeneran al iniciar awesome)
+config/awesome/.datetime-widget-*
+config/awesome/.desktop-music-pos-*
+config/awesome/.desktop-sysmon-pos-*
 # config/ncmpcpp/config
 
 # Claude / OpenCode (config compartida para IA - ver opencode.json)

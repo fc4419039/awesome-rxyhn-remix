@@ -43,7 +43,7 @@ local pop = wibox({
     height = beautiful.pop_size,
     width = beautiful.pop_size,
     shape = helpers.rrect(beautiful.pop_border_radius - 1),
-    bg = "#0a141999",
+    bg = "#0d0d1ab3",
     ontop = true,
     visible = false
 })
@@ -71,7 +71,7 @@ local pop_stack = pop_content
 
 pop:setup {
     pop_stack,
-    bg = "#0a141999",
+    bg = "#0d0d1ab3",
     shape = helpers.rrect(beautiful.pop_border_radius),
     widget = wibox.container.background
 }
@@ -173,7 +173,7 @@ local layout_list = awful.widget.layoutlist {
 
 local lp_list = wibox.widget{
     {layout_list, margins = dpi(24), widget = wibox.container.margin},
-    bg = "#0a141999",
+    bg = "#0d0d1ab3",
     shape = helpers.rrect(beautiful.border_radius),
     border_color = beautiful.widget_border_color,
     border_width = beautiful.widget_border_width,

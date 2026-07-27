@@ -22,8 +22,8 @@ local empty_notifbox = wibox.widget {
 			nil
 		},
 		{
-			text = "No Notifications? :(",
-			font =  beautiful.font_name .. 'medium 12',
+			text = "NO NOTIFICATIONS? :(",
+			font =  'Anurati 8',
 			align = 'center',
 			valign = 'center',
 			widget = wibox.widget.textbox

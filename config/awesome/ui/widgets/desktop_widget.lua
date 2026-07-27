@@ -27,6 +27,7 @@ local function unaccent(str)
 end
 
 local function create_widget(s)
+    if s.datetime_widget then return end
     local screen_geo = s.geometry
 
     local base_w = 180
@@ -348,6 +349,9 @@ local function create_widget(s)
                     w:geometry({width = nw, height = nh})
                     update_scale(current_scale)
                 end},
+                { "Ocultar", function()
+                    w.visible = false
+                end},
             },
             theme = { width = dpi(200), font = beautiful.font_name .. "10" }
         })
@@ -355,7 +359,7 @@ local function create_widget(s)
     end
 
     widget_bg:buttons(gears.table.join(
-        awful.button({}, 1, open_settings_menu),
+        awful.button({}, 3, open_settings_menu),
         awful.button({"Mod4"}, 1, start_move),
         awful.button({"Mod4"}, 3, start_resize)
     ))

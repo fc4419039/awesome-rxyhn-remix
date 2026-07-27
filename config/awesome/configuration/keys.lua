@@ -63,7 +63,6 @@ awful.keyboard.append_global_keybindings({
           awful.spawn.with_shell(spotify)
         end,
         {description = "open spotify", group = "launcher"}),
-
         awful.key({modkey, ctrl}, "t", function()
             local state_file = "/tmp/awesome-night-mode"
             local night_mode = io.open(state_file, "r") and true or false
@@ -236,6 +235,12 @@ awful.keyboard.append_global_keybindings({
     end,
     {description = "volume control menu", group = "hotkeys"}),
 
+    -- Clipboard history
+    awful.key({modkey, "Shift"}, "v", function()
+        awful.spawn.with_shell(os.getenv("HOME") .. "/.config/awesome/scripts/clipboard.sh")
+    end,
+    {description = "clipboard history", group = "hotkeys"}),
+
     -- Bluetooth menu
     awful.key({modkey}, "b", function()
         awful.spawn.with_shell(os.getenv("HOME") .. "/.config/awesome/scripts/bluetooth.sh")
@@ -273,11 +278,16 @@ awful.keyboard.append_global_keybindings({
     {description = "network menu", group = "hotkeys"}),
 
     -- Scratchpad
-    awful.key({modkey}, "z", function()
-        scratchpad:toggle()
-    end,
-    {description = "scratchpad", group = "launcher"})
-})
+        awful.key({modkey}, "z", function()
+            scratchpad:toggle()
+        end,
+        {description = "scratchpad", group = "launcher"}),
+
+        awful.key({modkey}, "e", function()
+            require("ui.overview").toggle()
+        end,
+        {description = "desktop overview", group = "launcher"})
+    })
 
 -- Awesome stuff
 awful.keyboard.append_global_keybindings({
@@ -285,7 +295,7 @@ awful.keyboard.append_global_keybindings({
         hotkeys_popup.show_help,
     {description = "show help", group = "awesome"}),
     awful.key({modkey, ctrl}, "r",
-        awesome.restart,
+        function() require("ui.reload").restart() end,
     {description = "reload awesome", group = "awesome"}),
     awful.key({modkey, ctrl}, "q",
         awesome.quit,

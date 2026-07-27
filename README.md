@@ -207,6 +207,22 @@ YouTube music search & download with interactive menu and direct mode:
 - Minimize/kill from switcher
 - Auto-hide on Alt release
 
+### Touchegg Gestures
+Touchpad gestures configured via touchegg:
+| Gesture | Action |
+|---|---|
+| 3-finger swipe UP | Show Desktop Overview |
+| 3-finger swipe DOWN | Hide Desktop Overview |
+| 3-finger swipe LEFT/RIGHT | Navigate desktops |
+| 3-finger pinch IN | Close window |
+| 4-finger swipe UP/DOWN | Change virtual desktop |
+| 4-finger swipe RIGHT | Screenshot (Super+S) |
+| 4-finger pinch OUT | Show desktop |
+| 4-finger pinch IN | App launcher (Super+A) |
+| 2-finger tap | Right click |
+| 3-finger tap | Middle click |
+| 2-finger pinch (browser) | Zoom in/out |
+
 ### Tag Preview
 - Hover preview of tag contents
 - Auto-positioned on correct monitor
@@ -289,6 +305,8 @@ Slide-out settings panel (200px) on the right side, toggled from the stats toolt
 | `Mod+Shift+s` | Floating layout |
 | `Mod+Space` | Next layout |
 | `Alt+a/s/d` | Tab group/iterate/ungroup |
+| `Mod+e` | Desktop Overview |
+| `Mod+Shift+v` | Clipboard history |
 
 ### Extras
 - **Sloppy focus** — mouse follows focus
@@ -313,6 +331,11 @@ Slide-out settings panel (200px) on the right side, toggled from the stats toolt
 - **Lock screen** uses PAM with `liblua_pam.so` (precompiled for Arch x86_64)
 - **OpenCode** AI agent config included (`opencode.json`)
 - **Desktop widget configurable menu** — click the datetime widget on the desktop to open a settings menu with color presets, visibility toggles, and size controls
+- **Desktop Overview** (`Super+E`) — Activities-style grid showing all open windows with live thumbnails, click to focus
+- **Calculator** (`toggle_calculator()`) — macOS-style floating calculator with scientific mode (sin/cos/tan/ln/log/sqrt), auto-close parentheses, √ button
+- **Clipboard history** (`Super+Shift+V`) — cliphist + rofi integration for clipboard history search
+- **Touchegg gestures** — 3-finger swipe for overview, 4-finger for desktops, pinch for close/launcher
+- **UI Watchdog** — auto-repairs broken wibar/dashboard/notif-center/tooltip, restarts awesome if 3 repairs fail
 
 <br>
 
@@ -426,6 +449,22 @@ Buscador y descargador de música desde YouTube:
 - Minimizar/matar desde el switcher
 - Auto-ocultamiento al soltar Alt
 
+### Gestos de Touchegg
+Gestos del touchpad configurados con touchegg:
+| Gesto | Acción |
+|---|---|
+| Swipe 3 dedos ARRIBA | Mostrar Desktop Overview |
+| Swipe 3 dedos ABAJO | Ocultar Desktop Overview |
+| Swipe 3 dedos IZQ/DER | Navegar entre escritorios |
+| Pinch 3 dedos ADENTRO | Cerrar ventana |
+| Swipe 4 dedos ARRIBA/ABAJO | Cambiar escritorio virtual |
+| Swipe 4 dedos DER | Captura de pantalla (Super+S) |
+| Pinch 4 dedos AFUERA | Mostrar escritorio |
+| Pinch 4 dedos ADENTRO | Lanzador de apps (Super+A) |
+| Tap 2 dedos | Click derecho |
+| Tap 3 dedos | Click medio |
+| Pinch 2 dedos (navegador) | Zoom +/- |
+
 ### Tag Preview
 - Vista previa del tag al hover
 - Posicionado automático
@@ -508,6 +547,8 @@ Panel deslizable de ajustes (200px) en el lateral derecho, abierto desde el tool
 | `Mod+Shift+s` | Layout floating |
 | `Mod+Space` | Siguiente layout |
 | `Alt+a/s/d` | Agrupar/iterar/desagrupar pestañas |
+| `Mod+e` | Desktop Overview |
+| `Mod+Shift+v` | Historial del portapapeles |
 
 ### Extras
 - **Sloppy focus** — el foco sigue al mouse
@@ -532,6 +573,11 @@ Panel deslizable de ajustes (200px) en el lateral derecho, abierto desde el tool
 - **Lock screen** usa PAM (`liblua_pam.so` para Arch x86_64)
 - **OpenCode** agente de IA incluido (`opencode.json`)
 - **Menú configurable del widget de escritorio** — haz clic en el widget de fecha/hora para abrir un menú de ajustes con colores preseleccionados, alternar visibilidad y controles de tamaño
+- **Desktop Overview** (`Super+E`) — cuadrícula estilo Activities con miniaturas de ventanas, clic para enfocar
+- **Calculadora** (`toggle_calculator()`) — calculadora flotante estilo macOS con modo científico (sin/cos/tan/ln/log/sqrt), auto-completar paréntesis, botón √
+- **Historial del portapapeles** (`Super+Shift+V`) — integración cliphist + rofi para buscar en el historial
+- **Gestos de Touchegg** — swipe 3 dedos para overview, 4 dedos para escritorios, pinch para cerrar/launcher
+- **UI Watchdog** — repara automáticamente wibar/dashboard/notif-center/tooltip rotos, reinicia awesome si 3 reparaciones fallan
 
 <br>
 
@@ -575,10 +621,11 @@ chmod +x install.sh
 yay -Sy awesome-git picom-git kitty rofi todo-bin acpi acpid \
 wireless_tools jq inotify-tools polkit-gnome xdotool xclip maim \
 brightnessctl alsa-utils alsa-tools pipewire pipewire-pulse wireplumber \
-playerctl feh zsh neovim btop lsd bat python-gobject pipewire-alsa xcolor-pick --needed
+playerctl feh zsh neovim btop lsd bat python-gobject pipewire-alsa xcolor-pick \
+touchegg cliphist --needed
 ```
 
-**Fonts / Fuentes:** Iosevka Nerd Font, Material Design Icons, Weather Icons + icomoon fonts in `fonts/`
+**Fonts / Fuentes:** Iosevka Nerd Font, JetBrains Mono Nerd Font, Hack Nerd Font, Material Design Icons, Weather Icons + icomoon fonts in `fonts/`
 
 **Copy config / Copiar configuración:**
 

@@ -289,7 +289,7 @@ theme.machi_editor_active_opacity = 0.25
 
 -- Tag Preview
 theme.tag_preview_client_border_radius = dpi(6)
-theme.tag_preview_client_opacity = 0.1
+theme.tag_preview_client_opacity = 1.0
 theme.tag_preview_client_bg = theme.xbackground
 theme.tag_preview_client_border_color = theme.darker_bg
 theme.tag_preview_client_border_width = theme.widget_border_width

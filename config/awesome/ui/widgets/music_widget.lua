@@ -17,7 +17,8 @@ end
 
 local music_widget = {}
 
-local function create_widget(s)
+ local function create_widget(s)
+    if s.music_widget then return end
     if not playerctl then return end
     local screen_geo = s.geometry
 

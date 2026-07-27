@@ -6,16 +6,16 @@ SDDM_CONF="$SDDM_THEME_DIR/theme.conf"
 
 [ ! -d "$DIR_FONDOS" ] && notify-send -u critical "Error" "No existe $DIR_FONDOS" && exit 1
 
-WALLPAPER=$(yad --file --add-preview --large-preview \
-    --file-filter="Imágenes | *.png *.jpg *.jpeg *.gif *.bmp *.tiff *.tif *.webp *.svg *.xpm" \
-    --file-filter="Todos los archivos | *" \
-    --title="Elegir fondo para SDDM" \
-    --filename="$DIR_FONDOS/" \
-    --width=800 --height=600)
+WALLPAPER=$(find "$DIR_FONDOS" -maxdepth 1 -type f \( -name "*.png" -o -name "*.jpg" -o -name "*.jpeg" -o -name "*.webp" -o -name "*.gif" \) \
+    | sed "s|$DIR_FONDOS/||" \
+    | sort \
+    | rofi -dmenu -p "Fondo SDDM" \
+        -theme "$HOME/.config/awesome/theme/rofi-menu.rasi" \
+        -no-custom)
 
 [ -z "$WALLPAPER" ] && exit 0
 
-BASENAME=$(basename "$WALLPAPER")
-pkexec bash -c "cp '$WALLPAPER' '$SDDM_THEME_DIR/' && sed -i 's/^Background=.*/Background=\"$BASENAME\"/' '$SDDM_CONF'"
+FULL_PATH="$DIR_FONDOS/$WALLPAPER"
+sudo cp "$FULL_PATH" "$SDDM_THEME_DIR/" && sudo sed -i "s/^Background=.*/Background=\"$WALLPAPER\"/" "$SDDM_CONF"
 
-notify-send -i wallpaper "Fondo SDDM" "Cambiado a $BASENAME (requiere reinicio)"
+notify-send -i wallpaper "Fondo SDDM" "Cambiado a $WALLPAPER (requiere reinicio)"

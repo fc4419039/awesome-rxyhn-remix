@@ -175,7 +175,7 @@ bling.module.flash_focus.enable()
 
 -- Tag Preview
 bling.widget.tag_preview.enable {
-    show_client_content = false,
+    show_client_content = true,
     placement_fn = function(c)
         local s = mouse.screen or awful.screen.focused()
         if s then c.screen = s end
@@ -197,6 +197,14 @@ bling.widget.tag_preview.enable {
         bg = beautiful.wibar_bg,
         widget = wibox.container.bg
     }
+}
+
+bling.widget.task_preview.enable {
+    height = dpi(200),
+    width = dpi(300),
+    placement_fn = function(c)
+        awful.placement.top(c, { margins = { top = dpi(100) } })
+    end,
 }
 
 require('ui.widgets.window_switcher').enable()

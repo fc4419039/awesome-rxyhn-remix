@@ -40,7 +40,7 @@ local function remember(c)
     end
 end
 
-function restore(c)
+local function restore(c)
     local s = stored[c.window]
     if s then
         c:geometry(unrel(c.screen.geometry, stored[c.window]))

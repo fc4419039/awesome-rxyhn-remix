@@ -149,9 +149,24 @@ local enable = function(opts)
         bg = "#00000000",
     })
 
+    -- Cache prev_content when client becomes inactive or content changes
+    client.connect_signal("property::active", function(c)
+        if not c.active and c.content then
+            pcall(function()
+                c.prev_content = gears.surface.duplicate_surface(c.content)
+            end)
+        end
+    end)
+
+    client.connect_signal("property::content", function(c)
+        if c.content then
+            pcall(function()
+                c.prev_content = gears.surface.duplicate_surface(c.content)
+            end)
+        end
+    end)
+
     tag.connect_signal("property::selected", function(t)
-        -- Awesome switches up tags on startup really fast it seems, probably depends on what rules you have set
-        -- which can cause the c.content to not show the correct image
         gears.timer
         {
             timeout = 0.1,
@@ -161,7 +176,9 @@ local enable = function(opts)
             callback = function()
                 if t.selected == true then
                     for _, c in ipairs(t:clients()) do
-                        c.prev_content = gears.surface.duplicate_surface(c.content)
+                        pcall(function()
+                            c.prev_content = gears.surface.duplicate_surface(c.content)
+                        end)
                     end
                 end
             end
@@ -184,7 +201,6 @@ local enable = function(opts)
             )
         else
             task_preview_box.widget = nil
-            collectgarbage("collect")
         end
 
         if not placement_fn then

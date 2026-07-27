@@ -1,6 +1,7 @@
 -- Standard awesome library
 local awful = require("awful")
 local gears = require("gears")
+local gfs = require("gears.filesystem")
 
 -- Widget library
 local wibox = require("wibox")
@@ -39,6 +40,7 @@ end
 local screen_batts = setmetatable({}, {__mode = "k"})
 local screen_chargers = setmetatable({}, {__mode = "k"})
 local screen_nets = setmetatable({}, {__mode = "k"})
+local screen_temps = setmetatable({}, {__mode = "k"})
 
 -- Función de lerp para color de batería
 local function lerp_color(a, b, t)
@@ -105,6 +107,23 @@ awesome.connect_signal("signal::network_speed", function(dl_bytes, ul_bytes)
     end
 end)
 
+awesome.connect_signal("signal::temperature", function(temp_celsius)
+    if not temp_celsius or type(temp_celsius) ~= "number" then return end
+    local color = beautiful.deco_cyan
+    if temp_celsius >= 80 then
+        color = beautiful.deco_red
+    elseif temp_celsius >= 65 then
+        color = beautiful.deco_yellow
+    end
+    for scr, data in pairs(screen_temps) do
+        pcall(function()
+            if data and data.temp then
+                data.temp.markup = helpers.colorize_text(temp_celsius .. "°C", color)
+            end
+        end)
+    end
+end)
+
 -- Handlers de fullscreen/unmanage (conectados UNA sola vez)
 client.connect_signal("property::fullscreen", function(c)
     for scr in screen do
@@ -147,18 +166,19 @@ screen.connect_signal("request::desktop_decoration", function(s)
         end
     end
 
-    -- GC anchoring: evitar que los widgets sean recolectados
-    s.anchors = s.anchors or {}
-    s.anchors.widgets = {}
+    -- GC anchoring: usar tabla global para evitar que el GC recolecte widgets
+    -- _G siempre es alcanzable desde el root set del GC, unlike screen userdata fields
+    _G._wibar_anchors = _G._wibar_anchors or {}
+    _G._wibar_anchors[s] = _G._wibar_anchors[s] or {}
+    local anchors = _G._wibar_anchors[s]
 
     local function anchor(k, v)
-        if s.anchors then
-            s.anchors.widgets[k] = v
-        end
+        anchors[k] = v
         return v
     end
 
-    -- Si ya existe wibar funcional, salir (evita recreación en hotplug)
+-- Si ya existe wibar funcional, salir (evita recreación en hotplug)
+    -- NO limpiar anchors aquí: los widgets viejos necesitan sus referencias vivas
     if s.mywibar then
         local ok, w = pcall(s.mywibar.get_widget, s.mywibar)
         if ok and w then return end
@@ -168,17 +188,33 @@ screen.connect_signal("request::desktop_decoration", function(s)
         s.mywibar = nil
     end
 
+    -- Limpiar anchors viejos SOLO cuando vamos a recrear la wibar
+    for k in pairs(anchors) do anchors[k] = nil end
+
+    -- wibar_update_padding: definido FUERA del pcall para que el health timer
+    -- también pueda acceder a él (captura 's' del closure del handler)
+    local function wibar_update_padding(visible)
+        local p = { right = dpi(0), top = dpi(15), bottom = dpi(15) }
+        p.left = visible and (dpi(10)) or 0
+        s.padding = p
+        awful.layout.arrange(s)
+    end
+    s._wibar_update_padding = wibar_update_padding
+
     local ok_init, err_init = pcall(function()
 
-    -- Launcher
-    -------------
+-- Launcher
+    ----------------
+
+    local awesome_icon_path = gfs.get_configuration_dir() .. "theme/assets/icons/awesome.png"
+    local awesome_icon_imgbox = wibox.widget.imagebox()
+    awesome_icon_imgbox.image = awesome_icon_path
+    awesome_icon_imgbox.resize = true
+    anchor("_awesome_icon_imgbox", awesome_icon_imgbox)
+    anchor("_awesome_icon_path", awesome_icon_path)
 
     local awesome_icon = wibox.widget {
-        {
-            widget = wibox.widget.imagebox,
-            image = beautiful.awesome_logo,
-            resize = true
-        },
+        awesome_icon_imgbox,
         margins = dpi(2),
         widget = wibox.container.margin
     }
@@ -280,6 +316,17 @@ screen.connect_signal("request::desktop_decoration", function(s)
     anchor("net_dl", net_dl)
     screen_nets[s] = {dl = net_dl}
 
+    -- Temperature widget
+    local temp_text = wibox.widget{
+        font = beautiful.font_name .. "bold 7",
+        align = "center",
+        valign = "center",
+        markup = helpers.colorize_text("--°C", beautiful.xcolor8),
+        widget = wibox.widget.textbox
+    }
+    anchor("temp_text", temp_text)
+    screen_temps[s] = {temp = temp_text}
+
     -- Stats
     -----------
 
@@ -296,20 +343,21 @@ screen.connect_signal("request::desktop_decoration", function(s)
     }
     anchor("stats", stats)
 
-    -- Crear dashboard, tooltip y system menu por pantalla
-    local ok_dash, err_dash = pcall(function() require("ui.dashboard").create(s) end)
+    -- Crear dashboard, tooltip y system menu por pantalla (lazy loaded)
+    local lazy = require("ui.lazy")
+    local ok_dash, err_dash = pcall(function() lazy.load("dashboard").create(s) end)
     if not ok_dash then
         local f = io.open("/tmp/awesome-wibar-errors.log", "a")
         if f then f:write(os.date("%H:%M:%S") .. " DASHBOARD ERROR: " .. tostring(err_dash) .. "\n"); f:close() end
         error(err_dash)
     end
-    local ok_tip, err_tip = pcall(function() require("ui.tooltip").create(s) end)
+    local ok_tip, err_tip = pcall(function() lazy.load("tooltip").create(s) end)
     if not ok_tip then
         local f = io.open("/tmp/awesome-wibar-errors.log", "a")
         if f then f:write(os.date("%H:%M:%S") .. " TOOLTIP ERROR: " .. tostring(err_tip) .. "\n"); f:close() end
         error(err_tip)
     end
-    local ok_menu, err_menu = pcall(function() require("ui.system_menu")(s) end)
+    local ok_menu, err_menu = pcall(function() lazy.load("system_menu")(s) end)
     if not ok_menu then
         local f = io.open("/tmp/awesome-wibar-errors.log", "a")
         if f then f:write(os.date("%H:%M:%S") .. " SYSTEM_MENU ERROR: " .. tostring(err_menu) .. "\n"); f:close() end
@@ -482,15 +530,6 @@ screen.connect_signal("request::desktop_decoration", function(s)
         end)
     ))
 
-    -- Ajusta padding del workarea según visibilidad de la barra
-    -- bar.x = dpi(10), strut.width = dpi(50) → workarea.left = padding + strut
-    local function wibar_update_padding(visible)
-        local p = { right = dpi(0), top = dpi(15), bottom = dpi(15) }
-        p.left = visible and (dpi(10)) or 0
-        s.padding = p
-        awful.layout.arrange(s)
-    end
-
     -- Toggle wibar con Ctrl+F
     s.wibar_visible = true
     _G["wibar_toggle"] = function()
@@ -539,6 +578,8 @@ screen.connect_signal("request::desktop_decoration", function(s)
             end
         end)
     end
+    anchor("_hide_for_client", s._hide_for_client)
+    anchor("_on_unmanage", s._on_unmanage)
 
     -- Padding inicial (barra visible)
     wibar_update_padding(true)
@@ -619,6 +660,7 @@ screen.connect_signal("request::desktop_decoration", function(s)
             {
                 awesome_icon,
                 taglist,
+                temp_text,
                 spacing = dpi(6),
                 layout = wibox.layout.fixed.vertical
             },
@@ -635,6 +677,7 @@ screen.connect_signal("request::desktop_decoration", function(s)
         margins = dpi(6),
         widget = wibox.container.margin
     }
+    anchor("_wibar_setup", s._wibar_setup)
 
     s.mywibar:setup(s._wibar_setup)
 
@@ -663,26 +706,38 @@ screen.connect_signal("request::desktop_decoration", function(s)
         log_init:close()
     end
 
-    -- Timer de salud: verifica cada 30s si la barra tiene widgets
+    -- Timer de salud: verifica cada 15s si la barra sigue teniendo widgets
     local health_attempts = 0
-    local health_timer = gears.timer.start_new(30, function()
+    local health_timer = gears.timer.start_new(15, function()
         pcall(function()
             if not (s and s.mywibar) then return true end
+            -- Solo verificar que el widget tree exista (NO verificar visible/width
+            -- porque la barra puede estar oculta intencionalmente por fullscreen)
             local ok, w = pcall(s.mywibar.get_widget, s.mywibar)
-            if ok and w then health_attempts = 0; return true end
-            ok, w = pcall(function() return s.mywibar._widget end)
-            if ok and w then health_attempts = 0; return true end
-            -- Si llegamos aquí, la barra perdió sus widgets
+            if ok and w then
+                health_attempts = 0
+                -- Re-assert awesome icon image (puede perderse por GC interno de C)
+                if anchors._awesome_icon_imgbox and anchors._awesome_icon_path then
+                    if not anchors._awesome_icon_imgbox.image then
+                        anchors._awesome_icon_imgbox.image = anchors._awesome_icon_path
+                    end
+                end
+                return true
+            end
+            -- La barra perdió sus widgets → recuperar
             health_attempts = health_attempts + 1
             local log = io.open("/tmp/awesome-wibar-errors.log", "a")
             if log then
                 log:write(os.date("%H:%M:%S") .. " Wibar lost widgets (attempt " .. health_attempts .. ")\n")
                 log:close()
             end
-            -- Intentar recuperar la barra re-configurándola
+            -- Re-configurar la barra
             pcall(function()
                 if s._wibar_setup then
                     s.mywibar:setup(s._wibar_setup)
+                    s.mywibar.visible = true
+                    s.wibar_visible = true
+                    wibar_update_padding(true)
                 end
             end)
             -- Si falla 3 veces seguidas, reiniciar

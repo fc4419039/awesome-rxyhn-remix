@@ -14,7 +14,7 @@ awful.screen.connect_for_each_screen(function(s)
         {"   Hotkeys", function() hotkeys_popup.show_help(nil, awful.screen.focused()) end},
         {"   Manual", terminal .. " -e man awesome"},
         {"   Edit Config", editor .. " " .. awesome.conffile},
-        {"   Restart", awesome.restart},
+        {"   Restart", function() require("ui.reload").restart() end},
         {"   Quit", function() awesome.quit() end}
     }
 
@@ -31,9 +31,8 @@ awful.screen.connect_for_each_screen(function(s)
 
     -- Wallpaper submenu
     wallpapermenu = {
-        {"   Fondo interactivo", function() awful.spawn.with_shell("rm -f $HOME/.cache/wallpaper_fijo.txt && " .. os.getenv("HOME") .. "/.config/cambiar_fondo.sh") end},
-        {"   Elegir imagen", function() awful.spawn.with_shell(os.getenv("HOME") .. "/.config/awesome/scripts/set-wallpaper.sh") end},
-        {"   Pantalla de bloqueo", function() awful.spawn.with_shell(os.getenv("HOME") .. "/.config/awesome/scripts/set-sddm-bg.sh") end}
+        {"  Fondo", function() require("ui.system_menu.wallpaper_picker").toggle() end},
+        {"  Pantalla de bloqueo", function() require("ui.system_menu.sddm_picker").toggle() end}
     }
 
     -- Mainmenu

@@ -6,8 +6,27 @@ local beautiful = require("beautiful")
 local update_interval = 30
 local last_notified = 0
 
+local bat_path = "/sys/class/power_supply/BAT0"
+local ac_path = "/sys/class/power_supply/AC"
+
+awful.spawn.easy_async_with_shell(
+    "for p in /sys/class/power_supply/BAT*; do [ -f \"$p/capacity\" ] && echo \"$p\" && break; done",
+    function(stdout)
+        local found = stdout and stdout:match("^%s*(.-)%s*$")
+        if found and found ~= "" then bat_path = found end
+    end
+)
+
+awful.spawn.easy_async_with_shell(
+    "for p in /sys/class/power_supply/AC* /sys/class/power_supply/ADP*; do [ -f \"$p/online\" ] && echo \"$p\" && break; done",
+    function(stdout)
+        local found = stdout and stdout:match("^%s*(.-)%s*$")
+        if found and found ~= "" then ac_path = found end
+    end
+)
+
 local function read_battery()
-    awful.spawn.easy_async_with_shell("cat /sys/class/power_supply/BAT0/capacity", function(stdout)
+    awful.spawn.easy_async_with_shell("cat " .. bat_path .. "/capacity", function(stdout)
         local val = stdout and tonumber(stdout:match("%d+"))
         if val then
             awesome.emit_signal("signal::battery", val)
@@ -16,7 +35,7 @@ local function read_battery()
 end
 
 local function read_charger()
-    awful.spawn.easy_async_with_shell("cat /sys/class/power_supply/AC/online", function(out)
+    awful.spawn.easy_async_with_shell("cat " .. ac_path .. "/online", function(out)
         awesome.emit_signal("signal::charger", tonumber(out) == 1)
     end)
 end
@@ -24,7 +43,7 @@ end
 -- Battery low notifications
 awesome.connect_signal("signal::battery", function(val)
     if val and val <= 15 and val ~= last_notified then
-        awful.spawn.easy_async_with_shell("cat /sys/class/power_supply/AC/online", function(out)
+        awful.spawn.easy_async_with_shell("cat " .. ac_path .. "/online", function(out)
             if tonumber(out) ~= 1 then
                 local urgency = val <= 5 and "critical" or "normal"
                 local title = val <= 5 and "⚠️ Battery critical!" or "Battery low"
