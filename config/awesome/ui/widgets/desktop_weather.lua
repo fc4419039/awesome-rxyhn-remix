@@ -32,7 +32,7 @@ local function create_widget(s)
 
     local desc_w = wibox.widget{
         font = beautiful.font_name .. "9",
-        markup = helpers.colorize_text("Loading...", beautiful.dashboard_fg),
+        markup = helpers.colorize_text(i18n.tr("dash.loading"), beautiful.dashboard_fg),
         align = "center",
         valign = "center",
         forced_height = dpi(14),
@@ -64,7 +64,7 @@ local function create_widget(s)
 
         if not temperature or temperature == 999 then
             temp_w.markup = helpers.colorize_text("--°", beautiful.dashboard_fg)
-            desc_w.markup = helpers.colorize_text("Sin datos", beautiful.dashboard_fg)
+            desc_w.markup = helpers.colorize_text(i18n.tr("widget.no_data"), beautiful.dashboard_fg)
             extra_w.markup = ""
         else
             temp_w.markup = helpers.colorize_text(temperature .. symbol, beautiful.xforeground)
@@ -168,17 +168,17 @@ local function create_widget(s)
         if active_menu then active_menu:hide(); active_menu = nil; return end
         active_menu = awful.menu({
             items = {
-                { "Aumentar", function()
+                { i18n.tr("dw.increase"), function()
                     local g = w:geometry()
                     w:geometry({width = g.width + dpi(20), height = g.height + dpi(20)})
                     save_pos()
                 end},
-                { "Disminuir", function()
+                { i18n.tr("dw.decrease"), function()
                     local g = w:geometry()
                     w:geometry({width = math.max(dpi(100), g.width - dpi(20)), height = math.max(dpi(100), g.height - dpi(20))})
                     save_pos()
                 end},
-                { "Ocultar", function()
+                { i18n.tr("dw.hide"), function()
                     w.visible = false
                 end},
             },

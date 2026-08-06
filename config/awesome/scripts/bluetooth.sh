@@ -1,5 +1,7 @@
 #!/bin/bash
 
+source "$HOME/.config/awesome/scripts/i18n.sh"
+
 theme="$HOME/.config/awesome/theme/bluetooth.rasi"
 
 get_status() {
@@ -25,7 +27,7 @@ get_devices() {
         elif [ "$paired" = "yes" ]; then
             echo "<span foreground='#94a3b8'>󰂲</span>   $name"
         else
-            echo "<span foreground='#64748b'>󰂲</span>   $name <span foreground='#64748b'>(unpaired)</span>"
+            echo "<span foreground='#64748b'>󰂲</span>   $name <span foreground='#64748b'>$(t bl.unpaired)</span>"
         fi
     done
 }
@@ -46,23 +48,23 @@ main_menu() {
     status=$(get_status)
 
     if [ "$status" = "yes" ]; then
-        printf "<span foreground='#22c55e'>󰂯</span>   Encendido\n"
-        printf "<span foreground='#ef4444'></span>   Apagar\n"
+        printf "<span foreground='#22c55e'>󰂯</span>   %s\n" "$(t bl.powered)"
+        printf "<span foreground='#ef4444'></span>   %s\n" "$(t bl.power_off)"
     else
-        printf "<span foreground='#ef4444'>󰂲</span>   Apagado\n"
-        printf "<span foreground='#22c55e'></span>   Encender\n"
+        printf "<span foreground='#ef4444'>󰂲</span>   %s\n" "$(t bl.powered_off)"
+        printf "<span foreground='#22c55e'></span>   %s\n" "$(t bl.power_on)"
     fi
-    printf "<span foreground='#06b6d4'>󰂰</span>   Dispositivos\n"
-    printf "<span foreground='#94a3b8'></span>   Salir"
+    printf "<span foreground='#06b6d4'>󰂰</span>   %s\n" "$(t bl.devices)"
+    printf "<span foreground='#94a3b8'></span>   %s" "$(t bl.exit)"
 }
 
 devices_menu() {
     local devs
     devs=$(get_devices)
-    [ -z "$devs" ] && devs="<span foreground='#64748b'>   Sin dispositivos</span>"
-    printf "<span foreground='#f97316'></span>   Atrás\n"
-    printf "<span foreground='#3b82f6'>󰍉</span>   Escanear\n"
-    printf "<span foreground='#a855f7'></span>   Refrescar\n"
+    [ -z "$devs" ] && devs="<span foreground='#64748b'>   $(t bl.no_devices)</span>"
+    printf "<span foreground='#f97316'></span>   %s\n" "$(t bl.back)"
+    printf "<span foreground='#3b82f6'>󰍉</span>   %s\n" "$(t bl.scan)"
+    printf "<span foreground='#a855f7'></span>   %s\n" "$(t bl.refresh)"
     printf "%s\n" "$devs"
 }
 
@@ -80,22 +82,22 @@ handle_device_action() {
 
     if [ "$connected" = "yes" ]; then
         bluetoothctl disconnect "$mac" >/dev/null 2>&1
-        notify-send -i bluetooth "Bluetooth" "Disconnected from $name"
+        notify-send -i bluetooth "$(t bl.title)" "$(tsub bl.disconnected "$name")"
     else
         local paired
         paired=$(echo "$info" | grep "Paired:" | awk '{print $2}')
         if [ "$paired" != "yes" ]; then
-            notify-send -i bluetooth "Bluetooth" "Pairing with $name..."
+            notify-send -i bluetooth "$(t bl.title)" "$(tsub bl.pairing "$name")"
             bluetoothctl agent on >/dev/null 2>&1
             bluetoothctl default-agent >/dev/null 2>&1
             bluetoothctl pair "$mac" >/dev/null 2>&1
         fi
         bluetoothctl trust "$mac" >/dev/null 2>&1
-        notify-send -i bluetooth "Bluetooth" "Connecting to $name..."
+        notify-send -i bluetooth "$(t bl.title)" "$(tsub bl.connecting "$name")"
         if bluetoothctl connect "$mac" >/dev/null 2>&1; then
-            notify-send -i bluetooth "Bluetooth" "Connected to $name"
+            notify-send -i bluetooth "$(t bl.title)" "$(tsub bl.connected "$name")"
         else
-            notify-send -u critical -i bluetooth "Bluetooth" "Failed to connect to $name"
+            notify-send -u critical -i bluetooth "$(t bl.title)" "$(tsub bl.connect_failed "$name")"
         fi
     fi
 }
@@ -105,21 +107,21 @@ while true; do
     [ -z "$choice" ] && exit 0
 
     case "$choice" in
-        *"Apagar"*)
+        *"$(t bl.power_off)"*)
             bluetoothctl power off >/dev/null 2>&1
-            notify-send -i bluetooth "Bluetooth" "Apagado"
+            notify-send -i bluetooth "$(t bl.title)" "$(t bl.powered_off)"
             continue
             ;;
-        *"Encender"*)
+        *"$(t bl.power_on)"*)
             rfkill unblock bluetooth >/dev/null 2>&1
             sleep 0.5
             bluetoothctl power on >/dev/null 2>&1
             bluetoothctl agent on >/dev/null 2>&1
             bluetoothctl default-agent >/dev/null 2>&1
-            notify-send -i bluetooth "Bluetooth" "Encendido"
+            notify-send -i bluetooth "$(t bl.title)" "$(t bl.powered)"
             continue
             ;;
-        *"Dispositivos"*)
+        *"$(t bl.devices)"*)
             ;;
         *)
             exit 0
@@ -131,16 +133,16 @@ while true; do
         [ -z "$choice" ] && exit 0
 
         case "$choice" in
-            *"Atrás"*)
+            *"$(t bl.back)"*)
                 break
                 ;;
-            *"Escanear"*)
-                notify-send -i bluetooth "Bluetooth" "Escaneando por 8 segundos..."
+            *"$(t bl.scan)"*)
+                notify-send -i bluetooth "$(t bl.title)" "$(t bl.scanning)"
                 bluetoothctl --timeout 8 scan on >/dev/null 2>&1
-                notify-send -i bluetooth "Bluetooth" "Escaneo completo"
+                notify-send -i bluetooth "$(t bl.title)" "$(t bl.scan_done)"
                 continue
                 ;;
-            *"Refrescar"*)
+            *"$(t bl.refresh)"*)
                 continue
                 ;;
         esac

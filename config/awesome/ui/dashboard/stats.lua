@@ -17,7 +17,7 @@ local helpers = require("helpers")
 
 local stats_text = wibox.widget{
     font = beautiful.font_name .. "medium 8",
-    markup = helpers.colorize_text("Stats", beautiful.dashboard_box_fg),
+    markup = helpers.colorize_text(i18n.tr("dash.stats"), beautiful.dashboard_box_fg),
     valign = "center",
     widget = wibox.widget.textbox
 }

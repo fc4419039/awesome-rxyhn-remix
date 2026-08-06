@@ -218,7 +218,7 @@ function M.create(s)
 
     local uptime_label = wibox.widget{
         font = beautiful.font_name .. "medium 9",
-        markup = helpers.colorize_text("Uptime", beautiful.xcolor5),
+        markup = helpers.colorize_text(i18n.tr("tt.uptime"), beautiful.xcolor5),
         valign = "center",
         widget = wibox.widget.textbox
     }
@@ -296,7 +296,7 @@ function M.create(s)
 
     local wifi_status_text = wibox.widget{
         font = beautiful.font_name .. "medium 9",
-        markup = helpers.colorize_text("Scanning...", beautiful.dashboard_box_fg),
+        markup = helpers.colorize_text(i18n.tr("tt.scanning"), beautiful.dashboard_box_fg),
         valign = "center",
         widget = wibox.widget.textbox
     }
@@ -336,29 +336,29 @@ function M.create(s)
             return nil, nil
         end
         if output:match("Secrets were required") or output:match("no secret") then
-            return "error", "Contraseña requerida"
+            return "error", i18n.tr("tt.err_password_required")
         end
         if output:match("password is not valid") or output:match("password too short") then
-            return "error", "Contraseña muy corta o inválida (mín. 8 caracteres)"
+            return "error", i18n.tr("tt.err_bad_password")
         end
         if output:match("incorrect") or output:match("wrong") or output:match("Invalid properties") then
-            return "error", "Contraseña incorrecta"
+            return "error", i18n.tr("tt.err_wrong_password")
         end
         if output:match("could not be found") then
-            return "error", "Red no encontrada"
+            return "error", i18n.tr("tt.err_not_found")
         end
         if output:match("not available") then
-            return "error", "Red no disponible"
+            return "error", i18n.tr("tt.err_not_available")
         end
         if output:match("No network with SSID") then
-            return "error", "No se encontró la red"
+            return "error", i18n.tr("tt.err_no_ssid")
         end
         if output:match("timeout") or output:match("timed out") then
-            return "error", "Tiempo de conexión agotado"
+            return "error", i18n.tr("tt.err_timeout")
         end
         local err = output:gsub("%s+", " "):gsub("^%s*(.-)%s*$", "%1")
         if err == "" then
-            return "error", "Error de conexión desconocido"
+            return "error", i18n.tr("tt.err_unknown")
         end
         return "error", err
     end
@@ -400,7 +400,7 @@ function M.create(s)
         end
         wifi_networks_list:reset()
         wifi_networks_list:insert(1, wibox.widget {
-            markup = helpers.colorize_text("Scanning...", beautiful.dashboard_box_fg),
+            markup = helpers.colorize_text(i18n.tr("tt.scanning"), beautiful.dashboard_box_fg),
             font = beautiful.font_name .. "medium 8",
             widget = wibox.widget.textbox
         })
@@ -411,7 +411,7 @@ function M.create(s)
             if not stdout or stdout == "" then
                 wifi_networks_list:reset()
                 wifi_networks_list:insert(1, wibox.widget {
-                    markup = helpers.colorize_text("No networks found", beautiful.xcolor8),
+                    markup = helpers.colorize_text(i18n.tr("tt.no_networks"), beautiful.xcolor8),
                     font = beautiful.font_name .. "medium 8",
                     widget = wibox.widget.textbox
                 })
@@ -469,7 +469,7 @@ function M.create(s)
 
                                 wifi_networks_list:reset()
                                 wifi_networks_list:add(wibox.widget {
-                                    markup = helpers.colorize_text("Password for:", beautiful.dashboard_box_fg),
+                                    markup = helpers.colorize_text(i18n.tr("tt.password_for"), beautiful.dashboard_box_fg),
                                     font = beautiful.font_name .. "medium 7",
                                     widget = wibox.widget.textbox
                                 })
@@ -479,7 +479,7 @@ function M.create(s)
                                     widget = wibox.widget.textbox
                                 })
                                 local pw_display = wibox.widget {
-                                    markup = helpers.colorize_text("Password: ", beautiful.xcolor3),
+                                    markup = helpers.colorize_text(i18n.tr("tt.password") .. " ", beautiful.xcolor3),
                                     font = beautiful.font_name .. "medium 8",
                                     valign = "center",
                                     widget = wibox.widget.textbox
@@ -494,7 +494,7 @@ function M.create(s)
                                     widget = wibox.container.margin
                                 })
                                 wifi_networks_list:add(wibox.widget {
-                                    markup = helpers.colorize_text("[Enter] connect  [Esc] cancel", beautiful.xcolor5),
+                                    markup = helpers.colorize_text(i18n.tr("tt.enter_hint"), beautiful.xcolor5),
                                     font = beautiful.font_name .. "medium 6",
                                     widget = wibox.widget.textbox
                                 })
@@ -507,16 +507,16 @@ function M.create(s)
                                         if wifi_pw_buf ~= "" then
                                             wifi_networks_list:reset()
                                             wifi_networks_list:add(wibox.widget {
-                                                markup = helpers.colorize_text("Connecting...", beautiful.xcolor3),
+                                                markup = helpers.colorize_text(i18n.tr("tt.connecting"), beautiful.xcolor3),
                                                 font = beautiful.font_name .. "medium 8",
                                                 widget = wibox.widget.textbox
                                             })
                                             awful.spawn.easy_async_with_shell("nmcli device wifi connect '" .. shell_escape(ssid) .. "' password '" .. shell_escape(wifi_pw_buf) .. "' 2>&1", function(stdout)
                                                 local level, msg = wifi_parse_error(stdout)
                                                 if level then
-                                                    naughty.notify({title = "WiFi Error", text = msg, timeout = 5, bg = beautiful.xcolor1})
+                                                    naughty.notify({title = i18n.tr("tt.wifi_error_title"), text = msg, timeout = 5, bg = beautiful.xcolor1})
                                                 else
-                                                    naughty.notify({title = "WiFi", text = "Conectado a " .. ssid, timeout = 3, bg = beautiful.xcolor2})
+                                                    naughty.notify({title = i18n.tr("wifi.notif_title"), text = i18n.format("wifi.connected", ssid), timeout = 3, bg = beautiful.xcolor2})
                                                 end
                                                 wifi_scan()
                                             end)
@@ -531,19 +531,19 @@ function M.create(s)
                                         return true
                                     elseif key == "BackSpace" then
                                         wifi_pw_buf = wifi_pw_buf:sub(1, -2)
-                                        pw_display.markup = helpers.colorize_text("Password: ", beautiful.xcolor3) .. helpers.colorize_text(string.rep("●", #wifi_pw_buf), beautiful.xforeground)
+                                        pw_display.markup = helpers.colorize_text(i18n.tr("tt.password") .. " ", beautiful.xcolor3) .. helpers.colorize_text(string.rep("●", #wifi_pw_buf), beautiful.xforeground)
                                     elseif #key == 1 then
                                         wifi_pw_buf = wifi_pw_buf .. key
-                                        pw_display.markup = helpers.colorize_text("Password: ", beautiful.xcolor3) .. helpers.colorize_text(string.rep("●", #wifi_pw_buf), beautiful.xforeground)
+                                        pw_display.markup = helpers.colorize_text(i18n.tr("tt.password") .. " ", beautiful.xcolor3) .. helpers.colorize_text(string.rep("●", #wifi_pw_buf), beautiful.xforeground)
                                     end
                                 end)
                             else
                                 awful.spawn.easy_async_with_shell("nmcli device wifi connect '" .. shell_escape(ssid) .. "' 2>&1", function(stdout)
                                     local level, msg = wifi_parse_error(stdout)
                                     if level then
-                                        naughty.notify({title = "WiFi Error", text = msg, timeout = 5, bg = beautiful.xcolor1})
+                                        naughty.notify({title = i18n.tr("tt.wifi_error_title"), text = msg, timeout = 5, bg = beautiful.xcolor1})
                                     else
-                                        naughty.notify({title = "WiFi", text = "Conectado a " .. ssid, timeout = 3, bg = beautiful.xcolor2})
+                                        naughty.notify({title = i18n.tr("wifi.notif_title"), text = i18n.format("wifi.connected", ssid), timeout = 3, bg = beautiful.xcolor2})
                                     end
                                     wifi_scan()
                                 end)
@@ -581,7 +581,7 @@ function M.create(s)
                 wifi_icon_w.markup = helpers.colorize_text("", beautiful.xcolor2)
             else
                 wifi_connected_ssid = ""
-                wifi_status_text.markup = helpers.colorize_text("Disconnected", beautiful.xcolor1)
+                wifi_status_text.markup = helpers.colorize_text(i18n.tr("tt.disconnected"), beautiful.xcolor1)
                 wifi_icon_w.markup = helpers.colorize_text("", beautiful.xcolor1)
             end
         end)

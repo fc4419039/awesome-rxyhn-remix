@@ -7,7 +7,7 @@ local helpers = require("helpers")
 
 local disk_text = wibox.widget{
     font = beautiful.font_name .. "medium 8",
-    markup = helpers.colorize_text("Disk", beautiful.dashboard_box_fg),
+    markup = helpers.colorize_text(i18n.tr("dash.disk"), beautiful.dashboard_box_fg),
     valign = "center",
     widget = wibox.widget.textbox
 }
@@ -128,7 +128,7 @@ disk_widget:buttons(gears.table.join(
         awful.spawn.easy_async_with_shell("df -h " .. current_mount .. " | tail -1", function(out)
             local naughty = require("naughty")
             naughty.notify({
-                title = "Disco " .. current_mount,
+                title = i18n.format("dash.disk_title", current_mount),
                 text = out,
                 timeout = 10,
                 width = dpi(400),

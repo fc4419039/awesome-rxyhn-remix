@@ -15,8 +15,7 @@ local beautiful = require("beautiful")
 naughty.connect_signal("request::display_error", function(message, startup)
     naughty.notification {
         urgency = "critical",
-        title = "Oops, an error happened" ..
-            (startup and " during startup!" or "!"),
+        title = i18n.tr(startup and "extras.error_title_startup" or "extras.error_title"),
         message = message
     }
 end)
@@ -89,7 +88,7 @@ function toggle_window_borders()
         if f then f:close() end
     end
     naughty.notify({
-        text = window_borders_enabled and "Bordes de ventanas activados" or "Bordes de ventanas desactivados",
+        text = window_borders_enabled and i18n.tr("extras.borders_on") or i18n.tr("extras.borders_off"),
         timeout = 2
     })
 end
@@ -123,8 +122,8 @@ function toggle_window_titlebars()
         if f then f:close() end
     end
     naughty.notify({
-        text = (titlebars_enabled and "Titlebars activados" or "Titlebars desactivados")
-            .. " (" .. n .. " ventanas)",
+        text = (titlebars_enabled and i18n.tr("extras.titlebars_on") or i18n.tr("extras.titlebars_off"))
+            .. " " .. i18n.format("extras.windows_count", n),
         timeout = 3
     })
 end

@@ -18,6 +18,9 @@ local rubato = require("module.rubato")
 -- Helpers
 local helpers = require("helpers")
 
+-- i18n
+local i18n = require("i18n")
+
 -- Lock
 local lock_screen = require("ui.lockscreen")
 
@@ -320,7 +323,7 @@ playerctl:connect_signal("metadata", function(_, title, artist, album_path)
     if title and title ~= "" then
         music_title.markup = helpers.colorize_text(title, beautiful.xforeground)
     else
-        music_title.markup = helpers.colorize_text("Nothing Playing", beautiful.xcolor5)
+        music_title.markup = helpers.colorize_text(i18n.tr("dash.nothing_playing"), beautiful.xcolor5)
     end
     if artist and artist ~= "" then
         music_artist.markup = helpers.colorize_text(artist, beautiful.xcolor5)

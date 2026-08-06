@@ -298,15 +298,15 @@ local function create_widget(s)
         end
 
         local colors = {
-            { "Blanco", "#ffffff" },
-            { "Negro", "#000000" },
-            { "Cyan", beautiful.deco_cyan },
-            { "Azul", beautiful.deco_blue },
-            { "Púrpura", beautiful.deco_purple },
-            { "Verde", beautiful.deco_green },
-            { "Amarillo", beautiful.deco_yellow },
-            { "Rojo", beautiful.deco_red },
-            { "Gris", beautiful.deco_gray },
+            { i18n.tr("dw.color_white"), "#ffffff" },
+            { i18n.tr("dw.color_black"), "#000000" },
+            { i18n.tr("dw.color_cyan"), beautiful.deco_cyan },
+            { i18n.tr("dw.color_blue"), beautiful.deco_blue },
+            { i18n.tr("dw.color_purple"), beautiful.deco_purple },
+            { i18n.tr("dw.color_green"), beautiful.deco_green },
+            { i18n.tr("dw.color_yellow"), beautiful.deco_yellow },
+            { i18n.tr("dw.color_red"), beautiful.deco_red },
+            { i18n.tr("dw.color_gray"), beautiful.deco_gray },
         }
 
         local color_menu = {}
@@ -321,20 +321,20 @@ local function create_widget(s)
 
         active_menu = awful.menu({
             items = {
-                { "Colores", color_menu },
-                { "Fecha: " .. (show_date and "ON" or "OFF"), function()
+                { i18n.tr("dw.colors"), color_menu },
+                { i18n.format("dw.date_toggle", show_date and "ON" or "OFF"), function()
                     show_date = not show_date
                     local fc = io.open(show_date_file, "w")
                     if fc then fc:write(tostring(show_date)); fc:close() end
                     render_all()
                 end},
-                { "Hora: " .. (show_time and "ON" or "OFF"), function()
+                { i18n.format("dw.time_toggle", show_time and "ON" or "OFF"), function()
                     show_time = not show_time
                     local fc = io.open(show_time_file, "w")
                     if fc then fc:write(tostring(show_time)); fc:close() end
                     render_all()
                 end},
-                { "Aumentar", function()
+                { i18n.tr("dw.increase"), function()
                     local max_w = s.geometry.width - dpi(40)
                     current_scale = math.min(max_w / base_w_px, current_scale + 0.1)
                     local nw = math.floor(base_w_px * current_scale)
@@ -342,14 +342,14 @@ local function create_widget(s)
                     w:geometry({width = nw, height = nh})
                     update_scale(current_scale)
                 end},
-                { "Disminuir", function()
+                { i18n.tr("dw.decrease"), function()
                     current_scale = math.max(0.4, current_scale - 0.1)
                     local nw = math.max(dpi(120), math.floor(base_w_px * current_scale))
                     local nh = math.floor(nw * base_h / base_w + 0.5)
                     w:geometry({width = nw, height = nh})
                     update_scale(current_scale)
                 end},
-                { "Ocultar", function()
+                { i18n.tr("dw.hide"), function()
                     w.visible = false
                 end},
             },

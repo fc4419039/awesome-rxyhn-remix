@@ -1,6 +1,8 @@
 #!/bin/bash
 # Change keyboard layout
 
+source "$HOME/.config/awesome/scripts/i18n.sh"
+
 current=$(setxkbmap -query 2>/dev/null | grep "^layout:" | awk '{print $2}')
 
 layouts="latam    Español Latinoamérica
@@ -18,7 +20,7 @@ cn       Chino
 ar       Árabe
 ru       Ruso"
 
-selected=$(echo "$layouts" | rofi -dmenu -p "Keyboard Layout" \
+selected=$(echo "$layouts" | rofi -dmenu -p "$(t kb.prompt)" \
     -theme "$HOME/.config/awesome/theme/rofi-menu.rasi" \
     -no-custom)
 
@@ -27,12 +29,12 @@ if [ -n "$selected" ]; then
 
     setxkbmap "$layout" 2>/dev/null
     new_kb=$(setxkbmap -query 2>/dev/null | grep "^layout:" | awk '{print $2}')
-    notify-send "Teclado cambiado" "Layout: $new_kb (sesión actual)" -i input-keyboard
+    notify-send "$(t kb.layout_changed)" "$(tsub kb.layout_current "$new_kb")" -i input-keyboard
 
     sudo localectl set-x11-keymap "$layout" 2>/dev/null
     if [ $? -eq 0 ]; then
-        notify-send "Teclado guardado" "Layout: $layout guardado permanentemente" -i input-keyboard
+        notify-send "$(t kb.layout_saved)" "$(tsub kb.layout_saved_perm "$layout")" -i input-keyboard
     else
-        notify-send "Error" "No se pudo guardar permanentemente" -i dialog-error
+        notify-send "$(t common.error)" "$(t kb.save_failed)" -i dialog-error
     fi
 fi

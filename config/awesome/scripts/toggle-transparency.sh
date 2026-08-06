@@ -1,5 +1,7 @@
 #!/bin/bash
 
+source "$HOME/.config/awesome/scripts/i18n.sh"
+
 STATE_FILE="/tmp/awesome-transparency-mode"
 BLUR_STATE="/tmp/awesome-blur-mode"
 THEME_DIR="$HOME/.config/awesome/theme"
@@ -69,7 +71,7 @@ if [ -f "$STATE_FILE" ]; then
 
     picom -b --dbus --config "$PICOM_CONF" &>/dev/null &
     awesome-client 'awesome.restart()'
-    notify-send -t 1500 "Transparency" "Desactivado"
+    notify-send -t 1500 "$(t ttr.title)" "$(t tb.deactivated)"
 else
     touch "$STATE_FILE"
     cp "$THEME_LUA" "$BACKUP"
@@ -106,5 +108,5 @@ else
     pkill picom
     picom -b --dbus --config "$PICOM_TRANS" &>/dev/null &
     awesome-client 'awesome.restart()'
-    notify-send -t 1500 "Transparency" "Activado"
+    notify-send -t 1500 "$(t ttr.title)" "$(t tb.activated)"
 fi

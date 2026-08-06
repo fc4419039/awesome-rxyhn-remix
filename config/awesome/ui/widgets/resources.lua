@@ -345,7 +345,7 @@ function toggle_resources()
         if not ok then
             local naughty = require("naughty")
             naughty.notify({
-                title = "Resources Error",
+                title = i18n.tr("widget.resources_error"),
                 text = tostring(err),
                 timeout = 10,
             })

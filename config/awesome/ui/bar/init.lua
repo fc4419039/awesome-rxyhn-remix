@@ -636,7 +636,7 @@ screen.connect_signal("request::desktop_decoration", function(s)
             create_callback = function(self, c, index, objects)
                 self:connect_signal('mouse::enter', function()
                     if c.valid then
-                        local title = c.name or "Unknown"
+                        local title = c.name or i18n.tr("widget.unknown")
                         local class = c.class or ""
                         if self._tooltip then
                             self._tooltip.text = title .. "\n" .. class

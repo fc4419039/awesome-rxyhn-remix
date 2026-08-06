@@ -1,5 +1,7 @@
 #!/bin/bash
 
+source "$HOME/.config/awesome/scripts/i18n.sh"
+
 STATE_FILE="/tmp/awesome-blur-mode"
 THEME_DIR="$HOME/.config/awesome/theme"
 THEME_LUA="$THEME_DIR/theme.lua"
@@ -69,7 +71,7 @@ if [ -f "$STATE_FILE" ]; then
 
     picom -b --dbus --config "$PICOM_CONF" &>/dev/null &
     awesome-client 'awesome.restart()'
-    notify-send -t 1500 "Blur" "Desactivado"
+    notify-send -t 1500 "$(t tb.title)" "$(t tb.deactivated)"
 else
     touch "$STATE_FILE"
     cp "$THEME_LUA" "$BACKUP"
@@ -109,5 +111,5 @@ else
     pkill picom
     picom -b --dbus --config "$PICOM_BLUR" &>/dev/null &
     awesome-client 'awesome.restart()'
-    notify-send -t 1500 "Blur" "Activado"
+    notify-send -t 1500 "$(t tb.title)" "$(t tb.activated)"
 fi

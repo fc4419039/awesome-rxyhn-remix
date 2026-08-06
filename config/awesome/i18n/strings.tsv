@@ -1,0 +1,194 @@
+key	es	en	pt	fr	de	it	ja	ko	zh	ru	ar
+pm.power	Apagar	Power Off	Desligar	Éteindre	Ausschalten	Spegni	電源オフ	전원 끄기	关机	Выключить	إيقاف التشغيل
+pm.reboot	Reiniciar	Reboot	Reiniciar	Redémarrer	Neustarten	Riavvia	再起動	재시작	重启	Перезагрузка	إعادة التشغيل
+pm.lock	Bloquear	Lock	Bloquear	Verrouiller	Sperren	Blocca	ロック	잠금	锁定	Блокировка	قفل
+pm.suspend	Suspender	Suspend	Suspender	Veille	Anhalten	Sospendi	サスペンド	절전 모드	挂起	Сон	إيقاف مؤقت
+pm.logout	Cerrar sesión	Log Out	Sair	Déconnexion	Abmelden	Esci	ログアウト	로그아웃	退出登录	Выйти	تسجيل الخروج
+pm.hibernate	Hibernar	Hibernate	Hibernar	Hiberner	Ruhezustand	Ibernazione	休止状態	최대 절전	休眠	Гибернация	إسبات
+pm.confirm_power	¿Apagar el sistema?	Power off the system?	Desligar o sistema?	Éteindre le système ?	System ausschalten?	Spegnere il sistema?	システムをシャットダウンしますか？	시스템을 종료할까요?	关闭系统？	Выключить систему?	إيقاف تشغيل النظام؟
+pm.confirm_reboot	¿Reiniciar el sistema?	Reboot the system?	Reiniciar o sistema?	Redémarrer le système ?	System neu starten?	Riavviare il sistema?	システムを再起動しますか？	시스템을 재시작할까요?	重启系统？	Перезагрузить систему?	إعادة تشغيل النظام؟
+pm.confirm_logout	¿Cerrar sesión?	Log out?	Sair da sessão?	Se déconnecter ?	Abmelden?	Uscire dalla sessione?	ログアウトしますか？	로그아웃할까요?	退出登录？	Выйти из сеанса?	تسجيل الخروج؟
+pm.confirm_hibernate	¿Hibernar el sistema?	Hibernate the system?	Hibernar o sistema?	Hiberner le système ?	System in den Ruhezustand versetzen?	Ibernare il sistema?	システムを休止状態にしますか？	시스템을 최대 절전 모드로 전환할까요?	系统休眠？	Перевести систему в режим гибернации?	إسبات النظام؟
+pm.yes	Si	Yes	Sim	Oui	Ja	Sì	はい	예	是	Да	نعم
+pm.no	No	No	Não	Non	Nein	No	いいえ	아니요	否	Нет	لا
+wifi.scan	Escanear	Rescan	Escanear	Scanner	Neu scannen	Scansiona	再スキャン	다시 스캔	重新扫描	Сканировать	فحص
+wifi.nonetworks	Sin redes disponibles	No networks available	Sem redes disponíveis	Aucun réseau disponible	Keine Netzwerke verfügbar	Nessuna rete disponibile	利用可能なネットワークがありません	사용 가능한 네트워크가 없습니다	没有可用网络	Нет доступных сетей	لا توجد شبكات متاحة
+wifi.forget	Olvidar red...	Forget network...	Esquecer rede...	Oublier le réseau...	Netzwerk vergessen...	Dimentica rete...	ネットワークを忘れる...	네트워크 잊기...	忘记网络...	Забыть сеть...	نسيان الشبكة...
+wifi.close	Cerrar	Close	Fechar	Fermer	Schließen	Chiudi	閉じる	닫기	关闭	Закрыть	إغلاق
+wifi.back	Volver	Back	Voltar	Retour	Zurück	Indietro	戻る	뒤로	返回	Назад	رجوع
+wifi.nosaved	No hay redes guardadas	No saved networks	Sem redes guardadas	Aucun réseau enregistré	Keine gespeicherten Netzwerke	Nessuna rete salvata	保存されたネットワークがありません	저장된 네트워크가 없습니다	没有已保存的网络	Нет сохранённых сетей	لا توجد شبكات محفوظة
+wifi.confirm_disconnect	Desconectar %s?	Disconnect %s?	Desconectar %s?	Déconnecter %s ?	%s trennen?	Disconnetti %s?	%s から切断しますか？	%s 연결을 끊을까요?	断开 %s？	Отключить %s?	قطع اتصال %s؟
+wifi.confirm_forget	Olvidar %s?	Forget %s?	Esquecer %s?	Oublier %s ?	%s vergessen?	Dimenticare %s?	%s を忘れますか？	%s를 잊을까요?	忘记 %s？	Забыть %s?	نسيان %s؟
+wifi.notif_title	WiFi	WiFi	WiFi	WiFi	WiFi	WiFi	WiFi	WiFi	WiFi	WiFi	WiFi
+wifi.forgotten	Red olvidada: %s	Network forgotten: %s	Rede esquecida: %s	Réseau oublié : %s	Netzwerk vergessen: %s	Rete dimenticata: %s	%s を忘れました	%s 네트워크를 잊었습니다	已忘记网络：%s	Сеть забыта: %s	تم نسيان الشبكة: %s
+wifi.connecting	Conectando a %s...	Connecting to %s...	Conectando a %s...	Connexion à %s...	Verbinde mit %s...	Connessione a %s...	%s に接続中...	%s에 연결 중...	正在连接 %s...	Подключение к %s...	الاتصال بـ %s...
+wifi.connected	Conectado a %s	Connected to %s	Conectado a %s	Connecté à %s	Verbunden mit %s	Connesso a %s	%s に接続しました	%s에 연결됨	已连接到 %s	Подключено к %s	متصل بـ %s
+wifi.error	Error al conectar a %s	Failed to connect to %s	Erro ao conectar a %s	Échec de la connexion à %s	Verbindung zu %s fehlgeschlagen	Errore di connessione a %s	%s への接続に失敗しました	%s에 연결하지 못했습니다	连接到 %s 失败	Не удалось подключиться к %s	فشل الاتصال بـ %s
+wifi.show_password	Alt+1  mostrar / ocultar contraseña	Alt+1  show / hide password	Alt+1  mostrar / ocultar senha	Alt+1  afficher / masquer le mot de passe	Alt+1  Passwort anzeigen / ausblenden	Alt+1  mostra / nascondi password	Alt+1  パスワードを表示 / 非表示	Alt+1  비밀번호 표시 / 숨기기	Alt+1  显示 / 隐藏密码	Alt+1  показать / скрыть пароль	Alt+1  إظهار / إخفاء كلمة المرور
+menu.hotkeys	Atajos	Hotkeys	Atalhos	Raccourcis	Tastenkürzel	Scorciatoie	ショートカット	단축키	快捷键	Горячие клавиши	اختصارات
+menu.manual	Manual	Manual	Manual	Manuel	Handbuch	Manuale	マニュアル	매뉴얼	手册	Справка	الدليل
+menu.edit_config	Editar configuración	Edit Config	Editar configuração	Modifier la configuration	Konfiguration bearbeiten	Modifica configurazione	設定を編集	설정 편집	编辑配置	Изменить конфигурацию	تعديل الإعدادات
+menu.restart	Reiniciar	Restart	Reiniciar	Redémarrer	Neu starten	Riavvia	再起動	다시 시작	重启	Перезапуск	إعادة التشغيل
+menu.quit	Salir	Quit	Sair	Quitter	Beenden	Esci	終了	종료	退出	Выход	خروج
+menu.lock_screen	Bloquear pantalla	Lock Screen	Bloquear tela	Verrouiller l'écran	Bildschirm sperren	Blocca schermo	画面をロック	화면 잠금	锁定屏幕	Заблокировать экран	قفل الشاشة
+menu.wallpaper	Fondo	Wallpaper	Papel de parede	Fond d'écran	Hintergrundbild	Sfondo	壁紙	배경화면	壁纸	Обои	الخلفية
+menu.sddm_bg	Pantalla de bloqueo	Lockscreen background	Tela de bloqueio	Fond d'écran de verrouillage	Sperrbildschirm-Hintergrund	Sfondo blocco schermo	ロック画面の背景	잠금 화면 배경	锁屏背景	Обои экрана блокировки	خلفية شاشة القفل
+menu.terminal	Terminal	Terminal	Terminal	Terminal	Terminal	Terminale	ターミナル	터미널	终端	Терминал	الطرفية
+menu.code_editor	Editor de código	Code Editor	Editor de código	Éditeur de code	Code-Editor	Editor di codice	コードエディター	코드 편집기	代码编辑器	Редактор кода	محرر الأكواد
+menu.file_manager	Gestor de archivos	File Manager	Gestor de arquivos	Gestionnaire de fichiers	Dateimanager	Gestore file	ファイルマネージャー	파일 관리자	文件管理器	Файловый менеджер	مدير الملفات
+menu.web_browser	Navegador web	Web Browser	Navegador web	Navigateur web	Webbrowser	Browser web	ウェブブラウザー	웹 브라우저	网页浏览器	Веб-браузер	متصفح الويب
+menu.music	Música	Music	Música	Musique	Musik	Musica	音楽	음악	音乐	Музыка	الموسيقى
+menu.wallpapers	Fondos	Wallpapers	Papéis de parede	Fonds d'écran	Hintergrundbilder	Sfondi	壁紙	배경화면	壁纸	Обои	الخلفيات
+menu.power_menu	Menú de energía	Power Menu	Menu de energia	Menu d'alimentation	Energiemenü	Menu energia	電源メニュー	전원 메뉴	电源菜单	Меню питания	قائمة الطاقة
+extras.error_title	¡Uy, ocurrió un error!	Oops, an error happened!	Ops, ocorreu um erro!	Oups, une erreur s'est produite !	Ups, es ist ein Fehler aufgetreten!	Ops, si è verificato un errore!	おっと、エラーが発生しました！	이런, 오류가 발생했습니다!	糟糕，发生错误了！	Упс, произошла ошибка!	عفوًا، حدث خطأ!
+extras.error_title_startup	¡Uy, ocurrió un error al iniciar!	Oops, an error happened during startup!	Ops, ocorreu um erro durante a inicialização!	Oups, une erreur s'est produite au démarrage !	Ups, beim Start ist ein Fehler aufgetreten!	Ops, si è verificato un errore durante l'avvio!	おっと、起動中にエラーが発生しました！	이런, 시작 중에 오류가 발생했습니다!	糟糕，启动时发生错误了！	Упс, произошла ошибка при запуске!	عفوًا، حدث خطأ أثناء بدء التشغيل!
+extras.borders_on	Bordes de ventanas activados	Window borders enabled	Bordas de janelas ativadas	Bordures de fenêtres activées	Fensterrahmen aktiviert	Bordi delle finestre attivati	ウィンドウ枠を有効にしました	창 테두리를 활성화했습니다	已启用窗口边框	Рамки окон включены	تم تفعيل حدود النوافذ
+extras.borders_off	Bordes de ventanas desactivados	Window borders disabled	Bordas de janelas desativadas	Bordures de fenêtres désactivées	Fensterrahmen deaktiviert	Bordi delle finestre disattivati	ウィンドウ枠を無効にしました	창 테두리를 비활성화했습니다	已禁用窗口边框	Рамки окон выключены	تم تعطيل حدود النوافذ
+extras.titlebars_on	Titlebars activados	Titlebars enabled	Barras de título ativadas	Barres de titre activées	Titelleisten aktiviert	Barre del titolo attivate	タイトルバーを有効にしました	제목 표시줄을 활성화했습니다	已启用标题栏	Заголовки окон включены	تم تفعيل أشرطة العناوين
+extras.titlebars_off	Titlebars desactivados	Titlebars disabled	Barras de título desativadas	Barres de titre désactivées	Titelleisten deaktiviert	Barre del titolo disattivate	タイトルバーを無効にしました	제목 표시줄을 비활성화했습니다	已禁用标题栏	Заголовки окон выключены	تم تعطيل أشرطة العناوين
+extras.windows_count	(%d ventanas)	(%d windows)	(%d janelas)	(%d fenêtres)	(%d Fenster)	(%d finestre)	(ウィンドウ %d 個)	(창 %d개)	(%d 个窗口)	(%d окон)	(نوافذ %d)
+sm.network	Red	Network	Rede	Réseau	Netzwerk	Rete	ネットワーク	네트워크	网络	Сеть	الشبكة
+sm.bluetooth	Bluetooth	Bluetooth	Bluetooth	Bluetooth	Bluetooth	Bluetooth	Bluetooth	Bluetooth	Bluetooth	Bluetooth	Bluetooth
+sm.blur	Desenfoque	Blur	Desfoque	Flou	Unschärfe	Sfocatura	ぼかし	흐림	模糊	Размытие	ضبابية
+sm.transparency	Transparencia	Transparency	Transparência	Transparence	Transparenz	Trasparenza	透明度	투명도	透明度	Прозрачность	الشفافية
+sm.night	Noche	Night	Noite	Nuit	Nacht	Notte	夜	밤	夜间	Ночь	الليل
+sm.wallpaper	Fondo de pantalla	Wallpaper	Papel de parede	Fond d'écran	Hintergrundbild	Sfondo	壁紙	배경화면	壁纸	Обои	خلفية الشاشة
+sm.volume	Volumen	Volume	Volume	Volume	Lautstärke	Volume	音量	볼륨	音量	Громкость	الصوت
+sm.music	Música	Music	Música	Musique	Musik	Musica	音楽	음악	音乐	Музыка	موسيقى
+sm.accent	Acento	Accent	Acento	Accent	Akzent	Accento	アクセント	강조 색	强调色	Акцент	اللون المميز
+sm.titlebar	Barra de título	Titlebar	Barra de título	Barre de titre	Titelleiste	Barra del titolo	タイトルバー	제목 표시줄	标题栏	Заголовок окна	شريط العنوان
+sm.borders	Bordes	Borders	Bordas	Bordures	Rahmen	Bordi	枠線	테두리	边框	Рамки	الحدود
+sm.sddm	SDDM	SDDM	SDDM	SDDM	SDDM	SDDM	SDDM	SDDM	SDDM	SDDM	SDDM
+sm.apps	Aplicaciones	Apps	Aplicativos	Applications	Apps	App	アプリ	앱	应用	Приложения	التطبيقات
+sm.opencode	OpenCode	OpenCode	OpenCode	OpenCode	OpenCode	OpenCode	OpenCode	OpenCode	OpenCode	OpenCode	OpenCode
+sm.resources	Recursos	Resources	Recursos	Ressources	Ressourcen	Risorse	リソース	리소스	资源	Ресурсы	الموارد
+sm.calculator	Calculadora	Calculator	Calculadora	Calculatrice	Rechner	Calcolatrice	電卓	계산기	计算器	Калькулятор	الآلة الحاسبة
+sm.widgets	Widgets	Widgets	Widgets	Widgets	Widgets	Widget	ウィジェット	위젯	小组件	Виджеты	الأدوات
+sm.power	Energía	Power	Energia	Alimentation	Energie	Energia	電源	전원	电源	Питание	الطاقة
+sm.timezone	Zona horaria	Timezone	Fuso horário	Fuseau horaire	Zeitzone	Fuso orario	タイムゾーン	시간대	时区	Часовой пояс	المنطقة الزمنية
+sm.keyboard	Teclado	Keyboard	Teclado	Clavier	Tastatur	Tastiera	キーボード	키보드	键盘	Клавиатура	لوحة المفاتيح
+sm.language	Idioma	Language	Idioma	Langue	Sprache	Lingua	言語	언어	语言	Язык	اللغة
+sm.clean	Limpiar	Clean	Limpar	Nettoyer	Bereinigen	Pulisci	クリーンアップ	정리	清理	Очистка	تنظيف
+tt.uptime	Tiempo activo	Uptime	Tempo ativo	Temps de fonctionnement	Betriebszeit	Tempo di attività	稼働時間	가동 시간	运行时间	Время работы	مدة التشغيل
+tt.scanning	Escaneando...	Scanning...	Escaneando...	Analyse...	Scannen...	Scansione...	スキャン中...	스캔 중...	正在扫描...	Сканирование...	جارٍ الفحص...
+tt.no_networks	No se encontraron redes	No networks found	Nenhuma rede encontrada	Aucun réseau trouvé	Keine Netzwerke gefunden	Nessuna rete trovata	ネットワークが見つかりません	네트워크를 찾을 수 없습니다	未找到网络	Сети не найдены	لم يتم العثور على شبكات
+tt.password_for	Contraseña para:	Password for:	Senha para:	Mot de passe pour :	Passwort für:	Password per:	のパスワード：	의 비밀번호:	的密码：	Пароль для:	كلمة المرور لـ:
+tt.password	Contraseña	Password	Senha	Mot de passe	Passwort	Password	パスワード	비밀번호	密码	Пароль	كلمة المرور
+tt.enter_hint	[Enter] conectar  [Esc] cancelar	[Enter] connect  [Esc] cancel	[Enter] conectar  [Esc] cancelar	[Entrée] connecter  [Échap] annuler	[Enter] verbinden  [Esc] abbrechen	[Invio] connetti  [Esc] annulla	[Enter] 接続  [Esc] キャンセル	[Enter] 연결  [Esc] 취소	[Enter] 连接  [Esc] 取消	[Enter] подключить  [Esc] отмена	[Enter] اتصال  [Esc] إلغاء
+tt.connecting	Conectando...	Connecting...	Conectando...	Connexion...	Verbinde...	Connessione...	接続中...	연결 중...	正在连接...	Подключение...	جارٍ الاتصال...
+tt.wifi_error_title	Error de WiFi	WiFi Error	Erro de WiFi	Erreur WiFi	WiFi-Fehler	Errore WiFi	WiFi エラー	WiFi 오류	WiFi 错误	Ошибка WiFi	خطأ WiFi
+tt.disconnected	Desconectado	Disconnected	Desconectado	Déconnecté	Getrennt	Disconnesso	切断済み	연결 끊김	已断开	Отключено	غير متصل
+tt.err_password_required	Contraseña requerida	Password required	Senha necessária	Mot de passe requis	Passwort erforderlich	Password richiesta	パスワードが必要です	비밀번호가 필요합니다	需要密码	Требуется пароль	كلمة المرور مطلوبة
+tt.err_bad_password	Contraseña muy corta o inválida (mín. 8 caracteres)	Password too short or invalid (min. 8 characters)	Senha muito curta ou inválida (mín. 8 caracteres)	Mot de passe trop court ou invalide (min. 8 caractères)	Passwort zu kurz oder ungültig (mind. 8 Zeichen)	Password troppo corta o non valida (min. 8 caratteri)	パスワードが短すぎるか無効です（最低 8 文字）	비밀번호가 너무 짧거나 유효하지 않습니다 (최소 8자)	密码太短或无效（至少 8 个字符）	Пароль слишком короткий или неверный (мин. 8 символов)	كلمة المرور قصيرة جدًا أو غير صالحة (8 أحرف على الأقل)
+tt.err_wrong_password	Contraseña incorrecta	Incorrect password	Senha incorreta	Mot de passe incorrect	Falsches Passwort	Password errata	パスワードが正しくありません	비밀번호가 올바르지 않습니다	密码错误	Неверный пароль	كلمة المرور غير صحيحة
+tt.err_not_found	Red no encontrada	Network not found	Rede não encontrada	Réseau introuvable	Netzwerk nicht gefunden	Rete non trovata	ネットワークが見つかりません	네트워크를 찾을 수 없습니다	找不到网络	Сеть не найдена	الشبكة غير موجودة
+tt.err_not_available	Red no disponible	Network not available	Rede indisponível	Réseau indisponible	Netzwerk nicht verfügbar	Rete non disponibile	ネットワークが利用できません	네트워크를 사용할 수 없습니다	网络不可用	Сеть недоступна	الشبكة غير متاحة
+tt.err_no_ssid	No se encontró la red	Network not found	Não foi encontrada a rede	Aucun réseau trouvé	Kein Netzwerk gefunden	Nessuna rete trovata	ネットワークが見つかりませんでした	네트워크를 찾지 못했습니다	未找到网络	Сеть не найдена	لم يتم العثور على الشبكة
+tt.err_timeout	Tiempo de conexión agotado	Connection timed out	Tempo de conexão esgotado	Délai de connexion dépassé	Zeitüberschreitung der Verbindung	Tempo di connessione scaduto	接続がタイムアウトしました	연결 시간이 초과되었습니다	连接超时	Истекло время подключения	انتهت مهلة الاتصال
+tt.err_unknown	Error de conexión desconocido	Unknown connection error	Erro de conexão desconhecido	Erreur de connexion inconnue	Unbekannter Verbindungsfehler	Errore di connessione sconosciuto	不明な接続エラー	알 수 없는 연결 오류	未知连接错误	Неизвестная ошибка подключения	خطأ اتصال غير معروف
+common.error	Error	Error	Erro	Erreur	Fehler	Errore	エラー	오류	错误	Ошибка	خطأ
+bl.title	Bluetooth	Bluetooth	Bluetooth	Bluetooth	Bluetooth	Bluetooth	Bluetooth	Bluetooth	Bluetooth	Bluetooth	Bluetooth
+bl.powered	Encendido	On	Ligado	Activé	An	Attivo	オン	켜짐	已开启	Вкл.	مفعّل
+bl.power_off	Apagar	Power Off	Desligar	Éteindre	Ausschalten	Spegni	オフ	끄기	关闭	Выключить	إيقاف
+bl.powered_off	Apagado	Off	Desligado	Désactivé	Aus	Spento	オフ	꺼짐	已关闭	Выкл.	مُطفأ
+bl.power_on	Encender	Power On	Ligar	Activer	Einschalten	Accendi	オン	켜기	开启	Включить	تشغيل
+bl.devices	Dispositivos	Devices	Dispositivos	Appareils	Geräte	Dispositivi	デバイス	장치	设备	Устройства	الأجهزة
+bl.exit	Salir	Exit	Sair	Quitter	Beenden	Esci	終了	나가기	退出	Выход	خروج
+bl.unpaired	(sin emparejar)	(unpaired)	(não pareado)	(non apparié)	(nicht gekoppelt)	(non associato)	(未ペアリング)	(연결 안 됨)	(未配对)	(не сопряжено)	(غير مقترن)
+bl.no_devices	Sin dispositivos	No devices	Sem dispositivos	Aucun appareil	Keine Geräte	Nessun dispositivo	デバイスがありません	장치 없음	无设备	Нет устройств	لا توجد أجهزة
+bl.back	Atrás	Back	Voltar	Retour	Zurück	Indietro	戻る	뒤로	返回	Назад	رجوع
+bl.scan	Escanear	Scan	Escanear	Scanner	Scannen	Scansiona	スキャン	스캔	扫描	Сканировать	مسح
+bl.refresh	Refrescar	Refresh	Atualizar	Actualiser	Aktualisieren	Aggiorna	更新	새로고침	刷新	Обновить	تحديث
+bl.disconnected	Desconectado de %s	Disconnected from %s	Desconectado de %s	Déconnecté de %s	Getrennt von %s	Disconnesso da %s	%s から切断しました	%s에서 연결 해제됨	已断开与 %s 的连接	Отключено от %s	تم قطع الاتصال بـ %s
+bl.pairing	Emparejando con %s...	Pairing with %s...	Emparelhando com %s...	Appairage avec %s...	Koppele mit %s...	Associazione con %s...	%s とペアリング中...	%s 연결 중...	正在与 %s 配对...	Сопряжение с %s...	جارٍ إقران %s...
+bl.connecting	Conectando con %s...	Connecting to %s...	Conectando a %s...	Connexion à %s...	Verbinde mit %s...	Connessione a %s...	%s に接続中...	%s에 연결 중...	正在连接 %s...	Подключение к %s...	جارٍ الاتصال بـ %s...
+bl.connected	Conectado a %s	Connected to %s	Conectado a %s	Connecté à %s	Verbunden mit %s	Connesso a %s	%s に接続しました	%s에 연결됨	已连接到 %s	Подключено к %s	تم الاتصال بـ %s
+bl.connect_failed	Error al conectar con %s	Failed to connect to %s	Falha ao conectar a %s	Échec de la connexion à %s	Verbindung zu %s fehlgeschlagen	Connessione a %s non riuscita	%s への接続に失敗しました	%s에 연결하지 못했습니다	无法连接到 %s	Не удалось подключиться к %s	فشل الاتصال بـ %s
+bl.scanning	Escaneando durante 8 segundos...	Scanning for 8 seconds...	Escaneando por 8 segundos...	Analyse pendant 8 secondes...	Scanne für 8 Sekunden...	Scansione per 8 secondi...	8秒間スキャン中...	8초 동안 스캔 중...	正在扫描 8 秒...	Сканирование в течение 8 секунд...	جارٍ المسح لمدة 8 ثوانٍ...
+bl.scan_done	Escaneo completo	Scan complete	Escaneamento concluído	Analyse terminée	Scan abgeschlossen	Scansione completata	スキャン完了	스캔 완료	扫描完成	Сканирование завершено	اكتمل المسح
+kb.prompt	Distribución del teclado	Keyboard Layout	Layout do teclado	Disposition du clavier	Tastaturlayout	Layout tastiera	キーボードレイアウト	키보드 레이아웃	键盘布局	Раскладка клавиатуры	تخطيط لوحة المفاتيح
+kb.layout_changed	Teclado cambiado	Keyboard changed	Teclado alterado	Clavier modifié	Tastatur geändert	Tastiera modificata	キーボードを変更しました	키보드 변경됨	键盘已更改	Раскладка изменена	تم تغيير لوحة المفاتيح
+kb.layout_current	Layout: %s (sesión actual)	Layout: %s (current session)	Layout: %s (sessão atual)	Disposition : %s (session actuelle)	Layout: %s (aktuelle Sitzung)	Layout: %s (sessione attuale)	レイアウト: %s（現在のセッション）	레이아웃: %s (현재 세션)	布局：%s（当前会话）	Раскладка: %s (текущая сессия)	التخطيط: %s (الجلسة الحالية)
+kb.layout_saved	Teclado guardado	Keyboard saved	Teclado salvo	Clavier enregistré	Tastatur gespeichert	Tastiera salvata	キーボードを保存しました	키보드 저장됨	键盘已保存	Раскладка сохранена	تم حفظ لوحة المفاتيح
+kb.layout_saved_perm	Layout: %s guardado permanentemente	Layout: %s saved permanently	Layout: %s salvo permanentemente	Disposition : %s enregistrée définitivement	Layout: %s dauerhaft gespeichert	Layout: %s salvato definitivamente	レイアウト: %s を永続的に保存しました	레이아웃: %s 영구 저장됨	布局：%s 已永久保存	Раскладка: %s сохранена навсегда	التخطيط: %s محفوظ بشكل دائم
+kb.save_failed	No se pudo guardar permanentemente	Failed to save permanently	Não foi possível salvar permanentemente	Échec de l'enregistrement définitif	Konnte nicht dauerhaft gespeichert werden	Impossibile salvare definitivamente	永続的に保存できませんでした	영구 저장하지 못했습니다	无法永久保存	Не удалось сохранить навсегда	تعذر الحفظ بشكل دائم
+lc.prompt	Idioma	Language	Idioma	Langue	Sprache	Lingua	言語	언어	语言	Язык	اللغة
+lc.updated_title	Locale actualizado	Locale updated	Locale atualizado	Locale mis à jour	Locale aktualisiert	Locale aggiornato	ロケールを更新しました	로케일 업데이트됨	区域设置已更新	Локаль обновлена	تم تحديث اللغة
+lc.updated_body	Idioma: %s\nReiniciando awesome...	Language: %s\nRestarting awesome...	Idioma: %s\nReiniciando awesome...	Langue : %s\nRedémarrage d'awesome...	Sprache: %s\nAwesome wird neu gestartet...	Lingua: %s\nRiavvio di awesome...	言語: %s\nawesome を再起動しています...	언어: %s\nawesome 재시작 중...	语言：%s\n正在重启 awesome...	Язык: %s\nПерезапуск awesome...	اللغة: %s\nإعادة تشغيل awesome...
+lc.error_failed	No se pudo cambiar el locale	Failed to change the locale	Não foi possível alterar o locale	Échec du changement de locale	Locale konnte nicht geändert werden	Impossibile cambiare il locale	ロケールを変更できませんでした	로케일을 변경하지 못했습니다	无法更改区域设置	Не удалось изменить локаль	تعذر تغيير اللغة
+tz.prompt	Zona Horaria	Time Zone	Fuso horário	Fuseau horaire	Zeitzone	Fuso orario	タイムゾーン	시간대	时区	Часовой пояс	المنطقة الزمنية
+tz.updated_title	Hora actualizada	Time updated	Hora atualizada	Heure mise à jour	Zeit aktualisiert	Ora aggiornata	時刻を更新しました	시간 업데이트됨	时间已更新	Время обновлено	تم تحديث الوقت
+tz.updated_body	Zona horaria: %s	Time zone: %s	Fuso horário: %s	Fuseau horaire : %s	Zeitzone: %s	Fuso orario: %s	タイムゾーン: %s	시간대: %s	时区：%s	Часовой пояс: %s	المنطقة الزمنية: %s
+tz.error_failed	No se pudo cambiar la zona horaria	Failed to change the time zone	Não foi possível alterar o fuso horário	Échec du changement de fuseau horaire	Zeitzone konnte nicht geändert werden	Impossibile cambiare il fuso orario	タイムゾーンを変更できませんでした	시간대를 변경하지 못했습니다	无法更改时区	Не удалось изменить часовой пояс	تعذر تغيير المنطقة الزمنية
+co.title	Limpieza	Cleanup	Limpeza	Nettoyage	Bereinigung	Pulizia	クリーンアップ	정리	清理	Очистка	تنظيف
+co.none	No hay paquetes huérfanos	No orphaned packages	Nenhum pacote órfão	Aucun paquet orphelin	Keine verwaisten Pakete	Nessun pacchetto orfano	孤立したパッケージはありません	고아 패키지 없음	没有孤立软件包	Нет осиротевших пакетов	لا توجد حزم يتيمة
+co.yes	Sí	Yes	Sim	Oui	Ja	Sì	はい	예	是	Да	نعم
+co.no	No	No	Não	Non	Nein	No	いいえ	아니요	否	Нет	لا
+co.confirm	Eliminar %s huérfanos?	Remove %s orphaned packages?	Eliminar %s pacotes órfãos?	Supprimer %s paquets orphelins ?	%s verwaiste Pakete entfernen?	Rimuovere %s pacchetti orfani?	%s 個の孤立パッケージを削除しますか？	%s개의 고아 패키지를 삭제할까요?	删除 %s 个孤立软件包？	Удалить %s осиротевших пакетов?	إزالة %s حزمة يتيمة؟
+co.list_title	Paquetes a eliminar:	Packages to remove:	Pacotes a remover:	Paquets à supprimer :	Zu entfernende Pakete:	Pacchetti da rimuovere:	削除するパッケージ:	삭제할 패키지:	要删除的软件包：	Пакеты для удаления:	الحزم المراد إزالتها:
+co.done_title	Limpieza completada	Cleanup complete	Limpeza concluída	Nettoyage terminé	Bereinigung abgeschlossen	Pulizia completata	クリーンアップ完了	정리 완료	清理完成	Очистка завершена	اكتمل التنظيف
+co.removed	%s paquetes eliminados	%s packages removed	%s pacotes removidos	%s paquets supprimés	%s Pakete entfernt	%s pacchetti rimossi	%s 個のパッケージを削除しました	%s개 패키지 제거됨	已删除 %s 个软件包	Удалено %s пакетов	تمت إزالة %s حزمة
+co.error_failed	No se pudieron eliminar los paquetes	Failed to remove the packages	Não foi possível remover os pacotes	Échec de la suppression des paquets	Konnte Pakete nicht entfernen	Impossibile rimuovere i pacchetti	パッケージを削除できませんでした	패키지를 제거하지 못했습니다	无法删除软件包	Не удалось удалить пакеты	تعذرت إزالة الحزم
+co.press_enter	Presiona Enter para cerrar...	Press Enter to close...	Pressione Enter para fechar...	Appuyez sur Entrée pour fermer...	Drücke Enter zum Schließen...	Premi Invio per chiudere...	閉じるには Enter キーを押してください...	닫으려면 Enter를 누르세요...	按回车关闭...	Нажмите Enter, чтобы закрыть...	اضغط Enter للإغلاق...
+ns.title	Pantalla	Screen	Tela	Écran	Bildschirm	Schermo	画面	화면	屏幕	Экран	الشاشة
+ns.off	Modo no-apagar: DESACTIVADO\nLa pantalla se apagará con inactividad	No-sleep mode: OFF\nThe screen will turn off on inactivity	Modo no-dormir: DESATIVADO\nA tela desligará com inatividade	Mode anti-veille : DÉSACTIVÉ\nL'écran s'éteindra en cas d'inactivité	No-Sleep-Modus: DEAKTIVIERT\nDer Bildschirm wird bei Inaktivität ausgehen	Modalità no-sleep: DISATTIVATA\nLo schermo si spegnerà con l'inattività	スリープなしモード: オフ\n非アクティブで画面が消えます	슬립 방지 모드: 꺼짐\n비활성 상태에서 화면이 꺼집니다	无休眠模式：已关闭\n屏幕将在空闲时熄灭	Режим без сна: ВЫКЛ\nЭкран погаснет при бездействии	وضع عدم السكون: معطّل\nستنطفئ الشاشة عند الخمول
+ns.on	Modo no-apagar: ACTIVADO\nLa pantalla no se apagará	No-sleep mode: ON\nThe screen will not turn off	Modo no-dormir: ATIVADO\nA tela não desligará	Mode anti-veille : ACTIVÉ\nL'écran ne s'éteindra pas	No-Sleep-Modus: AKTIVIERT\nDer Bildschirm wird nicht ausgehen	Modalità no-sleep: ATTIVATA\nLo schermo non si spegnerà	スリープなしモード: オン\n画面は消えません	슬립 방지 모드: 켜짐\n화면이 꺼지지 않습니다	无休眠模式：已开启\n屏幕不会熄灭	Режим без сна: ВКЛ\nЭкран не погаснет	وضع عدم السكون: مفعّل\nلن تنطفئ الشاشة
+wp.dir_missing	No existe %s	%s does not exist	Não existe %s	%s n'existe pas	%s existiert nicht	%s non esiste	%s が存在しません	%s이(가) 없습니다	%s 不存在	%s не существует	%s غير موجود
+wp.prompt	Fondo de pantalla	Wallpaper	Papel de parede	Fond d'écran	Hintergrundbild	Sfondo	壁紙	배경화면	壁纸	Обои	خلفية الشاشة
+wp.changed	Cambiado a %s	Changed to %s	Alterado para %s	Changé à %s	Geändert zu %s	Modificato a %s	%s に変更しました	%s(으)로 변경됨	已更改为 %s	Изменено на %s	تم التغيير إلى %s
+sddm.prompt	Fondo SDDM	SDDM Wallpaper	Papel de parede do SDDM	Fond d'écran SDDM	SDDM-Hintergrundbild	Sfondo SDDM	SDDM 壁紙	SDDM 배경화면	SDDM 壁纸	Обои SDDM	خلفية SDDM
+sddm.changed	Cambiado a %s (requiere reinicio)	Changed to %s (restart required)	Alterado para %s (requer reinicialização)	Changé à %s (redémarrage requis)	Geändert zu %s (Neustart erforderlich)	Modificato a %s (riavvio richiesto)	%s に変更しました（再起動が必要）	%s(으)로 변경됨(재시작 필요)	已更改为 %s（需要重启）	Изменено на %s (требуется перезагрузка)	تم التغيير إلى %s (يلزم إعادة تشغيل)
+cb.prompt	Portapapeles	Clipboard	Área de transferência	Presse-papiers	Zwischenablage	Appunti	クリップボード	클립보드	剪贴板	Буфер обмена	الحافظة
+ac.title	Acento	Accent	Acento	Accent	Akzentfarbe	Accento	アクセントカラー	강조 색	强调色	Акцент	اللون المميز
+ac.switched	Cambiado a <span color='%s'>■</span> %s	Switched to <span color='%s'>■</span> %s	Alterado para <span color='%s'>■</span> %s	Passé à <span color='%s'>■</span> %s	Gewechselt zu <span color='%s'>■</span> %s	Passato a <span color='%s'>■</span> %s	<span color='%s'>■</span> %s に変更しました	<span color='%s'>■</span> %s(으)로 변경됨	已切换到 <span color='%s'>■</span> %s	Изменено на <span color='%s'>■</span> %s	تم التبديل إلى <span color='%s'>■</span> %s
+tb.title	Desenfoque	Blur	Desfoque	Flou	Unschärfe	Sfocatura	ぼかし	흐림	模糊	Размытие	ضبابية
+tb.activated	Activado	Activated	Ativado	Activé	Aktiviert	Attivato	有効化	활성화됨	已启用	Включено	مفعّل
+tb.deactivated	Desactivado	Deactivated	Desativado	Désactivé	Deaktiviert	Disattivato	無効化	비활성화됨	已禁用	Выключено	معطّل
+ttr.title	Transparencia	Transparency	Transparência	Transparence	Transparenz	Trasparenza	透明度	투명도	透明度	Прозрачность	الشفافية
+dash.stats	Estadísticas	Stats	Estatísticas	Statistiques	Statistiken	Statistiche	統計	통계	统计	Статистика	إحصائيات
+dash.tasks	Tareas	Tasks	Tarefas	Tâches	Aufgaben	Attività	タスク	할 일	任务	Задачи	المهام
+dash.tasks_done	completadas	completed	concluídas	terminées	erledigt	completate	完了	완료됨	已完成	выполнено	مكتملة
+dash.no_tasks	No hay tareas pendientes	No pending tasks	Nenhuma tarefa pendente	Aucune tâche en attente	Keine offenen Aufgaben	Nessuna attività in sospeso	保留中のタスクはありません	대기 중인 할 일 없음	没有待办任务	Нет незавершённых задач	لا توجد مهام معلقة
+dash.tasks_pending_title	Tareas pendientes	Pending Tasks	Tarefas pendentes	Tâches en attente	Offene Aufgaben	Attività in sospeso	保留中のタスク	대기 중인 할 일	待办任务	Незавершённые задачи	المهام المعلقة
+dash.press_enter_exit	Presiona Enter para salir...	Press Enter to exit...	Pressione Enter para sair...	Appuyez sur Entrée pour quitter...	Drücke Enter zum Beenden...	Premi Invio per uscire...	終了するには Enter キーを押してください...	종료하려면 Enter를 누르세요...	按回车退出...	Нажмите Enter, чтобы выйти...	اضغط Enter للخروج...
+dash.notifications	Notificaciones	Notifications	Notificações	Notifications	Benachrichtigungen	Notifiche	通知	알림	通知	Уведомления	الإشعارات
+dash.no_notifs	¡No tienes notificaciones!	You have no notifs!	Você não tem notificações!	Vous n'avez aucune notification !	Du hast keine Benachrichtigungen!	Non hai notifiche!	通知はありません！	알림이 없습니다!	您没有通知！	У вас нет уведомлений!	لا توجد لديك إشعارات!
+dash.notification	Notificación	Notification	Notificação	Notification	Benachrichtigung	Notifica	通知	알림	通知	Уведомление	إشعار
+dash.nothing_playing	Nada sonando	Nothing Playing	Nada tocando	Rien en lecture	Nichts wird abgespielt	Nessuna riproduzione	再生中なし	재생 중 없음	没有正在播放	Ничего не играет	لا شيء قيد التشغيل
+dash.now_playing	Sonando ahora	Now Playing	Tocando agora	En lecture	Jetzt spielt	In riproduzione	再生中	재생 중	正在播放	Сейчас играет	قيد التشغيل الآن
+dash.music	Música	Music	Música	Musique	Musik	Musica	音楽	음악	音乐	Музыка	موسيقى
+dash.disk	Disco	Disk	Disco	Disque	Festplatte	Disco	ディスク	디스크	磁盘	Диск	القرص
+dash.disk_title	Disco %s	Disk %s	Disco %s	Disque %s	Festplatte %s	Disco %s	ディスク %s	디스크 %s	磁盘 %s	Диск %s	القرص %s
+dash.loading	Cargando...	Loading...	Carregando...	Chargement...	Laden...	Caricamento...	読み込み中...	불러오는 중...	正在加载...	Загрузка...	جارٍ التحميل...
+dash.date_fmt	%s de %s	%s %s	%s de %s	%s %s	%s. %s	%s %s	%s月%s日	%s월 %s일	%s月%s日	%s %s	%s %s
+dw.increase	Aumentar	Increase	Aumentar	Augmenter	Vergrößern	Aumenta	拡大	크게	增大	Увеличить	تكبير
+dw.decrease	Disminuir	Decrease	Diminuir	Diminuer	Verkleinern	Riduci	縮小	작게	减小	Уменьшить	تصغير
+dw.hide	Ocultar	Hide	Ocultar	Masquer	Ausblenden	Nascondi	非表示	숨기기	隐藏	Скрыть	إخفاء
+dw.colors	Colores	Colors	Cores	Couleurs	Farben	Colori	色	색상	颜色	Цвета	الألوان
+dw.color_white	Blanco	White	Branco	Blanc	Weiß	Bianco	白	흰색	白色	Белый	أبيض
+dw.color_black	Negro	Black	Preto	Noir	Schwarz	Nero	黒	검정	黑色	Чёрный	أسود
+dw.color_cyan	Cian	Cyan	Ciano	Cyan	Cyan	Ciano	シアン	시안	青色	Голубой	سماوي
+dw.color_blue	Azul	Blue	Azul	Bleu	Blau	Blu	青	파랑	蓝色	Синий	أزرق
+dw.color_purple	Púrpura	Purple	Roxo	Violet	Violett	Porpora	紫	보라	紫色	Фиолетовый	بنفسجي
+dw.color_green	Verde	Green	Verde	Vert	Grün	Verde	緑	초록	绿色	Зелёный	أخضر
+dw.color_yellow	Amarillo	Yellow	Amarelo	Jaune	Gelb	Giallo	黄	노랑	黄色	Жёлтый	أصفر
+dw.color_red	Rojo	Red	Vermelho	Rouge	Rot	Rosso	赤	빨강	红色	Красный	أحمر
+dw.color_gray	Gris	Gray	Cinza	Gris	Grau	Grigio	グレー	회색	灰色	Серый	رمادي
+dw.date_toggle	Fecha: %s	Date: %s	Data: %s	Date : %s	Datum: %s	Data: %s	日付: %s	날짜: %s	日期：%s	Дата: %s	التاريخ: %s
+dw.time_toggle	Hora: %s	Time: %s	Hora: %s	Heure : %s	Uhrzeit: %s	Ora: %s	時刻: %s	시간: %s	时间：%s	Время: %s	الوقت: %s
+widget.no_data	Sin datos	No data	Sem dados	Aucune donnée	Keine Daten	Nessun dato	データなし	데이터 없음	无数据	Нет данных	لا توجد بيانات
+widget.calculator	Calculadora	Calculator	Calculadora	Calculatrice	Taschenrechner	Calcolatrice	電卓	계산기	计算器	Калькулятор	آلة حاسبة
+widget.calculator_error	Error de calculadora	Calculator Error	Erro da calculadora	Erreur de calculatrice	Taschenrechner-Fehler	Errore della calcolatrice	電卓エラー	계산기 오류	计算器错误	Ошибка калькулятора	خطأ الآلة الحاسبة
+widget.resources_error	Error de recursos	Resources Error	Erro de recursos	Erreur de ressources	Ressourcen-Fehler	Errore delle risorse	リソースエラー	리소스 오류	资源错误	Ошибка ресурсов	خطأ الموارد
+widget.unknown	Desconocido	Unknown	Desconhecido	Inconnu	Unbekannt	Sconosciuto	不明	알 수 없음	未知	Неизвестно	غير معروف
+nif.empty	¿Sin notificaciones? :(	NO NOTIFICATIONS? :(	Sem notificações? :(	Aucune notification ? :(	Keine Benachrichtigungen? :(	Nessuna notifica? :(	通知がありません :(	알림이 없습니다 :(	没有通知 :(	Нет уведомлений :(	لا توجد إشعارات :(
+tb.vpn_checking	VPN: Comprobando...	VPN: Checking...	VPN: Verificando...	VPN : Vérification...	VPN: Prüfe...	VPN: Controllo...	VPN: 確認中...	VPN: 확인 중...	VPN：正在检查...	VPN: Проверка...	VPN: جارٍ الفحص...
+tb.vpn_connected	VPN: Conectado (%s)	VPN: Connected (%s)	VPN: Conectado (%s)	VPN : Connecté (%s)	VPN: Verbunden (%s)	VPN: Connesso (%s)	VPN: 接続済み (%s)	VPN: 연결됨 (%s)	VPN：已连接 (%s)	VPN: Подключено (%s)	VPN: متصل (%s)
+tb.vpn_disconnected	VPN: Desconectado	VPN: Disconnected	VPN: Desconectado	VPN : Déconnecté	VPN: Getrennt	VPN: Disconnesso	VPN: 切断済み	VPN: 연결 안 됨	VPN：已断开	VPN: Отключено	VPN: غير متصل
+tb.public_ip	IP pública	Public IP	IP público	IP publique	Öffentliche IP	IP pubblica	パブリック IP	공개 IP	公网 IP	Публичный IP	عنوان IP العام
+tb.public_ip_value	IP pública: %s	Public IP: %s	IP público: %s	IP publique : %s	Öffentliche IP: %s	IP pubblica: %s	パブリック IP: %s	공개 IP: %s	公网 IP：%s	Публичный IP: %s	عنوان IP العام: %s
+tb.wifi_checking	WiFi: Comprobando...	WiFi: Checking...	WiFi: Verificando...	WiFi : Vérification...	WiFi: Prüfe...	WiFi: Controllo...	WiFi: 確認中...	WiFi: 확인 중...	WiFi：正在检查...	WiFi: Проверка...	WiFi: جارٍ الفحص...
+tb.wifi_ssid	WiFi: %s	WiFi: %s	WiFi: %s	WiFi : %s	WiFi: %s	WiFi: %s	WiFi: %s	WiFi: %s	WiFi：%s	WiFi: %s	WiFi: %s
+tb.wifi_disconnected	WiFi: Desconectado	WiFi: Disconnected	WiFi: Desconectado	WiFi : Déconnecté	WiFi: Getrennt	WiFi: Disconnesso	WiFi: 切断済み	WiFi: 연결 안 됨	WiFi：已断开	WiFi: Отключено	WiFi: غير متصل
+tb.wifi_off	WiFi: Apagado	WiFi: Off	WiFi: Desligado	WiFi : Éteint	WiFi: Aus	WiFi: Spento	WiFi: オフ	WiFi: 꺼짐	WiFi：已关闭	WiFi: Выключено	WiFi: مغلق
+ov.title	Vista general	Overview	Visão geral	Aperçu	Übersicht	Panoramica	概要	개요	概览	Обзор	نظرة عامة

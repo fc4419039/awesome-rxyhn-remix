@@ -50,7 +50,7 @@ local function create_widget(s)
 
     local title = wibox.widget{
         font = beautiful.font_name .. "bold 9",
-        markup = helpers.colorize_text("Nothing playing", beautiful.dashboard_fg),
+        markup = helpers.colorize_text(i18n.tr("dash.nothing_playing"), beautiful.dashboard_fg),
         align = "left",
         valign = "bottom",
         forced_width = dpi(120),
@@ -164,7 +164,7 @@ local function create_widget(s)
         if t and t ~= "" then
             title.markup = helpers.colorize_text(truncate(t, 20), beautiful.xforeground)
         else
-            title.markup = helpers.colorize_text("Nothing playing", beautiful.dashboard_fg)
+            title.markup = helpers.colorize_text(i18n.tr("dash.nothing_playing"), beautiful.dashboard_fg)
             artist.markup = ""
         end
         if a and a ~= "" then
@@ -279,17 +279,17 @@ local function create_widget(s)
         if active_menu then active_menu:hide(); active_menu = nil; return end
         active_menu = awful.menu({
             items = {
-                { "Aumentar", function()
+                { i18n.tr("dw.increase"), function()
                     local g = w:geometry()
                     w:geometry({width = g.width + dpi(20), height = g.height + dpi(15)})
                     save_pos()
                 end},
-                { "Disminuir", function()
+                { i18n.tr("dw.decrease"), function()
                     local g = w:geometry()
                     w:geometry({width = math.max(dpi(140), g.width - dpi(20)), height = math.max(dpi(80), g.height - dpi(15))})
                     save_pos()
                 end},
-                { "Ocultar", function()
+                { i18n.tr("dw.hide"), function()
                     w.visible = false
                 end},
             },

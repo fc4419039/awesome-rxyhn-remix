@@ -5,6 +5,7 @@ local gears = require("gears")
 local rubato = require("module.rubato")
 local helpers = require("helpers")
 local cairo = require("lgi").cairo
+local i18n = require("i18n")
 local dpi = beautiful.xresources.apply_dpi
 
 local M = {}
@@ -232,7 +233,7 @@ function M.show()
     end
 
     local header = wibox.widget {
-        markup = "<span font='" .. (beautiful.font_name or "") .. "Bold 14' color='" .. fg_color .. "'>Overview</span>",
+        markup = "<span font='" .. (beautiful.font_name or "") .. "Bold 14' color='" .. fg_color .. "'>" .. gears.string.xml_escape(i18n.tr("ov.title")) .. "</span>",
         align = "center",
         widget = wibox.widget.textbox
     }

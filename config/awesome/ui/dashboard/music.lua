@@ -120,8 +120,8 @@ local playerctl = require("module.bling").signal.playerctl.cli({
 })
 
 playerctl:connect_signal("metadata", function(_, title, artist, album_path, __, ___)
-    if title == "" then title = "Nothing Playing" end
-    if artist == "" then artist = "Nothing Playing" end
+    if title == "" then title = i18n.tr("dash.nothing_playing") end
+    if artist == "" then artist = i18n.tr("dash.nothing_playing") end
 
     if album_path and album_path ~= "" then
         set_art_image(album_path)
@@ -137,9 +137,9 @@ end)
 
 playerctl:connect_signal("playback_status", function(_, playing, __)
     if playing then
-        music_text:set_markup_silently(helpers.colorize_text("Now Playing", beautiful.xforeground .. "cc"))
+        music_text:set_markup_silently(helpers.colorize_text(i18n.tr("dash.now_playing"), beautiful.xforeground .. "cc"))
     else
-        music_text:set_markup_silently(helpers.colorize_text("Music", beautiful.xforeground .. "cc"))
+        music_text:set_markup_silently(helpers.colorize_text(i18n.tr("dash.music"), beautiful.xforeground .. "cc"))
     end
 end)
 

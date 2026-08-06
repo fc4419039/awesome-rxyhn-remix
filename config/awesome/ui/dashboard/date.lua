@@ -36,7 +36,7 @@ local date_month = wibox.widget{
 }
 
 gears.timer.start_new(1, function()
-    date_month:set_markup_silently('<span letter_spacing="1500">' .. helpers.upper_no_accents(os.date("%d de %B")) .. '</span>')
+    date_month:set_markup_silently('<span letter_spacing="1500">' .. helpers.upper_no_accents(i18n.format("dash.date_fmt", os.date("%d"), os.date("%B"))) .. '</span>')
     return true
 end)
 

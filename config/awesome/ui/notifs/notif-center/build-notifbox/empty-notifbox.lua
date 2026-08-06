@@ -3,6 +3,7 @@ local gears = require('gears')
 
 local beautiful = require('beautiful')
 local dpi = require('beautiful').xresources.apply_dpi
+local i18n = require('i18n')
 
 local empty_notifbox = wibox.widget {
 	{
@@ -22,7 +23,7 @@ local empty_notifbox = wibox.widget {
 			nil
 		},
 		{
-			text = "NO NOTIFICATIONS? :(",
+			text = i18n.tr('nif.empty'),
 			font =  'Anurati 8',
 			align = 'center',
 			valign = 'center',

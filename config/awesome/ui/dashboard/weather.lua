@@ -24,7 +24,7 @@ local weather_temp = wibox.widget{
 -- ── Condition ───────────────────────────────────────────────────────
 local weather_desc = wibox.widget{
   font = beautiful.font_name .. "Medium 8",
-  markup = helpers.colorize_text("Cargando...", beautiful.dashboard_box_fg),
+  markup = helpers.colorize_text(i18n.tr("dash.loading"), beautiful.dashboard_box_fg),
   align = "center",
   valign = "center",
   widget = wibox.widget.textbox

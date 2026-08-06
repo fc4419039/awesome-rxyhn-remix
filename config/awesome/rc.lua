@@ -45,6 +45,9 @@ end
 collectgarbage("setpause", 110)
 collectgarbage("setstepmul", 200)
 
+-- Traducción de la UI (sigue el LANG de /etc/locale.conf)
+i18n = require("i18n")
+
 -- Función para ejecutar aplicaciones solo si no están corriendo
 local function run_once(cmd)
     local findme = cmd

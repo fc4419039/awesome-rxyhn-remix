@@ -8,7 +8,7 @@ local helpers = require("helpers")
 
 local todo_title = wibox.widget{
   font = beautiful.font_name .. "Medium 8",
-  markup = helpers.colorize_text("Tareas", beautiful.dashboard_box_fg),
+  markup = helpers.colorize_text(i18n.tr("dash.tasks"), beautiful.dashboard_box_fg),
   align = "left",
   valign = "center",
   widget = wibox.widget.textbox
@@ -43,7 +43,7 @@ local todo_arc = wibox.widget{
 
 local todo_label = wibox.widget{
   font = beautiful.font_name .. "7",
-  markup = helpers.colorize_text("completadas", beautiful.xcolor8),
+  markup = helpers.colorize_text(i18n.tr("dash.tasks_done"), beautiful.xcolor8),
   align = "center",
   valign = "top",
   widget = wibox.widget.textbox
@@ -95,10 +95,10 @@ end)
 todo:buttons(gears.table.join(
   awful.button({}, 1, function()
     awful.spawn.easy_async_with_shell("todo list", function(out)
-      local text = out:match("^(.*%S.-)%s*$") or "No hay tareas pendientes"
-      if text == "" then text = "No hay tareas pendientes" end
+      local text = out:match("^(.*%S.-)%s*$") or i18n.tr("dash.no_tasks")
+      if text == "" then text = i18n.tr("dash.no_tasks") end
       naughty.notify({
-        title = "Tareas pendientes",
+        title = i18n.tr("dash.tasks_pending_title"),
         text = text,
         timeout = 10,
         width = dpi(400),
@@ -106,7 +106,7 @@ todo:buttons(gears.table.join(
     end)
   end),
   awful.button({}, 3, function()
-    awful.spawn({terminal, "-e", "bash", "-c", "todo list; echo; read -p 'Presiona Enter para salir...'"})
+    awful.spawn({terminal, "-e", "bash", "-c", "todo list; echo; read -p '" .. i18n.tr("dash.press_enter_exit") .. "'"})
   end)
 ))
 

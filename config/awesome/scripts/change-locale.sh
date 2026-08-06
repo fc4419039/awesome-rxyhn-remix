@@ -1,6 +1,8 @@
 #!/bin/bash
 # Change system locale
 
+source "$HOME/.config/awesome/scripts/i18n.sh"
+
 current=$(grep "^LANG=" /etc/locale.conf 2>/dev/null | cut -d= -f2)
 
 locales="es_MX.UTF-8  Español (México)
@@ -18,7 +20,7 @@ zh_CN.UTF-8  Chino (Simplificado)
 ru_RU.UTF-8  Ruso
 ar_SA.UTF-8  Árabe"
 
-selected=$(echo "$locales" | rofi -dmenu -p "Language" \
+selected=$(echo "$locales" | rofi -dmenu -p "$(t lc.prompt)" \
     -theme "$HOME/.config/awesome/theme/rofi-menu.rasi" \
     -no-custom)
 
@@ -27,10 +29,10 @@ if [ -n "$selected" ]; then
 
     sudo localectl set-locale "LANG=$locale" 2>/dev/null
     if [ $? -eq 0 ]; then
-        notify-send "Locale actualizado" "Idioma: $locale\nReiniciando awesome..." -i preferences-desktop-locale
+        notify-send "$(t lc.updated_title)" "$(tsub lc.updated_body "$locale")" -i preferences-desktop-locale
         sleep 1
         awesome-client 'awesome.restart()' 2>/dev/null
     else
-        notify-send "Error" "No se pudo cambiar el locale" -i dialog-error
+        notify-send "$(t common.error)" "$(t lc.error_failed)" -i dialog-error
     fi
 fi

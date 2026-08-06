@@ -309,7 +309,7 @@ local function create()
     }
 
     local title_text = wibox.widget{
-        markup = helpers.colorize_text("Calculator", fg_dim),
+        markup = helpers.colorize_text(i18n.tr("widget.calculator"), fg_dim),
         font = beautiful.font_name .. "9",
         align = "center",
         valign = "center",
@@ -575,7 +575,7 @@ function toggle_calculator()
         if not ok then
             local naughty = require("naughty")
             naughty.notify({
-                title = "Calculator Error",
+                title = i18n.tr("widget.calculator_error"),
                 text = tostring(err),
                 timeout = 10,
             })

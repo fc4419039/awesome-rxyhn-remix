@@ -20,7 +20,7 @@ local helpers = require("helpers")
 
 local notifs_text = wibox.widget{
     font = beautiful.font_name .. "medium 8",
-    markup = helpers.colorize_text("Notifications", beautiful.dashboard_box_fg),
+    markup = helpers.colorize_text(i18n.tr("dash.notifications"), beautiful.dashboard_box_fg),
     valign = "center",
     widget = wibox.widget.textbox
 }
@@ -46,7 +46,7 @@ local notifs_empty = wibox.widget {
         {
             nil,
             {
-                markup = helpers.colorize_text('You have no notifs!', beautiful.xforeground .. "e6"),
+                markup = helpers.colorize_text(i18n.tr("dash.no_notifs"), beautiful.xforeground .. "e6"),
                 font = beautiful.font_name .. '8',
                 align = 'center',
                 valign = 'center',
@@ -108,7 +108,7 @@ local create_notif = function(icon, n)
                             {
                                 {
                                     {
-                                        markup = helpers.colorize_text(n.title or "Notification", beautiful.xforeground .. "b3"),
+                                        markup = helpers.colorize_text(n.title or i18n.tr("dash.notification"), beautiful.xforeground .. "b3"),
                                         font = beautiful.font_name .. "medium 8",
                                         align = "left",
                                         forced_width = dpi(125),

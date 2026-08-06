@@ -269,15 +269,15 @@ local function create_widget(s)
         if active_menu then active_menu:hide(); active_menu = nil; return end
         active_menu = awful.menu({
             items = {
-                { "Aumentar", function()
+                { i18n.tr("dw.increase"), function()
                     current_scale = math.min(2, current_scale + 0.1)
                     w:geometry({width = dpi(base_w * current_scale), height = dpi(base_h * current_scale)})
                 end},
-                { "Disminuir", function()
+                { i18n.tr("dw.decrease"), function()
                     current_scale = math.max(0.5, current_scale - 0.1)
                     w:geometry({width = dpi(base_w * current_scale), height = dpi(base_h * current_scale)})
                 end},
-                { "Ocultar", function()
+                { i18n.tr("dw.hide"), function()
                     w.visible = false
                 end},
             },

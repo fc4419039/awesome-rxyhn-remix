@@ -109,7 +109,7 @@ end)
 
 -- Repeat-one (single) button
 local single = control_button(c, "", beautiful.xforeground, beautiful.icon_font_name .. "12", dpi(30), function()
-    awful.spawn.with_shell("sh -c 'if [ \"$(mpc status 2>/dev/null | grep -o \'single: [a-z]*\' | cut -d\' \' -f2)\" = \"on\" ]; then mpc -q single off; else mpc -q single on; mpc -q repeat on; fi'")
+    awful.spawn.with_shell("if mpc status 2>/dev/null | grep -q 'single: on'; then mpc -q single off; else mpc -q single on; mpc -q repeat on; fi")
 end)
 
 -- Shuffle playlist

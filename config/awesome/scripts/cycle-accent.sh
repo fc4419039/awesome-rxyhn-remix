@@ -1,5 +1,7 @@
 #!/bin/bash
 
+source "$HOME/.config/awesome/scripts/i18n.sh"
+
 idx_file="/tmp/awesome-accent-idx"
 
 palette=(
@@ -41,7 +43,7 @@ color="${palette[$idx]}"
 accent="#$color"
 accent_dim=$(darken "$color" 0.4)
 
-notify-send -t 1500 "Accent" "Switched to <span color='$accent'>■</span> $color"
+notify-send -t 1500 "$(t ac.title)" "$(tsub ac.switched "$accent" "$color")"
 
 theme_dir="$HOME/.config/awesome/theme"
 rofi_dir="$HOME/.config/rofi"

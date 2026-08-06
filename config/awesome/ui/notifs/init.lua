@@ -9,6 +9,7 @@ local ruled = require("ruled")
 
 local menubar = require("menubar")
 local button_container = require('ui.widgets.button')
+local i18n = require("i18n")
 
 naughty.connect_signal("request::icon", function(n, context, hints)
     if context ~= "app_icon" then return end
@@ -25,7 +26,7 @@ require("ui.notifs.popup")
 naughty.config.defaults.ontop = true
 naughty.config.defaults.screen = awful.screen.focused()
 naughty.config.defaults.timeout = 3
-naughty.config.defaults.title = "Notification"
+naughty.config.defaults.title = i18n.tr("dash.notification")
 naughty.config.defaults.position = "top_right"
 
 -- Timeouts

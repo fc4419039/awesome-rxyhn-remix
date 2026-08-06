@@ -5,6 +5,7 @@ local beautiful = require("beautiful")
 local xresources = require("beautiful.xresources")
 local dpi = xresources.apply_dpi
 local helpers = require("helpers")
+local i18n = require("i18n")
 
 
 local function create_title_button(c, color_focus, color_unfocus)
@@ -75,7 +76,7 @@ local function setup_titlebar(c)
 
     local vpn_tooltip = awful.tooltip {
         objects = { vpn_icon },
-        text = "VPN: Checking...",
+        text = i18n.tr("tb.vpn_checking"),
         mode = "outside",
         preferred_positions = { "bottom", "top" },
         margins = dpi(4)
@@ -88,10 +89,10 @@ local function setup_titlebar(c)
                 local iface = stdout and stdout:match("^([%w-]+)")
                 if iface and iface ~= "disconnected" then
                     vpn_icon.markup = helpers.colorize_text("", beautiful.xcolor2)
-                    vpn_tooltip.text = "VPN: Connected (" .. iface .. ")"
+                    vpn_tooltip.text = i18n.format("tb.vpn_connected", iface)
                 else
                     vpn_icon.markup = helpers.colorize_text("", beautiful.xcolor1)
-                    vpn_tooltip.text = "VPN: Disconnected"
+                    vpn_tooltip.text = i18n.tr("tb.vpn_disconnected")
                 end
             end
         )
@@ -115,7 +116,7 @@ local function setup_titlebar(c)
 
     local ip_tooltip = awful.tooltip {
         objects = { ip_text },
-        text = "Public IP",
+        text = i18n.tr("tb.public_ip"),
         mode = "outside",
         preferred_positions = { "bottom", "top" },
         margins = dpi(4)
@@ -128,7 +129,7 @@ local function setup_titlebar(c)
                 local ip = stdout and stdout:match("([%d%.]+)")
                 if ip then
                     ip_text.markup = helpers.colorize_text(ip, beautiful.xcolor6)
-                    ip_tooltip.text = "Public IP: " .. ip
+                    ip_tooltip.text = i18n.format("tb.public_ip_value", ip)
                 end
             end
         )
@@ -152,7 +153,7 @@ local function setup_titlebar(c)
 
     local wifi_tooltip = awful.tooltip {
         objects = { wifi_icon },
-        text = "WiFi: Checking...",
+        text = i18n.tr("tb.wifi_checking"),
         mode = "outside",
         preferred_positions = { "bottom", "top" },
         margins = dpi(4)
@@ -174,16 +175,16 @@ local function setup_titlebar(c)
                             local ssid = ssid_out and ssid_out:match("^(.+)$")
                             if ssid and ssid ~= "" then
                                 wifi_icon.markup = helpers.colorize_text("", beautiful.deco_cyan)
-                                wifi_tooltip.text = "WiFi: " .. ssid
+                                wifi_tooltip.text = i18n.format("tb.wifi_ssid", ssid)
                             else
                                 wifi_icon.markup = helpers.colorize_text("", beautiful.deco_red)
-                                wifi_tooltip.text = "WiFi: Disconnected"
+                                wifi_tooltip.text = i18n.tr("tb.wifi_disconnected")
                             end
                         end
                     )
                 else
                     wifi_icon.markup = helpers.colorize_text("", beautiful.xcolor8)
-                    wifi_tooltip.text = "WiFi: Off"
+                    wifi_tooltip.text = i18n.tr("tb.wifi_off")
                 end
             end
         )
