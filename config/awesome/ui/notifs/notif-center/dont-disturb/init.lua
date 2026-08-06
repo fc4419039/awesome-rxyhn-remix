@@ -12,10 +12,20 @@ local widget_dir = config_dir .. 'ui/notifs/notif-center/dont-disturb/'
 
 local dont_disturb = false
 
+-- Conecta el estado local, la variable global usada por ui/notifs/init.lua
+-- y el modo suspendido de naughty (bloquea la aparición de popups).
+local function set_dont_disturb(value)
+	dont_disturb = value
+	_G.dont_disturb = value
+	naughty.suspended = value
+end
+
+set_dont_disturb(false)
+
 local dont_disturb_icon = wibox.widget {
 	{
 		id = 'icon',
-		markup = "",
+		markup = "",
 		font = beautiful.icon_font_name .. "Round 16",
 		align = "center",
 		valign = "center",
@@ -29,9 +39,9 @@ local function update_icon()
 	local dd_icon = dont_disturb_icon.icon
 
 	if dont_disturb then
-		dd_icon:set_markup_silently("")
+		dd_icon:set_markup_silently("")
 	else
-		dd_icon:set_markup_silently("")
+		dd_icon:set_markup_silently("")
 	end
 end
 
@@ -44,11 +54,11 @@ local check_disturb_status = function()
 			local status = stdout
 
 			if status:match('true') then
-				dont_disturb = true
+				set_dont_disturb(true)
 			elseif status:match('false') then
-				dont_disturb = false
+				set_dont_disturb(false)
 			else
-				dont_disturb = false
+				set_dont_disturb(false)
 				awful.spawn.with_shell('echo "false" > ' .. widget_dir .. 'disturb_status')
 			end
 
@@ -60,11 +70,7 @@ end
 check_disturb_status()
 
 local toggle_disturb = function()
-	if dont_disturb then
-		dont_disturb = false
-	else
-		dont_disturb = true
-	end
+	set_dont_disturb(not dont_disturb)
 	awful.spawn.with_shell('echo "' .. tostring(dont_disturb) .. '" > ' .. widget_dir .. 'disturb_status')
 	update_icon()
 end

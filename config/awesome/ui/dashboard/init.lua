@@ -83,8 +83,8 @@ function M.create(s)
 
     local time_boxed    = create_boxed_widget(centered_widget(time), dpi(250), dpi(90), beautiful.transparent)
     local date_boxed    = create_boxed_widget(date, dpi(120), dpi(50), beautiful.dashboard_box_bg)
-    local disk_boxed    = create_boxed_widget(disk, dpi(120), dpi(120), beautiful.dashboard_box_bg)
-    local weather_boxed = create_boxed_widget(weather, dpi(120), dpi(140), beautiful.dashboard_box_bg)
+    local disk_boxed    = create_boxed_widget(disk, dpi(120), dpi(110), beautiful.dashboard_box_bg)
+    local weather_boxed = create_boxed_widget(weather, dpi(120), dpi(130), beautiful.dashboard_box_bg)
     local stats_boxed   = create_boxed_widget(stats, dpi(115), dpi(185), beautiful.dashboard_box_bg)
     local todo_boxed    = create_boxed_widget(todo, dpi(120), dpi(120), beautiful.dashboard_box_bg)
     local notifs_boxed  = create_boxed_widget(notifs, dpi(245), dpi(185), beautiful.dashboard_box_bg)
@@ -92,14 +92,14 @@ function M.create(s)
     local dashboard = wibox({
         type = "dialog",
         screen = s,
-        height = screen_height - dpi(50),
+        height = screen_height - dpi(30),
         width = beautiful.dashboard_width or dpi(300),
         shape = helpers.rrect(beautiful.border_radius),
         bg = beautiful.xbackground,
         ontop = true,
         visible = false
     })
-    dashboard.y = dpi(25)
+    dashboard.y = dpi(15)
 
     local slide = rubato.timed{
         pos = s.geometry.x + dpi(-290),

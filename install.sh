@@ -67,15 +67,16 @@ echo -e "${YELLOW}📦 Verificando dependencias...${NC}"
 PKGS="
     awesome-git picom-git kitty rofi todo-bin acpi acpid
     wireless_tools jq inotify-tools polkit-gnome xdotool xclip maim
-    brightnessctl alsa-utils alsa-tools pipewire pipewire-pulse wireplumber
+    brightnessctl alsa-utils alsa-tools pipewire pipewire-pulse wireplumber libpulse psmisc
     qt5-imageformats qt6-imageformats
-    playerctl spotify mpd ncmpcpp mpd-mpris blueman pasystray
+    playerctl spotify mpd mpc ncmpcpp mpd-mpris blueman pasystray
     touchegg redshift networkmanager bluez libnotify curl ffmpeg gpick
-    imagemagick thunar firefox xorg-xrdb yad xcolor-pick cliphist
+    imagemagick thunar firefox xorg-xrdb yad xcolor-pick cliphist xdg-utils xdg-user-dirs
     nerd-fonts-jetbrains-mono ttf-iosevka-nerd ttf-hack-nerd ttf-font-awesome ttf-material-design-icons ttf-weather-icons
     zsh-syntax-highlighting zsh-autosuggestions zsh-sudo zoxide feh zsh neovim
     btop lsd bat python-gobject python-pip python-pyqt5 pipewire-alsa
     powerlevel10k fzf starship autorandr xorg-xrandr pamixer gtk3 sound-theme-freedesktop
+    xorg-xset xorg-xprop xorg-xwininfo
 "
 
 # Filtrar solo los paquetes que faltan
@@ -189,8 +190,8 @@ systemctl --user enable --now limpiar-sistema.timer 2>/dev/null && echo -e "${GR
 # Generar secrets.lua desde template si no existe
 if [ ! -f "$HOME/.config/awesome/secrets.lua" ]; then
     cp config/awesome/secrets.lua.template "$HOME/.config/awesome/secrets.lua"
-    echo -e "${YELLOW}🔑 Edita ~/.config/awesome/secrets.lua con tu API key de OpenWeather${NC}"
-    echo -e "${YELLOW}   (consíguela gratis en https://openweathermap.org/api)${NC}"
+    echo -e "${YELLOW}🌤️  El clima usa Open-Meteo (sin API key) + ubicación automática por IP.${NC}"
+    echo -e "${YELLOW}   Opcional: edita weather_location_override en ~/.config/awesome/secrets.lua${NC}"
 fi
 
 echo ""
@@ -420,13 +421,22 @@ echo ""
 # =====================================================================
 # 1️⃣1️⃣ INSTALAR MSCDOWN (Music Searcher & Downloader)
 # =====================================================================
-echo -e "${YELLOW}🎵 Instalando MSCDown (Music Searcher & Downloader)...${NC}"
-
-# Inicializar submodulos (mscdown)
+# Si mscdown ya está instalado, no volver a clonar/instalar
 MSCDOWN_DIR="$(dirname "$0")/mscdown"
-if [ -f "$MSCDOWN_DIR/install.sh" ]; then
-    echo -e "${YELLOW}📦 Ejecutando instalador de mscdown...${NC}"
-    chmod +x "$MSCDOWN_DIR/install.sh"
+if [ -x "$HOME/mscdown/ejecutar.sh" ]; then
+    echo -e "${GREEN}✓ MSCDown ya está instalado en $HOME/mscdown (saltando)${NC}"
+else
+    echo -e "${YELLOW}🎵 Instalando MSCDown (Music Searcher & Downloader)...${NC}"
+
+    # Inicializar submódulo (mscdown)
+    if [ -f "$MSCDOWN_DIR/install.sh" ]; then
+        echo -e "${YELLOW}📦 Ejecutando instalador de mscdown...${NC}"
+        chmod +x "$MSCDOWN_DIR/install.sh"
+    else
+        echo -e "${YELLOW}⚠️  Submódulo mscdown no encontrado. Inicializando...${NC}"
+        git submodule update --init --recursive
+        chmod +x "$MSCDOWN_DIR/install.sh"
+    fi
 
     # Copiar mscdown a $HOME/mscdown para que el alias funcione
     if [ ! -d "$HOME/mscdown" ]; then
@@ -441,19 +451,6 @@ if [ -f "$MSCDOWN_DIR/install.sh" ]; then
     # Ejecutar instalador con "musica" como alias por defecto
     echo "musica" | bash "$HOME/mscdown/install.sh"
     echo -e "${GREEN}✓ MSCDown instalado (alias: musica)${NC}"
-else
-    echo -e "${YELLOW}⚠️  Submódulo mscdown no encontrado. Inicializando...${NC}"
-    git submodule update --init --recursive
-    chmod +x "$MSCDOWN_DIR/install.sh"
-
-    if [ ! -d "$HOME/mscdown" ]; then
-        cp -r "$MSCDOWN_DIR" "$HOME/mscdown"
-    fi
-
-    sed -i 's/sudo pacman -Syu --noconfirm/sudo pacman -S --noconfirm --needed/' "$HOME/mscdown/install.sh"
-
-    echo "musica" | bash "$HOME/mscdown/install.sh"
-    echo -e "${GREEN}✓ MSCDown instalado${NC}"
 fi
 
 echo ""
@@ -500,9 +497,8 @@ echo -e "${YELLOW}📝 PRÓXIMOS PASOS:${NC}"
 echo "1. Recarga las variables de entorno:"
 echo -e "   ${GREEN}source ~/.zshrc${NC}"
 echo ""
-echo "2. Configura OpenWeatherMap (opcional):"
-echo -e "   ${GREEN}Edit: ~/.config/awesome/rc.lua${NC}"
-echo "   Set: openweathermap_key y openweathermap_city_id"
+echo "2. El clima usa Open-Meteo (sin API key) + ubicación automática por IP:"
+echo "   Opcional: edita weather_location_override en ~/.config/awesome/secrets.lua"
 echo ""
 echo "3. Control de volumen de notificaciones:"
 echo "   El script notif-sink-setup.sh (autostart) crea un sink"

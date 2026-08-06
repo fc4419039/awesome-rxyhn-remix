@@ -30,16 +30,15 @@ launcher = "rofi -show drun -theme " .. os.getenv("HOME") .. "/.config/awesome/t
 file_manager = "thunar"
 music_client = "kitty --session " .. os.getenv("HOME") .. "/.config/ncmpcpp/session.conf --class music --title ncmpcpp --config " .. os.getenv("HOME") .. "/.config/ncmpcpp/kitty-music.conf"
 
--- Weather API (cargar desde secrets.lua si existe, o usar defaults)
+-- Weather (cargar desde secrets.lua si existe, o usar defaults)
+-- Proveedor: Open-Meteo (sin API key) + ubicación automática por IP.
 local ok, secrets = pcall(require, "secrets")
 if ok then
-    openweathermap_key = secrets.openweathermap_key
-    openweathermap_city_id = secrets.openweathermap_city_id
     weather_units = secrets.weather_units
+    weather_location_override = secrets.weather_location_override
 else
-    openweathermap_key = nil
-    openweathermap_city_id = nil
     weather_units = "metric"
+    weather_location_override = nil
 end
 
 -- Garbage Collector Settings (Valores estables para AwesomeWM)

@@ -194,7 +194,7 @@ screen.connect_signal("request::desktop_decoration", function(s)
     -- wibar_update_padding: definido FUERA del pcall para que el health timer
     -- también pueda acceder a él (captura 's' del closure del handler)
     local function wibar_update_padding(visible)
-        local p = { right = dpi(0), top = dpi(15), bottom = dpi(15) }
+        local p = { right = dpi(0), top = dpi(5), bottom = dpi(5) }
         p.left = visible and (dpi(10)) or 0
         s.padding = p
         awful.layout.arrange(s)
@@ -381,13 +381,13 @@ screen.connect_signal("request::desktop_decoration", function(s)
     local notif_center = wibox({
         type = "dock",
         screen = s,
-        height = s.geometry.height - dpi(50),
+        height = s.geometry.height - dpi(30),
         width = dpi(280),
         shape = helpers.rrect(beautiful.notif_center_radius),
         ontop = true,
         visible = false
     })
-    notif_center.y = dpi(25)
+    notif_center.y = dpi(15)
     anchor("notif_center", notif_center)
 
     local slide = rubato.timed{
@@ -514,7 +514,7 @@ screen.connect_signal("request::desktop_decoration", function(s)
         type = "dock",
         position = "left",
         screen = s,
-        height = s.geometry.height - dpi(50),
+        height = s.geometry.height - dpi(30),
         width = dpi(44),
         shape = helpers.rrect(beautiful.border_radius),
         bg = beautiful.wibar_bg,
@@ -537,7 +537,7 @@ screen.connect_signal("request::desktop_decoration", function(s)
         if fs and fs.mywibar then
             fs.wibar_visible = not fs.wibar_visible
             fs.mywibar.visible = fs.wibar_visible
-            local p = { right = dpi(0), top = dpi(15), bottom = dpi(15) }
+            local p = { right = dpi(0), top = dpi(5), bottom = dpi(5) }
             p.left = fs.wibar_visible and (dpi(10)) or 0
             fs.padding = p
             awful.layout.arrange(fs)

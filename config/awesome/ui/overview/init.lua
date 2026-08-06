@@ -258,9 +258,8 @@ function M.show()
         height = sgeo.height,
         x = sgeo.x,
         y = sgeo.y,
-        bg = bg_color,
+        bg = bg_color .. "b3",
         fg = fg_color,
-        opacity = 0.95,
     }
     M.overlay:set_widget(content)
 

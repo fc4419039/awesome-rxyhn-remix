@@ -529,6 +529,13 @@ awful.keyboard.append_global_keybindings({
     }
 })
 
+-- No-sleep toggle
+awful.keyboard.append_global_keybindings({
+    awful.key({modkey}, "p", function()
+        awful.spawn.with_shell(os.getenv("HOME") .. "/.config/awesome/scripts/no-sleep.sh")
+    end, {description = "toggle no-sleep mode", group = "system"})
+})
+
 -- Mouse bindings on desktop
 ------------------------------
 

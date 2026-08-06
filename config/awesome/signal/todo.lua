@@ -1,32 +1,24 @@
--- Provides:
--- signal::todo
---      total (integer)
---      done (integer)
---      undone (integer)
 local awful = require("awful")
 
--- 🌟 LA MAGIA: Lua obtiene dinámicamente la ruta HOME del usuario actual
 local user_home = os.getenv("HOME")
 local todo_file_path = user_home .. "/.todo"
+local todo_dir = user_home
 
--- Subscribe to todo changes
--- Requires inotify-tools
+-- Watch the directory for changes to .todo (sed -i creates a new inode)
 local todo_subscribe_script = [[
    bash -c "
-   while inotifywait -e modify ]] .. todo_file_path .. [[ -qq; do
-       echo 'update'
-   done
+   while inotifywait -e modify -e close_write -e moved_to -e create -qq ]] .. todo_dir .. [[ --include '\.todo$'; do
+        sleep 0.2
+        echo 'update'
+    done
 "
 ]]
 
 local todo_script = [[
    bash -c "
-   touch ]] .. todo_file_path .. [[
-
-   todo_done=$(todo raw done | wc -l)
-   todo_undone=$(todo raw todo | wc -l)
-
-   echo \"$todo_done\"@@\"$todo_undone\"
+    todo_done=$(grep -c '^\[\*\]' ]] .. todo_file_path .. [[ 2>/dev/null || echo 0)
+    todo_undone=$(grep -c '^\[ \]' ]] .. todo_file_path .. [[ 2>/dev/null || echo 0)
+    echo \"\${todo_done}@@\${todo_undone}\"
 "
 ]]
 
@@ -44,12 +36,9 @@ local emit_todo_info = function()
    })
 end
 
--- Run once to initialize widgets
 emit_todo_info()
 
--- Kill old inotifywait process de forma limpia usando pkill (así evitas el grep/awk que gasta CPU)
-awful.spawn.easy_async_with_shell("pkill -f 'inotifywait -e modify " .. todo_file_path .. "'", function ()
-   -- Update todo status with each line printed
+awful.spawn.easy_async_with_shell("pkill -f 'inotifywait.*todo'", function()
    awful.spawn.with_line_callback(todo_subscribe_script, {
        stdout = function(_)
            emit_todo_info()

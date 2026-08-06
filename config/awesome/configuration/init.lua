@@ -54,7 +54,7 @@ screen.connect_signal("request::desktop_decoration", function(s)
     -- La barra ajusta left/right padding dinámicamente en ui/bar/init.lua
     -- Este padding se aplica solo como valor inicial antes que la barra lo sobreescriba
     if not s.padding then
-        s.padding = {left = dpi(40), right = dpi(15), top = dpi(15), bottom = dpi(15)}
+        s.padding = {left = dpi(40), right = dpi(15), top = dpi(5), bottom = dpi(5)}
     end
     -- Each screen has its own tag table (solo si no tiene tags aún)
     if #s.tags == 0 then

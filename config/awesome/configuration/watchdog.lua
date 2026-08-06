@@ -45,7 +45,7 @@ local function recreate_wibar(s)
             end
             s.mywibar = awful.wibar({
                 type = "dock", position = "left", screen = s,
-                height = s.geometry.height - dpi(50), width = dpi(44),
+                height = s.geometry.height - dpi(30), width = dpi(44),
                 shape = helpers.rrect(beautiful.border_radius),
                 bg = beautiful.wibar_bg, ontop = true, visible = true,
             })

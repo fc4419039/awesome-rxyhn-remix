@@ -107,6 +107,11 @@ local loop = control_button(c, "", beautiful.xforeground, beautiful.icon_font
     awful.spawn.with_shell("mpc repeat")
 end)
 
+-- Repeat-one (single) button
+local single = control_button(c, "", beautiful.xforeground, beautiful.icon_font_name .. "12", dpi(30), function()
+    awful.spawn.with_shell("sh -c 'if [ \"$(mpc status 2>/dev/null | grep -o \'single: [a-z]*\' | cut -d\' \' -f2)\" = \"on\" ]; then mpc -q single off; else mpc -q single on; mpc -q repeat on; fi'")
+end)
+
 -- Shuffle playlist
 local shuffle = control_button(c, "", beautiful.xforeground, beautiful.icon_font_name .. "Round 12", dpi(30), function()
     awful.spawn.with_shell("mpc random")
@@ -225,6 +230,7 @@ end)
 
 local music_play_pause_textbox = music_play_pause:get_all_children()[1]:get_all_children()[1]
 local loop_textbox = loop:get_all_children()[1]:get_all_children()[1]
+local single_textbox = single:get_all_children()[1]:get_all_children()[1]
 local shuffle_textbox = shuffle:get_all_children()[1]:get_all_children()[1]
 
 -- Volume
@@ -375,6 +381,20 @@ playerctl:connect_signal("shuffle", function(_, shuffle, player_name)
     end
 end)
 
+-- Single status poll (mpc status)
+local function update_single_status()
+    awful.spawn.easy_async_with_shell("mpc status 2>/dev/null | grep -o 'single: [a-z]*' | cut -d' ' -f2", function(stdout)
+        local state = stdout:match("^%s*(.-)%s*$") or ""
+        if state == "on" then
+            single_textbox:set_markup_silently(helpers.colorize_text("", beautiful.deco_blue))
+        else
+            single_textbox:set_markup_silently("")
+        end
+    end)
+end
+
+local single_timer = gears.timer { timeout = 4, call_now = true, autostart = true, single_shot = false, callback = update_single_status }
+
 local music_create_decoration = function (c)
 
     -- Hide default titlebar
@@ -468,6 +488,7 @@ local music_create_decoration = function (c)
                     music_pos,
                     {
                         loop,
+                        single,
                         shuffle,
                         -- Go to list of playlists
                         control_button(c, "", beautiful.xforeground, beautiful.icon_font_name .. "Round 12", dpi(30), function()

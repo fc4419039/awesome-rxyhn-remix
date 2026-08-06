@@ -8,7 +8,7 @@
 
 [![GitHub stars](https://img.shields.io/github/stars/fc4419039/awesome-rxyhn-remix?style=for-the-badge&label=★%20STARS&color=7c3aed&labelColor=0f0f0f)](https://github.com/fc4419039/awesome-rxyhn-remix/stargazers)
 [![GitHub license](https://img.shields.io/github/license/fc4419039/awesome-rxyhn-remix?style=for-the-badge&color=67AFC1&labelColor=0f0f0f)](https://github.com/fc4419039/awesome-rxyhn-remix/blob/main/LICENSE)
-[![Install](https://img.shields.io/badge/⚡-INSTALL-7c3aed?style=for-the-badge&labelColor=0f0f0f)](https://github.com/fc4419039/awesome-rxyhn-remix#Installation--Instalaci%C3%B3n)
+[![Install](https://img.shields.io/badge/⚡-INSTALL-7c3aed?style=for-the-badge&labelColor=0f0f0f)](https://github.com/fc4419039/awesome-rxyhn-remix#installation--instalación)
 [![AwesomeWM](https://img.shields.io/badge/WM-Awesome-F4C2C2?style=for-the-badge&labelColor=0f0f0f&logo=awesomewm)](https://awesomewm.org/)
 [![Arch Linux](https://img.shields.io/badge/OS-Arch_Linux-1793D1?style=for-the-badge&labelColor=0f0f0f&logo=arch-linux)](https://archlinux.org/)
 [![Lua](https://img.shields.io/badge/Lua-2C2D72?style=for-the-badge&labelColor=0f0f0f&logo=lua)](https://www.lua.org/)
@@ -27,10 +27,14 @@
   AwesomeWM Dotfiles — Modernized & Fixed Remix
 </h1>
 
+<p align="center">
+  <i>rxyhn's legendary dotfiles — lost to the void, now reborn with modern AwesomeWM APIs, bug fixes, and a bag of extras.</i>
+</p>
+
 <br>
 
 <div align="center">
-  <h2>Stack</h2>
+  <h3>Stack</h3>
   <p>
     <img src="https://img.shields.io/badge/AwesomeWM-F4C2C2?style=flat-square&logo=awesomewm&labelColor=0f0f0f">
     <img src="https://img.shields.io/badge/Arch_Linux-1793D1?style=flat-square&logo=arch-linux&labelColor=0f0f0f">
@@ -46,8 +50,6 @@
 </div>
 
 <br>
-
-<!-- LANGUAGE SELECTOR -->
 
 <div align="center">
   <a href="#english"><img src="https://img.shields.io/badge/🇬🇧-English-7c3aed?style=for-the-badge&labelColor=0f0f0f"></a>
@@ -98,6 +100,7 @@
 <br>
 
 ---
+
 <br>
 
 <!-- ==================== ENGLISH ==================== -->
@@ -105,171 +108,27 @@
 <h1 align="center" id="english">🇬🇧 English</h1>
 
 <p align="center">
-  <i>Complete <b>AwesomeWM</b> configuration — repaired, optimized, and extended with modern features.</i>
-  <br><br>
-  Based on the original work by <b>rxyhn</b> (deleted repository) and the <b>Alpharivs</b> fork.
+  A complete <b>AwesomeWM</b> configuration: repaired, optimized, and extended with modern features.
+  Based on <b>rxyhn</b>'s original work (repo deleted) and the <b>Alpharivs</b> fork.
 </p>
 
 <br>
 
-### Wibar
-Vertical bar on the **left** side (50px wide):
-- **Pac-Man taglist** — Pac-Man (selected), Ghost (has windows), Dot (empty)
-- **Battery arc chart** — dynamic colors (green/yellow/red), charging indicator
-- **Digital clock** — stacked hour/minute
-- **Window list** — hover tooltip with title and class
-- **Notification center** button
-- **Layoutbox** for switching layouts
-- Auto-hide on maximize/fullscreen
-- Toggle with `Ctrl+F`
+### Features
 
-### Dashboard
-Slide-in panel from the left with:
-- **Profile** with user photo
-- **Music** — cover art, animated artist/title, progress bar
-- **Media controls** — prev/play/next
-- **12h clock**, **date**, **todo** arc chart & counter
-- **Weather** — icon, temp, description, humidity, wind (OpenWeatherMap)
-- **System stats** — volume, brightness, CPU, RAM with tooltips
-- **Recent notifications** — scrollable list with clear button
-
-### Stats Tooltip
-Dropdown on battery/clock click:
-- **Analog clock** drawn with Cairo
-- **Battery** with dynamic icons
-- **System uptime**
-- **Interactive WiFi manager**:
-  - Network scanning · Signal-sorted list · Password input · Connected indicator
-- **Settings button** — opens the **System Menu** slide-out panel
-
-### Notification Center
-- Recent notification list with icon, title, message, timestamp
-- **Do Not Disturb** toggle (persistent state, silences sounds)
-- **Clear all** button
-- Mouse wheel scrolling
-- Slide animation
-
-### Notification Audio System
-- **Isolated PipeWire sink** for notifications
-- **Screenshot sounds** (Insert/Alt+Insert) played on notification sink
-- **Auto-router** for notification streams
-- **Independent volume** via `volumen` (`Super+v`)
-- **Low-latency loopback** to default sink (25ms)
-- **DND** fully silences notification sounds
-
-### Rofi Menus
-- **Launcher** (`Super+d`) — centered, purple borders, cyan selection
-- **WiFi** (`Super+Shift+w`) — searchable, robust SSID parsing
-- **Bluetooth** (`Super+b`) — rewritten with modular functions
-- **Power** (`Alt+F4`) — shutdown/reboot/lock/suspend
-- **Volume** (`Super+v`) — GTK3 per-app sliders
-- **Cycle accent** (`Ctrl+Super+b`) — switch between 12 accent colors instantly
-
-### Window Decorations
-**Standard titlebar:**
-- Round buttons: close (red), maximize (yellow), float (purple)
-- Info widgets: WiFi, public IP, VPN
-- Centered window title
-- **2px border** matching rofi accent color, changeable with `Ctrl+Super+b`
-- **Borders & titlebars enabled by default.** Toggle:
-  - `Ctrl+Super+Shift+B` — toggle borders
-  - `Ctrl+Super+Shift+T` — toggle titlebars
-- Both persist across Awesome reloads
-
-**Music player (ncmpcpp windows):**
-- Full replacement titlebar with album art
-- Interactive progress bar (click to seek)
-- Controls: prev, play/pause, next
-- Buttons: loop, shuffle, playlist, visualizer
-- Animated song text · Adjustable volume
-
-### MSCDown — Music Searcher & Downloader
-YouTube music search & download with interactive menu and direct mode:
-- **Auto-install** with dotfiles or manually via `mscdown/install.sh`
-- **Interactive menu** (`musica`)
-- **Direct mode**: `musica Queen Bohemian Rhapsody`
-- **Auto MPD sync** (optional)
-- **Embedded metadata & thumbnails**
-- **Adjustable quality**: 320/192/128 kbps, format mp3/m4a/ogg/wav
-- **Isolated Python venv**
-- Repo: [`fc4419039/mscdown`](https://github.com/fc4419039/mscdown)
-
-### Lock Screen
-- **PAM authentication**
-- **English word clock** (e.g. "IT IS HALF PAST TEN")
-- Music controls with cover art
-- Rainbow key animation
-- Shortcut: `Mod+Ctrl+L`
-
-### Window Switcher (Alt+Tab)
-- Live window thumbnails
-- Keyboard navigation (Tab/arrows)
-- Minimize/kill from switcher
-- Auto-hide on Alt release
-
-### Touchegg Gestures
-Touchpad gestures configured via touchegg:
-| Gesture | Action |
-|---|---|
-| 3-finger swipe UP | Show Desktop Overview |
-| 3-finger swipe DOWN | Hide Desktop Overview |
-| 3-finger swipe LEFT/RIGHT | Navigate desktops |
-| 3-finger pinch IN | Close window |
-| 4-finger swipe UP/DOWN | Change virtual desktop |
-| 4-finger swipe RIGHT | Screenshot (Super+S) |
-| 4-finger pinch OUT | Show desktop |
-| 4-finger pinch IN | App launcher (Super+A) |
-| 2-finger tap | Right click |
-| 3-finger tap | Middle click |
-| 2-finger pinch (browser) | Zoom in/out |
-
-### Tag Preview
-- Hover preview of tag contents
-- Auto-positioned on correct monitor
-
-### Multi-Monitor
-- Full **multi-monitor** support
-- Independent wibars, dashboards, tooltips, notification centers per screen
-- Independent tags per monitor
-- Navigate: `Mod+Ctrl+j/k`
-- Move client: `Mod+o`
-
-### Monitored System Signals
-
-| Signal | Description |
-|---|---|
-| Battery | Percentage and status (30s) |
-| Volume | Level and mute (wpctl polling every 0.5s) |
-| Brightness | Level (inotify events) |
-| CPU | Usage percentage (5s) |
-| RAM | Used/total (20s) |
-| Uptime | System uptime (60s) |
-| Weather | OpenWeatherMap (1200s) |
-| Todo | Task progress (inotify events) |
-| Network | Status and SSID (30s) |
-| Playerctl | Metadata, status, position |
-
-### System Menu
-Slide-out settings panel (200px) on the right side, toggled from the stats tooltip:
-- **Blur** — toggle picom background blur on/off (reloads AwesomeWM, adapts theme)
-- **Transparency** — toggle transparency mode without blur (reloads AwesomeWM, adapts theme)
-- **Volume** — opens GTK3 per-app volume sliders
-- **Night Mode** — redshift 3500K on/off
-- **Network** — rofi WiFi menu
-- **Bluetooth** — rofi Bluetooth menu
-- **Wallpaper** — pick a custom image with yad file dialog
-- **SDDM Wallpaper** — set lock screen background
-- **Apps** — rofi application launcher
-- **Music** — ncmpcpp music client
-- **Cycle Accent** — switch between 12 accent colors
-- **Titlebar / Borders** — toggle window titlebars or borders on all windows
-- **Widgets** — toggle the desktop datetime widget visibility on/off
-- **Power Menu** — shutdown/reboot/lock/suspend
-- Auto-hides after 3 seconds of inactivity
-
-### Available Layouts
-- **Tile** (default) · **Floating** · **Centered** (bling) · **MSTab** (bling)
-- **Horizontal** (bling) · **Machi** (interactive manual) · **Equalarea** (bling) · **Deck** (bling)
+- **Wibar** — vertical bar on the left: Pac-Man taglist, battery arc, stacked clock, window list tooltips, layoutbox, notification-center button. Auto-hides on fullscreen (`Ctrl+F` to toggle).
+- **Dashboard** — slide-in from the left: profile, music with cover art & progress, media controls, clock, todo arc, **weather** (Open-Meteo, no API key — location auto-detected by IP), system stats, recent notifications.
+- **Notification Center** — scrollable history, clear-all, and a **Do Not Disturb that actually works**: popups are silenced *and queued* until you turn it back on.
+- **Notification audio** — isolated PipeWire sink, screenshot sounds, auto-router, independent volume (`Super+v`), low-latency loopback, fully silenced by DND.
+- **Rofi menus** — launcher, wifi, bluetooth, power, GTK3 volume sliders, and instant **accent cycling** across 12 colors.
+- **Window decorations** — round buttons, WiFi/IP/VPN info, 2px accent border. **Borders & titlebars on by default** (`Ctrl+Super+Shift+B` / `+T` to toggle). ncmpcpp windows get a full music titlebar with album art, seek bar & controls.
+- **Lock screen** — PAM auth, English word clock, music controls, rainbow keys (`Mod+Ctrl+L`).
+- **Alt+Tab switcher** — live window thumbnails with keyboard navigation.
+- **System Menu** — slide-out panel: blur, transparency, night mode, wallpaper, music, accent, borders/titlebars, widgets, power.
+- **Layouts** — tile, floating, centered, mstab, horizontal, machi, equalarea, deck.
+- **MSCDown** — bundled YouTube music searcher/downloader (`musica` or `musica <query>`), auto-installed with the dotfiles. The installer **skips it if already present**.
+- **Multi-monitor** — independent wibars, dashboards and tags per screen (`Mod+Ctrl+j/k`).
+- **Touchegg gestures** — 3-finger swipe for the desktop overview, 4-finger to change desktops, pinches to close windows or open the launcher.
 
 ### Keyboard Shortcuts
 
@@ -278,64 +137,29 @@ Slide-out settings panel (200px) on the right side, toggled from the stats toolt
 | `Mod+Enter` | Terminal (kitty) |
 | `Mod+d` | Rofi launcher |
 | `Mod+Shift+d` | Dashboard |
-| `Mod+w` | Web browser |
-| `Mod+Shift+w` | Network menu |
-| `Mod+b` | Bluetooth |
-| `Mod+v` | Volume control |
+| `Mod+w` / `Mod+Shift+w` | Web browser / WiFi menu |
+| `Mod+b` / `Mod+v` | Bluetooth / Volume |
 | `Alt+F4` | Power menu |
-| `Insert` | Full screenshot |
-| `Alt+Insert` | Area screenshot |
+| `Mod+p` | **No-sleep toggle** (keep screen on) |
+| `Insert` / `Alt+Insert` | Screenshot / area screenshot |
 | `Mod+z` | Scratchpad |
 | `Mod+Ctrl+l` | Lock screen |
 | `Ctrl+Super+b` | Cycle accent color |
-| `Ctrl+Super+Shift+B` | Toggle borders |
-| `Ctrl+Super+Shift+T` | Toggle titlebars |
+| `Ctrl+Super+Shift+B` / `+T` | Toggle borders / titlebars |
 | `Alt+Tab` | Window switcher |
-| `Mod+q` | Close window |
-| `Mod+f` | File manager |
-| `Mod+Ctrl+j/k` | Navigate monitors |
-| `Ctrl+F` | Toggle wibar |
-| `Mod+[1-5]` | Switch tag |
-| `Mod+Shift+[1-5]` | Move to tag |
-| `Mod+Arrow` | Directional focus |
-| `Mod+Shift+Arrow` | Directional swap |
-| `Mod+=/-` | Adjust useless gap |
-| `Mod+Shift+=/-` | Adjust padding |
-| `Mod+s` | Tile layout |
-| `Mod+Shift+s` | Floating layout |
-| `Mod+Space` | Next layout |
-| `Alt+a/s/d` | Tab group/iterate/ungroup |
 | `Mod+e` | Desktop Overview |
 | `Mod+Shift+v` | Clipboard history |
+| `Mod+s` / `Mod+Shift+s` / `Mod+Space` | Tile / floating / next layout |
+| `Mod+q` | Close window |
+| `Mod+f` | File manager |
+| `Ctrl+F` | Toggle wibar |
+| `Mod+[1-5]` / `Mod+Shift+[1-5]` | Switch / move to tag |
+| `Mod+Arrow` / `Mod+Shift+Arrow` | Directional focus / swap |
+| `Mod+=/-` | Adjust useless gap |
 
 ### Extras
-- **Sloppy focus** — mouse follows focus
-- **Flash focus** — flash on focus change
-- **Desktop context menu** with **Wallpapers** submenu:
-  - **Interactive background** — random wallpaper from `~/fondos/` on reload
-  - **Choose image** — `yad` file picker to set wallpaper manually
-  - **Lock screen** — set SDDM lock screen background
-- **Scratchpad** floating terminal (`Mod+z`)
-- **Window swallowing** — terminals replaced by launched apps
-- **Save floats** — preserves floating window positions across tags
-- **Better resize** — improved tiled resize
-- **Rounded corners** on windows
-- **OSD notifications** for volume/brightness with progress bars (no watermark, adaptive bg)
-- **Tooltip fix** — tooltip window is now visible (was transparent due to `beautiful.transparent`)
-- **Blur toggle** — `toggle-blur.sh` switches picom compositor blur on/off with full theme adaptation
-- **Transparency toggle** — `toggle-transparency.sh` enables transparency without blur (lighter picom), adapts theme
-- **Emergency reset** — `reset-theme.sh` restores original theme and removes all state files if something breaks
-- **Solid fallback theme** — `theme_solid.lua` is used when blur/transparency is off, ensuring backgrounds are opaque
-- **Three picom configs** — `picom.conf` (solid), `picom-blur.conf` (blur), `picom-transparency.conf` (transparency); each with `inactive-opacity = 1.0` + `override = false` to respect per-window alpha, `dock = { opacity = 1.0 }` for panels, and custom opacity rules for browsers/media apps
-- **Layout selector** with icon preview
-- **Lock screen** uses PAM with `liblua_pam.so` (precompiled for Arch x86_64)
-- **OpenCode** AI agent config included (`opencode.json`)
-- **Desktop widget configurable menu** — click the datetime widget on the desktop to open a settings menu with color presets, visibility toggles, and size controls
-- **Desktop Overview** (`Super+E`) — Activities-style grid showing all open windows with live thumbnails, click to focus
-- **Calculator** (`toggle_calculator()`) — macOS-style floating calculator with scientific mode (sin/cos/tan/ln/log/sqrt), auto-close parentheses, √ button
-- **Clipboard history** (`Super+Shift+V`) — cliphist + rofi integration for clipboard history search
-- **Touchegg gestures** — 3-finger swipe for overview, 4-finger for desktops, pinch for close/launcher
-- **UI Watchdog** — auto-repairs broken wibar/dashboard/notif-center/tooltip, restarts awesome if 3 repairs fail
+
+Sloppy & flash focus · window swallowing · scratchpad · save floats · better resize · rounded corners · OSD volume/brightness notifications · clipboard history (cliphist) · macOS-style floating calculator · desktop context menu with wallpaper picker · blur/transparency toggles that fully re-adapt the theme · `reset-theme.sh` emergency reset · three picom configs (solid/blur/transparency) · **UI watchdog** that auto-repairs broken panels · OpenCode AI config included.
 
 <br>
 
@@ -348,170 +172,27 @@ Slide-out settings panel (200px) on the right side, toggled from the stats toolt
 <h1 align="center" id="español">🇪🇸 Español</h1>
 
 <p align="center">
-  <i>Configuración completa de <b>AwesomeWM</b>, reparada, optimizada y extendida con funcionalidades modernas.</i>
-  <br><br>
-  Basado en el trabajo original de <b>rxyhn</b> (repo eliminado) y el <b>Alpharivs</b> fork.
+  Configuración completa de <b>AwesomeWM</b>, reparada, optimizada y extendida con funcionalidades modernas.
+  Basada en el trabajo original de <b>rxyhn</b> (repo eliminado) y el <b>Alpharivs</b> fork.
 </p>
 
 <br>
 
-### Wibar
-Barra vertical en el lateral **izquierdo** (50px de ancho):
-- **Taglist personalizado** — Pac-Man (seleccionado), Fantasma (con ventanas), Punto (vacío)
-- **Arcchart de batería** — colores dinámicos verde/amarillo/rojo, indicador de carga
-- **Reloj digital** — hora/minuto apilados verticalmente
-- **Lista de ventanas** — tooltip con título y clase al hover
-- Botón de **centro de notificaciones**
-- **Layoutbox** para cambiar layouts
-- Auto-ocultamiento al maximizar o pantalla completa
-- Atajo `Ctrl+F` para ocultar/mostrar
+### Características
 
-### Dashboard
-Panel deslizable desde la izquierda con:
-- **Perfil** con foto de usuario
-- **Música** — carátula, artista/título animado, barra de progreso
-- **Controles multimedia** — anterior/reproducir/siguiente
-- **Reloj 12h**, **fecha**, **Todo** con gráfico de arco y contador
-- **Clima** — icono, temperatura, descripción, humedad, viento (OpenWeatherMap)
-- **Estadísticas** — volumen, brillo, CPU, RAM con tooltips
-- **Notificaciones recientes** — lista scrolleable con botón limpiar
-
-### Panel de estadísticas (Stats Tooltip)
-Panel desplegable al hacer clic en batería/reloj:
-- **Reloj analógico** dibujado con Cairo
-- **Batería** con iconos dinámicos
-- **Uptime** del sistema
-- **Gestor WiFi interactivo**:
-  - Escaneo de redes · Lista ordenada por señal · Conexión con contraseña · Indicador de red conectada
-- **Botón de ajustes** — abre el **System Menu**
-
-### Centro de notificaciones
-- Lista con icono, título, mensaje y timestamp
-- **No molestar** (persiste, silencia sonidos)
-- **Limpiar todas**
-- Scroll con rueda del mouse
-- Animación slide
-
-### Sistema de audio de notificaciones
-- **Sink independiente** en PipeWire
-- **Sonido al capturar pantalla** (Insert/Alt+Insert)
-- **Router automático** de streams
-- **Volumen independiente** desde `volumen` (`Super+v`)
-- **Loopback** de baja latencia (25ms)
-- **No molestar** silencia todo
-
-### Menús Rofi
-- **Launcher** (`Super+d`) — centrado, bordes púrpura, selección cyan
-- **WiFi** (`Super+Shift+w`) — buscador, parsing robusto
-- **Bluetooth** (`Super+b`) — funciones modulares
-- **Power** (`Alt+F4`) — apagado/reinicio/bloqueo/suspensión
-- **Volumen** (`Super+v`) — GTK3 con sliders por app
-- **Cycle accent** (`Ctrl+Super+b`) — cambia entre 12 colores de acento
-
-### Decoraciones de ventana
-**Barra de título estándar:**
-- Botones redondos: cerrar (rojo), maximizar (amarillo), flotar (púrpura)
-- Widgets: WiFi, IP pública, VPN
-- Título centrado
-- **Borde de 2px** del color de acento, cambiable con `Ctrl+Super+b`
-- **Bordes y titlebars activados por defecto:**
-  - `Ctrl+Super+Shift+B` — quitar/poner bordes
-  - `Ctrl+Super+Shift+T` — quitar/poner titlebars
-- Persisten entre recargas
-
-**Reproductor (ventanas ncmpcpp):**
-- Titlebar reemplazada por reproductor completo
-- Carátula, barra de progreso interactiva
-- Controles, loop/shuffle/playlist/visualizador
-- Texto animado · Volumen ajustable
-
-### MSCDown — Music Searcher & Downloader
-Buscador y descargador de música desde YouTube:
-- **Instalación automática** con el dotfiles o manual desde `mscdown/install.sh`
-- **Menú interactivo** (`musica`)
-- **Modo directo**: `musica Queen Bohemian Rhapsody`
-- **Sincronización automática con MPD** (opcional)
-- **Metadatos y miniaturas** embebidos
-- **Calidad ajustable**: 320/192/128 kbps, formato mp3/m4a/ogg/wav
-- **Entorno virtual aislado**
-- Repo: [`fc4419039/mscdown`](https://github.com/fc4419039/mscdown)
-
-### Lock Screen
-- **Autenticación PAM**
-- **Word clock** en inglés ("IT IS HALF PAST TEN")
-- Controles de música con carátula
-- Animación arcoíris en teclas
-- Atajo: `Mod+Ctrl+L`
-
-### Window Switcher (Alt+Tab)
-- Thumbnails en vivo
-- Navegación con teclado
-- Minimizar/matar desde el switcher
-- Auto-ocultamiento al soltar Alt
-
-### Gestos de Touchegg
-Gestos del touchpad configurados con touchegg:
-| Gesto | Acción |
-|---|---|
-| Swipe 3 dedos ARRIBA | Mostrar Desktop Overview |
-| Swipe 3 dedos ABAJO | Ocultar Desktop Overview |
-| Swipe 3 dedos IZQ/DER | Navegar entre escritorios |
-| Pinch 3 dedos ADENTRO | Cerrar ventana |
-| Swipe 4 dedos ARRIBA/ABAJO | Cambiar escritorio virtual |
-| Swipe 4 dedos DER | Captura de pantalla (Super+S) |
-| Pinch 4 dedos AFUERA | Mostrar escritorio |
-| Pinch 4 dedos ADENTRO | Lanzador de apps (Super+A) |
-| Tap 2 dedos | Click derecho |
-| Tap 3 dedos | Click medio |
-| Pinch 2 dedos (navegador) | Zoom +/- |
-
-### Tag Preview
-- Vista previa del tag al hover
-- Posicionado automático
-
-### Gestión de pantallas
-- **Soporte multi-monitor** completo
-- Wibar, dashboard, tooltip y notificaciones independientes
-- Tags independientes por monitor
-- Navegar: `Mod+Ctrl+j/k`
-- Mover cliente: `Mod+o`
-
-### Señales del sistema monitoreadas
-
-| Señal | Descripción |
-|---|---|
-| Batería | Porcentaje y estado (c/30s) |
-| Volumen | Nivel y mute (wpctl polling c/0.5s) |
-| Brillo | Nivel (eventos inotify) |
-| CPU | Uso porcentual (c/5s) |
-| RAM | Usada/total (c/20s) |
-| Uptime | Tiempo encendido (c/60s) |
-| Clima | OpenWeatherMap (c/1200s) |
-| Todo | Progreso (eventos inotify) |
-| Red | Estado y SSID (c/30s) |
-| Playerctl | Metadatos, estado, posición |
-
-### System Menu
-Panel deslizable de ajustes (200px) en el lateral derecho, abierto desde el tooltip:
-- **Blur** — activa/desactiva el blur de picom (recarga AwesomeWM, adapta el tema)
-- **Transparencia** — activa modo transparencia sin blur (recarga AwesomeWM, adapta el tema)
-- **Volumen** — sliders GTK3 por aplicación
-- **Modo noche** — redshift 3500K on/off
-- **Red** — menú rofi WiFi
-- **Bluetooth** — menú rofi Bluetooth
-- **Fondo** — selector de wallpaper con yad
-- **Fondo SDDM** — cambiar fondo de pantalla de bloqueo
-- **Apps** — lanzador rofi
-- **Música** — ncmpcpp
-- **Cycle Accent** — cambia entre 12 colores de acento
-- **Titlebar / Borders** — oculta/muestra barras de título o bordes
-- **Widgets** — mostrar/ocultar el widget de escritorio (fecha/hora)
-- **Power Menu** — apagado/reinicio/bloqueo/suspensión
-- Se oculta automáticamente tras 3s de inactividad
-
-### Layouts disponibles
-- **Tile** (default) · **Floating** · **Centered** (bling) · **MSTab** (bling)
-- **Horizontal** (bling) · **Machi** (manual interactivo) · **Equalarea** (bling) · **Deck** (bling)
+- **Wibar** — barra vertical a la izquierda: taglist Pac-Man, arco de batería, reloj apilado, tooltips de ventanas, layoutbox, botón del centro de notificaciones. Se oculta en pantalla completa (`Ctrl+F` para alternar).
+- **Dashboard** — panel deslizable desde la izquierda: perfil, música con carátula y progreso, controles multimedia, reloj, arco de tareas, **clima** (Open-Meteo, sin API key — ubicación detectada por IP), estadísticas del sistema y notificaciones recientes.
+- **Centro de notificaciones** — historial scrolleable, limpiar todo y un **no molestar que funciona de verdad**: silencia *y encola* los popups hasta que lo vuelvas a activar.
+- **Audio de notificaciones** — sink aislado en PipeWire, sonidos de captura, router automático, volumen independiente (`Super+v`), loopback de baja latencia, silenciado por completo con no molestar.
+- **Menús Rofi** — lanzador, wifi, bluetooth, power, sliders GTK3 de volumen y **cambio de acento** instantáneo entre 12 colores.
+- **Decoraciones de ventana** — botones redondos, widgets WiFi/IP/VPN, borde de 2px del color de acento. **Bordes y titlebars activados por defecto** (`Ctrl+Super+Shift+B` / `+T` para alternar). Las ventanas de ncmpcpp tienen una titlebar de música completa con carátula, barra de búsqueda y controles.
+- **Lock screen** — autenticación PAM, word clock en inglés, controles de música, teclas arcoíris (`Mod+Ctrl+L`).
+- **Switcher Alt+Tab** — miniaturas en vivo con navegación por teclado.
+- **System Menu** — panel deslizable: blur, transparencia, modo noche, fondo, música, acento, bordes/titlebars, widgets, power.
+- **Layouts** — tile, floating, centered, mstab, horizontal, machi, equalarea, deck.
+- **MSCDown** — buscador/descargador de música de YouTube incluido (`musica` o `musica <consulta>`), se instala automáticamente con el dotfiles. El instalador **lo salta si ya está presente**.
+- **Multi-monitor** — wibar, dashboard y tags independientes por pantalla (`Mod+Ctrl+j/k`).
+- **Gestos de Touchegg** — swipe de 3 dedos para el overview, 4 dedos para cambiar de escritorio, pinches para cerrar ventanas o abrir el lanzador.
 
 ### Atajos de teclado
 
@@ -520,64 +201,29 @@ Panel deslizable de ajustes (200px) en el lateral derecho, abierto desde el tool
 | `Mod+Enter` | Terminal (kitty) |
 | `Mod+d` | Rofi lanzador |
 | `Mod+Shift+d` | Dashboard |
-| `Mod+w` | Navegador web |
-| `Mod+Shift+w` | Menú de redes |
-| `Mod+b` | Bluetooth |
-| `Mod+v` | Control de volumen |
+| `Mod+w` / `Mod+Shift+w` | Navegador / menú WiFi |
+| `Mod+b` / `Mod+v` | Bluetooth / Volumen |
 | `Alt+F4` | Menú de apagado |
-| `Insert` | Captura de pantalla |
-| `Alt+Insert` | Captura de área |
+| `Mod+p` | **No-sleep** (mantener pantalla encendida) |
+| `Insert` / `Alt+Insert` | Captura / captura de área |
 | `Mod+z` | Scratchpad |
 | `Mod+Ctrl+l` | Lock screen |
 | `Ctrl+Super+b` | Cycle accent color |
-| `Ctrl+Super+Shift+B` | Quitar/poner bordes |
-| `Ctrl+Super+Shift+T` | Quitar/poner titlebars |
+| `Ctrl+Super+Shift+B` / `+T` | Quitar/poner bordes / titlebars |
 | `Alt+Tab` | Window switcher |
-| `Mod+q` | Cerrar ventana |
-| `Mod+f` | Explorador de archivos |
-| `Mod+Ctrl+j/k` | Navegar pantallas |
-| `Ctrl+F` | Ocultar/mostrar wibar |
-| `Mod+[1-5]` | Cambiar tag |
-| `Mod+Shift+[1-5]` | Mover a tag |
-| `Mod+Arrow` | Foco direccional |
-| `Mod+Shift+Arrow` | Intercambiar direccional |
-| `Mod+=/-` | Ajustar useless gap |
-| `Mod+Shift+=/-` | Ajustar padding |
-| `Mod+s` | Layout tile |
-| `Mod+Shift+s` | Layout floating |
-| `Mod+Space` | Siguiente layout |
-| `Alt+a/s/d` | Agrupar/iterar/desagrupar pestañas |
 | `Mod+e` | Desktop Overview |
 | `Mod+Shift+v` | Historial del portapapeles |
+| `Mod+s` / `Mod+Shift+s` / `Mod+Space` | Tile / floating / siguiente layout |
+| `Mod+q` | Cerrar ventana |
+| `Mod+f` | Explorador de archivos |
+| `Ctrl+F` | Ocultar/mostrar wibar |
+| `Mod+[1-5]` / `Mod+Shift+[1-5]` | Cambiar / mover a tag |
+| `Mod+Arrow` / `Mod+Shift+Arrow` | Foco / intercambio direccional |
+| `Mod+=/-` | Ajustar useless gap |
 
 ### Extras
-- **Sloppy focus** — el foco sigue al mouse
-- **Flash focus** — destello al cambiar foco
-- **Menú contextual** en escritorio con **"Fondos"**:
-  - **Fondo interactivo** — wallpaper aleatorio desde `~/fondos/`
-  - **Elegir imagen** — selector gráfico `yad`
-  - **Pantalla de bloqueo** — fondo del lock screen SDDM
-- **Scratchpad** terminal flotante (`Mod+z`)
-- **Window swallowing** — terminales reemplazadas por apps
-- **Save floats** — preserva posición flotante entre tags
-- **Better resize** — redimensionado mejorado
-- **Esquinas redondeadas**
-- **Notificaciones OSD** para volumen/brillo (sin watermark, fondo adaptable)
-- **Tooltip corregido** — la ventana del tooltip ahora es visible (era transparente por `beautiful.transparent`)
-- **Toggle Blur** — `toggle-blur.sh` activa/desactiva el blur de picom adaptando el tema completo
-- **Toggle Transparencia** — `toggle-transparency.sh` activa transparencia sin blur (picom más ligero), adapta el tema
-- **Reset de emergencia** — `reset-theme.sh` restaura el tema original y limpia archivos de estado ante fallos
-- **Tema sólido de respaldo** — `theme_solid.lua` se usa sin blur/transparencia para fondos opacos
-- **Tres configs de picom** — `picom.conf` (sólido), `picom-blur.conf` (blur), `picom-transparency.conf` (transparencia); cada uno con `inactive-opacity = 1.0` + `override = false` para respetar el alpha por ventana, `dock = { opacity = 1.0 }` para paneles, y reglas de opacidad para navegadores/media
-- **Selector de layouts** con vista previa
-- **Lock screen** usa PAM (`liblua_pam.so` para Arch x86_64)
-- **OpenCode** agente de IA incluido (`opencode.json`)
-- **Menú configurable del widget de escritorio** — haz clic en el widget de fecha/hora para abrir un menú de ajustes con colores preseleccionados, alternar visibilidad y controles de tamaño
-- **Desktop Overview** (`Super+E`) — cuadrícula estilo Activities con miniaturas de ventanas, clic para enfocar
-- **Calculadora** (`toggle_calculator()`) — calculadora flotante estilo macOS con modo científico (sin/cos/tan/ln/log/sqrt), auto-completar paréntesis, botón √
-- **Historial del portapapeles** (`Super+Shift+V`) — integración cliphist + rofi para buscar en el historial
-- **Gestos de Touchegg** — swipe 3 dedos para overview, 4 dedos para escritorios, pinch para cerrar/launcher
-- **UI Watchdog** — repara automáticamente wibar/dashboard/notif-center/tooltip rotos, reinicia awesome si 3 reparaciones fallan
+
+Foco sloppy y flash · window swallowing · scratchpad · save floats · mejor redimensionado · esquinas redondeadas · OSD de volumen/brillo · historial del portapapeles (cliphist) · calculadora flotante estilo macOS · menú contextual con selector de fondo · toggles de blur/transparencia que re-adaptan el tema completo · reset de emergencia `reset-theme.sh` · tres configs de picom (sólido/blur/transparencia) · **UI watchdog** que repara paneles rotos · configuración del agente OpenCode incluida.
 
 <br>
 
@@ -603,6 +249,10 @@ chmod +x install.sh
 ./install.sh
 ```
 
+> The installer is **smart**: it detects already-installed packages and skips them, won't reconfigure what's already configured, and won't re-clone or re-install mscdown if it's already present.
+>
+> El instalador es **inteligente**: detecta los paquetes ya instalados y los omite, no reconfigura lo ya configurado y no vuelve a clonar ni instalar mscdown si ya está presente.
+
 > ⚠️ `sudo` is only required for the SDDM theme installation.
 > ⚠️ El script requiere `sudo` solo para instalar el tema SDDM.
 
@@ -618,11 +268,12 @@ chmod +x install.sh
 **Dependencies / Dependencias** (Arch Linux):
 
 ```bash
-yay -Sy awesome-git picom-git kitty rofi todo-bin acpi acpid \
+yay -S awesome-git picom-git kitty rofi todo-bin acpi acpid \
 wireless_tools jq inotify-tools polkit-gnome xdotool xclip maim \
 brightnessctl alsa-utils alsa-tools pipewire pipewire-pulse wireplumber \
 playerctl feh zsh neovim btop lsd bat python-gobject pipewire-alsa xcolor-pick \
-touchegg cliphist --needed
+touchegg cliphist xorg-xset mpc xorg-xprop xorg-xwininfo xdg-utils \
+xdg-user-dirs libpulse psmisc --needed
 ```
 
 **Fonts / Fuentes:** Iosevka Nerd Font, JetBrains Mono Nerd Font, Hack Nerd Font, Material Design Icons, Weather Icons + icomoon fonts in `fonts/`
@@ -634,9 +285,10 @@ cp -r config/* ~/.config/
 cp -r bin/* ~/.local/bin/
 ```
 
-**Configure / Configurar:** Set `openweathermap_key` and `openweathermap_city_id` in `rc.lua`
+**No API keys needed / Sin API keys:** the weather widget uses **Open-Meteo** and auto-detects your location by IP.
+**Sin API keys:** el widget de clima usa **Open-Meteo** y detecta tu ubicación por IP.
 
-**Wallpapers:** Place images in `~/fondos/`
+**Wallpapers:** place images in `~/fondos/`
 
 **Logout & select AwesomeWM / Cerrar sesión e iniciar AwesomeWM**
 

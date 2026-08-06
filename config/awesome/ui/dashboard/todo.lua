@@ -37,7 +37,7 @@ local todo_arc = wibox.widget{
   start_angle = math.pi * 1.5,
   rounded_edge = true,
   bg = beautiful.darker_bg or "#1a1a2e",
-  colors = { beautiful.xcolor2 or "#06b6d4" },
+  colors = { beautiful.deco_cyan or "#06b6d4" },
   widget = wibox.container.arcchart
 }
 

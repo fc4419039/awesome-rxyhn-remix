@@ -32,4 +32,4 @@ start xrdb $HOME/.Xresources
 # clipboard history (se activa al presionar Super+Shift+V)
 
 # touchegg client (gestos del touchpad)
-pgrep -u "$(whoami)" -f "touchegg.*--client" > /dev/null 2>&1 || nohup touchegg --client > /dev/null 2>&1 &
+pgrep -u "$USER" -f "touchegg.*--client" > /dev/null 2>&1 || nohup touchegg --client > /dev/null 2>&1 &
