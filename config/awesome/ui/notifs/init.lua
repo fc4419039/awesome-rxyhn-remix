@@ -65,11 +65,21 @@ ruled.notification.connect_signal("request::rules", function()
 
     -- Firefox: ignorar notificaciones de baja urgencia (hover en videos, etc.)
     ruled.notification.append_rule {
-        rule_any = {
+        rule_every = {
             app_name = {"Firefox", "firefox"},
             urgency = {"low"},
         },
-        properties = {ignored = true}
+        properties = {ignore = true}
+    }
+
+    -- Opera GX: solo notificaciones importantes (correo, WhatsApp, YouTube);
+    -- ignorar las de baja urgencia (hover en videos, etc.)
+    ruled.notification.append_rule {
+        rule_every = {
+            app_name = {"opera-gx", "opera", "Opera GX", "Opera", "OperaGX", "chromium", "Chromium"},
+            urgency = {"low"},
+        },
+        properties = {ignore = true}
     }
 end)
 
