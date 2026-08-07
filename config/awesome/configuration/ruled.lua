@@ -7,6 +7,9 @@ local beautiful = require("beautiful")
 -- Notification handling library
 local naughty = require("naughty")
 
+-- Timer handling library
+local gears = require("gears")
+
 -- Ruled
 local ruled = require("ruled")
 
@@ -23,10 +26,30 @@ ruled.client.connect_signal("request::rules", function()
             focus = awful.client.focus.filter,
             raise = true,
             size_hints_honor = false,
+            floating = false,
+            maximized = false,
             screen = awful.screen.preferred,
             titlebars_enabled = beautiful.titlebar_enabled,
             placement = awful.placement.no_overlap+awful.placement.no_offscreen
-        }
+        },
+        callback = function(c)
+            -- Evitar que las apps abran maximizadas al iniciar
+            -- (muchas restauran su estado guardado).
+            if c.maximized then
+                c.maximized = false
+            end
+            local mx_guard
+            mx_guard = function()
+                if c.valid then c.maximized = false end
+            end
+            c:connect_signal("property::maximized", mx_guard)
+            gears.timer.start_new(3, function()
+                if c.valid then
+                    pcall(c.disconnect_signal, c, "property::maximized", mx_guard)
+                end
+                return false
+            end)
+        end
     }
 
     -- Tasklist order

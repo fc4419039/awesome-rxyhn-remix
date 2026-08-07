@@ -63,6 +63,17 @@ awful.keyboard.append_global_keybindings({
           awful.spawn.with_shell(spotify)
         end,
         {description = "open spotify", group = "launcher"}),
+        awful.key({modkey}, "o", function()
+            local bin = io.popen("command -v opera-gx 2>/dev/null")
+            local found = bin and bin:read() or nil
+            if bin then bin:close() end
+            if found then
+                awful.spawn(found)
+            else
+                naughty.notify({ text = "Opera GX no está instalado. Instálalo con: yay -S opera-gx", timeout = 5 })
+            end
+        end,
+        {description = "open opera gx", group = "launcher"}),
         awful.key({modkey, ctrl}, "t", function()
             local state_file = "/tmp/awesome-night-mode"
             local night_mode = io.open(state_file, "r") and true or false
@@ -422,7 +433,7 @@ client.connect_signal("request::default_keybindings", function()
             c:swap(awful.client.getmaster())
         end,
         {description = "move to master", group = "client"}),
-        awful.key({modkey}, "o", function(c)
+        awful.key({modkey, shift}, "O", function(c)
             c:move_to_screen() end,
         {description = "move to screen", group = "client"}),
         awful.key({modkey, shift}, "b", function(c)

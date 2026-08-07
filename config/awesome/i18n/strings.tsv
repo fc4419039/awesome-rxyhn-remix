@@ -120,6 +120,7 @@ tz.prompt	Zona Horaria	Time Zone	Fuso horário	Fuseau horaire	Zeitzone	Fuso orar
 tz.updated_title	Hora actualizada	Time updated	Hora atualizada	Heure mise à jour	Zeit aktualisiert	Ora aggiornata	時刻を更新しました	시간 업데이트됨	时间已更新	Время обновлено	تم تحديث الوقت
 tz.updated_body	Zona horaria: %s	Time zone: %s	Fuso horário: %s	Fuseau horaire : %s	Zeitzone: %s	Fuso orario: %s	タイムゾーン: %s	시간대: %s	时区：%s	Часовой пояс: %s	المنطقة الزمنية: %s
 tz.error_failed	No se pudo cambiar la zona horaria	Failed to change the time zone	Não foi possível alterar o fuso horário	Échec du changement de fuseau horaire	Zeitzone konnte nicht geändert werden	Impossibile cambiare il fuso orario	タイムゾーンを変更できませんでした	시간대를 변경하지 못했습니다	无法更改时区	Не удалось изменить часовой пояс	تعذر تغيير المنطقة الزمنية
+tz.frequent	Frecuentes	Frequent	Frequentes	Fréquents	Häufige	Frequenti	よく使う	자주 사용	常用	Частые	المتكررة
 co.title	Limpieza	Cleanup	Limpeza	Nettoyage	Bereinigung	Pulizia	クリーンアップ	정리	清理	Очистка	تنظيف
 co.none	No hay paquetes huérfanos	No orphaned packages	Nenhum pacote órfão	Aucun paquet orphelin	Keine verwaisten Pakete	Nessun pacchetto orfano	孤立したパッケージはありません	고아 패키지 없음	没有孤立软件包	Нет осиротевших пакетов	لا توجد حزم يتيمة
 co.yes	Sí	Yes	Sim	Oui	Ja	Sì	はい	예	是	Да	نعم
@@ -130,6 +131,8 @@ co.done_title	Limpieza completada	Cleanup complete	Limpeza concluída	Nettoyage 
 co.removed	%s paquetes eliminados	%s packages removed	%s pacotes removidos	%s paquets supprimés	%s Pakete entfernt	%s pacchetti rimossi	%s 個のパッケージを削除しました	%s개 패키지 제거됨	已删除 %s 个软件包	Удалено %s пакетов	تمت إزالة %s حزمة
 co.error_failed	No se pudieron eliminar los paquetes	Failed to remove the packages	Não foi possível remover os pacotes	Échec de la suppression des paquets	Konnte Pakete nicht entfernen	Impossibile rimuovere i pacchetti	パッケージを削除できませんでした	패키지를 제거하지 못했습니다	无法删除软件包	Не удалось удалить пакеты	تعذرت إزالة الحزم
 co.press_enter	Presiona Enter para cerrar...	Press Enter to close...	Pressione Enter para fechar...	Appuyez sur Entrée pour fermer...	Drücke Enter zum Schließen...	Premi Invio per chiudere...	閉じるには Enter キーを押してください...	닫으려면 Enter를 누르세요...	按回车关闭...	Нажмите Enter, чтобы закрыть...	اضغط Enter للإغلاق...
+co.remove_all	Quitar todos (%s)	Remove all (%s)	Remover todos (%s)	Tout supprimer (%s)	Alle entfernen (%s)	Rimuovi tutti (%s)	すべて削除 (%s)	모두 제거 (%s)	全部删除 (%s)	Удалить все (%s)	إزالة الكل (%s)
+co.confirm_one	¿Eliminar %s?	Remove %s?	Remover %s?	Supprimer %s ?	%s entfernen?	Rimuovere %s?	%s を削除しますか？	%s을(를) 삭제할까요?	删除 %s？	Удалить %s?	إزالة %s?
 ns.title	Pantalla	Screen	Tela	Écran	Bildschirm	Schermo	画面	화면	屏幕	Экран	الشاشة
 ns.off	Modo no-apagar: DESACTIVADO\nLa pantalla se apagará con inactividad	No-sleep mode: OFF\nThe screen will turn off on inactivity	Modo no-dormir: DESATIVADO\nA tela desligará com inatividade	Mode anti-veille : DÉSACTIVÉ\nL'écran s'éteindra en cas d'inactivité	No-Sleep-Modus: DEAKTIVIERT\nDer Bildschirm wird bei Inaktivität ausgehen	Modalità no-sleep: DISATTIVATA\nLo schermo si spegnerà con l'inattività	スリープなしモード: オフ\n非アクティブで画面が消えます	슬립 방지 모드: 꺼짐\n비활성 상태에서 화면이 꺼집니다	无休眠模式：已关闭\n屏幕将在空闲时熄灭	Режим без сна: ВЫКЛ\nЭкран погаснет при бездействии	وضع عدم السكون: معطّل\nستنطفئ الشاشة عند الخمول
 ns.on	Modo no-apagar: ACTIVADO\nLa pantalla no se apagará	No-sleep mode: ON\nThe screen will not turn off	Modo no-dormir: ATIVADO\nA tela não desligará	Mode anti-veille : ACTIVÉ\nL'écran ne s'éteindra pas	No-Sleep-Modus: AKTIVIERT\nDer Bildschirm wird nicht ausgehen	Modalità no-sleep: ATTIVATA\nLo schermo non si spegnerà	スリープなしモード: オン\n画面は消えません	슬립 방지 모드: 켜짐\n화면이 꺼지지 않습니다	无休眠模式：已开启\n屏幕不会熄灭	Режим без сна: ВКЛ\nЭкран не погаснет	وضع عدم السكون: مفعّل\nلن تنطفئ الشاشة
@@ -192,3 +195,36 @@ tb.wifi_ssid	WiFi: %s	WiFi: %s	WiFi: %s	WiFi : %s	WiFi: %s	WiFi: %s	WiFi: %s	WiF
 tb.wifi_disconnected	WiFi: Desconectado	WiFi: Disconnected	WiFi: Desconectado	WiFi : Déconnecté	WiFi: Getrennt	WiFi: Disconnesso	WiFi: 切断済み	WiFi: 연결 안 됨	WiFi：已断开	WiFi: Отключено	WiFi: غير متصل
 tb.wifi_off	WiFi: Apagado	WiFi: Off	WiFi: Desligado	WiFi : Éteint	WiFi: Aus	WiFi: Spento	WiFi: オフ	WiFi: 꺼짐	WiFi：已关闭	WiFi: Выключено	WiFi: مغلق
 ov.title	Vista general	Overview	Visão geral	Aperçu	Übersicht	Panoramica	概要	개요	概览	Обзор	نظرة عامة
+bl.on	Bluetooth encendido	Bluetooth on	Bluetooth ligado	Bluetooth activé	Bluetooth an	Bluetooth attivo	Bluetooth オン	Bluetooth 켜짐	蓝牙已开启	Bluetooth включён	بلوتوث مفعّل
+bl.off	Bluetooth apagado	Bluetooth off	Bluetooth desligado	Bluetooth désactivé	Bluetooth aus	Bluetooth spento	Bluetooth オフ	Bluetooth 꺼짐	蓝牙已关闭	Bluetooth выключен	بلوتوث مطفأ
+bl.discoverable_on	Descubrimiento activo	Discoverable	Visível	Détectable	Sichtbar	Rilevabile	検出可能	검색 가능	可被发现	Обнаружимый	قابل للاكتشاف
+bl.discoverable_off	Descubrimiento inactivo	Hidden	Oculto	Masqué	Versteckt	Nascosto	非表示	숨김	隐藏	Скрытый	مخفي
+bl.connect	Conectar	Connect	Conectar	Connecter	Verbinden	Connetti	接続	연결	连接	Подключить	اتصال
+bl.disconnect	Desconectar	Disconnect	Desconectar	Déconnecter	Trennen	Disconnetti	切断	연결 끊기	断开	Отключить	قطع الاتصال
+bl.send_file	Enviar archivo...	Send file...	Enviar arquivo...	Envoyer un fichier...	Datei senden...	Invia file...	ファイルを送信...	파일 보내기...	发送文件...	Отправить файл...	إرسال ملف...
+bl.sending	Enviando a %s...	Sending to %s...	Enviando para %s...	Envoi vers %s...	Sende an %s...	Invio a %s...	%s に送信中...	%s로 보내는 중...	正在发送到 %s...	Отправка в %s...	جارٍ الإرسال إلى %s...
+bl.sink	Salida de audio	Audio output	Saída de áudio	Sortie audio	Audio-Ausgabe	Uscita audio	音声出力	오디오 출력	音频输出	Выход аудио	خرج الصوت
+bl.source	Micrófono	Microphone	Microfone	Microphone	Mikrofon	Microfono	マイク	마이크	麦克风	Микрофон	ميكروفون
+bl.forget	Olvidar dispositivo	Forget device	Esquecer dispositivo	Oublier l'appareil	Gerät vergessen	Dimentica dispositivo	デバイスを忘れる	장치 잊기	忘记设备	Забыть устройство	نسيان الجهاز
+bl.forget_confirm	¿Olvidar %s?	Forget %s?	Esquecer %s?	Oublier %s ?	%s vergessen?	Dimenticare %s?	%s を忘れますか？	%s를 잊을까요?	忘记 %s？	Забыть %s?	نسيان %s؟
+bl.forgotten	Dispositivo olvidado: %s	Device forgotten: %s	Dispositivo esquecido: %s	Appareil oublié : %s	Gerät vergessen: %s	Dispositivo dimenticato: %s	%s を忘れました	%s 장치를 잊었습니다	已忘记设备：%s	Устройство забыто: %s	تم نسيان الجهاز: %s
+bl.type_phone	Teléfono	Phone	Telefone	Téléphone	Telefon	Telefono	電話	전화	电话	Телефон	هاتف
+bl.type_computer	Computadora	Computer	Computador	Ordinateur	Computer	Computer	コンピューター	컴퓨터	电脑	Компьютер	كمبيوتر
+bl.type_audio	Audio	Audio	Áudio	Audio	Audio	Audio	オーディオ	오디오	音频	Аудио	صوت
+bl.type_input	Periférico	Input device	Dispositivo de entrada	Périphérique	Eingabegerät	Periferica	入力デバイス	입력 장치	输入设备	Устройство ввода	جهاز إدخال
+bl.type_unknown	Dispositivo	Device	Dispositivo	Appareil	Gerät	Dispositivo	デバイス	장치	设备	Устройство	جهاز
+bl.sink_set	Salida de audio: %s	Audio output: %s	Saída de áudio: %s	Sortie audio : %s	Audio-Ausgabe: %s	Uscita audio: %s	音声出力: %s	오디오 출력: %s	音频输出：%s	Выход аудио: %s	خرج الصوت: %s
+bl.source_set	Micrófono: %s	Microphone: %s	Microfone: %s	Microphone : %s	Mikrofon: %s	Microfono: %s	マイク: %s	마이크: %s	麦克风：%s	Микрофон: %s	ميكروفون: %s
+bl.no_sink	No hay salida de audio Bluetooth	No Bluetooth audio output	Sem saída de áudio Bluetooth	Aucune sortie audio Bluetooth	Keine Bluetooth-Audioausgabe	Nessuna uscita audio Bluetooth	Bluetooth 音声出力がありません	Bluetooth 오디오 출력 없음	没有蓝牙音频输出	Нет Bluetooth-аудиовыхода	لا يوجد مخرج صوت بلوتوث
+bl.no_source	No hay micrófono Bluetooth	No Bluetooth microphone	Sem microfone Bluetooth	Aucun microphone Bluetooth	Kein Bluetooth-Mikrofon	Nessun microfono Bluetooth	Bluetooth マイクがありません	Bluetooth 마이크 없음	没有蓝牙麦克风	Нет Bluetooth-микрофона	لا يوجد ميكروفون بلوتوث
+bl.need_obex	Instala bluez-obex para enviar archivos	Install bluez-obex to send files	Instale bluez-obex para enviar arquivos	Installez bluez-obex pour envoyer des fichiers	bluez-obex installieren, um Dateien zu senden	Installa bluez-obex per inviare file	ファイル送信には bluez-obex が必要です	파일 보내기: bluez-obex 설치 필요	发送文件需要安装 bluez-obex	Установите bluez-obex для отправки файлов	ثبّت bluez-obex لإرسال الملفات
+bl.unnamed	Dispositivo desconocido	Unknown device	Dispositivo desconhecido	Appareil inconnu	Unbekanntes Gerät	Dispositivo sconosciuto	不明なデバイス	알 수 없는 장치	未知设备	Неизвестное устройство	جهاز غير معروف
+cb.copy	Copiar	Copy	Copiar	Copier	Kopieren	Copia	コピー	복사	复制	Копировать	نسخ
+cb.delete	Borrar entrada	Delete entry	Excluir item	Supprimer l'entrée	Eintrag löschen	Elimina voce	エントリを削除	항목 삭제	删除条目	Удалить запись	حذف الإدخال
+cb.clear	Limpiar historial	Clear history	Limpar histórico	Vider l'historique	Verlauf löschen	Svuota cronologia	履歴をクリア	기록 지우기	清除历史	Очистить историю	مسح السجل
+cb.clear_confirm	¿Borrar todo el historial del portapapeles?	Clear the entire clipboard history?	Limpar todo o histórico da área de transferência?	Vider tout l'historique du presse-papiers ?	Gesamten Verlauf der Zwischenablage löschen?	Svuotare l'intera cronologia degli appunti?	クリップボード履歴をすべて削除しますか？	클립보드 기록을 모두 지울까요?	清除整个剪贴板历史？	Очистить всю историю буфера обмена?	مسح كامل سجل الحافظة؟
+cb.cleared	Historial del portapapeles vaciado	Clipboard history cleared	Histórico da área de transferência limpo	Historique du presse-papiers vidé	Zwischenablage-Verlauf geleert	Cronologia degli appunti svuotata	クリップボード履歴を消去しました	클립보드 기록을 지웠습니다	剪贴板历史已清除	История буфера обмена очищена	تم مسح سجل الحافظة
+cb.empty	Sin historial	No history	Sem histórico	Aucun historique	Kein Verlauf	Nessuna cronologia	履歴がありません	기록 없음	无历史记录	Нет истории	لا يوجد سجل
+cb.back	Atrás	Back	Voltar	Retour	Zurück	Indietro	戻る	뒤로	返回	Назад	رجوع
+cb.exit	Salir	Exit	Sair	Quitter	Beenden	Esci	終了	나가기	退出	Выход	خروج
+cb.copied	Copiado al portapapeles	Copied to clipboard	Copiado para a área de transferência	Copié dans le presse-papiers	In die Zwischenablage kopiert	Copiato negli appunti	クリップボードにコピーしました	클립보드에 복사됨	已复制到剪贴板	Скопировано в буфер обмена	تم النسخ إلى الحافظة

@@ -5,6 +5,8 @@ source "$HOME/.config/awesome/scripts/i18n.sh"
 theme="$HOME/.config/awesome/theme/powermenu.rasi"
 confirm_theme="$HOME/.config/awesome/theme/powermenu-confirm.rasi"
 
+now="<span foreground='#06b6d4'>󰔔</span>  $(date '+%A %d %B · %H:%M')"
+
 opt_power=$(t pm.power "Apagar")
 opt_reboot=$(t pm.reboot "Reiniciar")
 opt_lock=$(t pm.lock "Bloquear")
@@ -21,7 +23,10 @@ options=$(printf \
 <span foreground='#eab308'></span>   %s" \
 "$opt_power" "$opt_reboot" "$opt_lock" "$opt_suspend" "$opt_logout" "$opt_hibernate")
 
-choice=$(echo "$options" | rofi -dmenu -markup-rows -theme "$theme" -selected-row 4)
+choice=$(echo "$options" | rofi -dmenu -markup-rows -theme "$theme" \
+    -theme-str 'mainbox { children: [message, listview]; } message { enabled: true; padding: 18px 16px 0 16px; horizontal-align: 0.5; background-color: transparent; text-color: #e2e8f0; font: "JetBrainsMono Nerd Font 11"; }' \
+    -mesg "$now" \
+    -selected-row 0)
 
 confirm() {
     local msg="$1" ans

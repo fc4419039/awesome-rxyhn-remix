@@ -74,7 +74,7 @@ PKGS="
     imagemagick thunar firefox xorg-xrdb yad xcolor-pick cliphist xdg-utils xdg-user-dirs
     nerd-fonts-jetbrains-mono ttf-iosevka-nerd ttf-hack-nerd ttf-font-awesome ttf-material-design-icons ttf-weather-icons
     zsh-syntax-highlighting zsh-autosuggestions zsh-sudo zoxide feh zsh neovim
-    btop lsd bat python-gobject python-pip python-pyqt5 pipewire-alsa
+    btop lsd bat python-dbus python-gobject python-pip python-pyqt5 pipewire-alsa
     powerlevel10k fzf starship autorandr xorg-xrandr pamixer gtk3 sound-theme-freedesktop
     xorg-xset xorg-xprop xorg-xwininfo
 "
