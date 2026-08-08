@@ -116,7 +116,7 @@ end
 ---------------
 
 local playerctl = require("module.bling").signal.playerctl.cli({
-  player = {"firefox", "spotify", "%any","mpd"}
+  player = {"firefox", "spotify", "%any"}
 })
 
 playerctl:connect_signal("metadata", function(_, title, artist, album_path, __, ___)

@@ -11,7 +11,7 @@ local bling_loaded, bling = pcall(require, "module.bling")
 local playerctl = nil
 if bling_loaded then
     playerctl = bling.signal.playerctl.cli({
-        player = {"firefox", "spotify", "%any", "mpd"}
+        player = {"firefox", "spotify", "%any"}
     })
 end
 

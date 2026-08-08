@@ -110,8 +110,9 @@ awful.spawn(os.getenv("HOME") .. "/.config/awesome/scripts/color_temp.sh")
 do
     local f = io.open("/etc/locale.conf", "r")
     if f then
-        local lang = f:read("*l"):match("^LANG=(.+)")
+        local line = f:read("*l")
         f:close()
+        local lang = line and line:match("^LANG=(.+)")
         if lang and lang ~= "" then
             local ok, lgi = pcall(require, "lgi")
             if ok then
