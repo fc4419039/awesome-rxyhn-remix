@@ -8,6 +8,25 @@
 --]]
 pcall(require, "luarocks.loader")
 
+-- Log de tiempo de arranque (diagnóstico profesional)
+local boot_start = os.clock()
+local boot_prev = boot_start
+local boot_marks = {}
+local function boot_mark(label)
+    local now = os.clock()
+    boot_marks[#boot_marks + 1] = string.format("%-10s %6.0f ms", label, (now - boot_prev) * 1000)
+    boot_prev = now
+end
+local function boot_flush()
+    boot_marks[#boot_marks + 1] = string.format("%-10s %6.0f ms", "TOTAL", (os.clock() - boot_start) * 1000)
+    local f = io.open("/tmp/awesome-startup-time.log", "a")
+    if f then
+        f:write(os.date("%H:%M:%S") .. "  arranque awesome\n")
+        for _, line in ipairs(boot_marks) do f:write("  " .. line .. "\n") end
+        f:write(string.rep("-", 26) .. "\n")
+        f:close()
+    end
+end
 
 -- Standard awesome library
 local gears = require("gears")
@@ -15,10 +34,12 @@ local gfs = require("gears.filesystem")
 local awful = require("awful")
 local naughty = require("naughty")
 local beautiful = require("beautiful")
+boot_mark("core")
 
 -- Theme handling library (Cargado primero para asegurar referencias en módulos UI)
 beautiful.init(gfs.get_configuration_dir() .. "theme/theme.lua")
 dpi = beautiful.xresources.apply_dpi
+boot_mark("theme")
 
 -- Default Applications
 terminal = "kitty"
@@ -88,20 +109,28 @@ awful.spawn.with_shell("pkill -u $(whoami) -x touchegg; sleep 0.2; pgrep -x touc
 -- Import Configuration, Signals and UI
 -- NOTA: Estos deben cargarse después de definir las variables globales y el tema
 require("configuration")
+boot_mark("config")
  -- Deferred para que notif-sink-setup.sh tenga tiempo de crear los sinks
  gears.timer.delayed_call(function()
+     local t0 = os.clock()
      pcall(require, "signal")
+     boot_marks[#boot_marks + 1] = string.format("%-10s %6.0f ms", "signal", (os.clock() - t0) * 1000)
  end)
  require("ui")
+ boot_mark("ui")
  require("ui.reload")
 
  -- Global UI Watchdog (inicia después de que UI esté lista)
  gears.timer.delayed_call(function()
-     pcall(require, "configuration.watchdog").start()
+     local ok, watchdog = pcall(require, "configuration.watchdog")
+     if ok and watchdog and watchdog.start then
+         watchdog.start()
+     end
  end)
 
 -- Wallpapers y scripts de sesión
 awful.spawn(os.getenv("HOME") .. "/.config/cambiar_fondo.sh")
+awful.spawn(os.getenv("HOME") .. "/.config/awesome/scripts/pregen_fondos_thumbs.sh")
 
 -- Temperatura de color ligeramente fría (7000K)
 awful.spawn(os.getenv("HOME") .. "/.config/awesome/scripts/color_temp.sh")
@@ -167,5 +196,10 @@ gears.timer({
         )
     end
 })
+
+-- Volcar el log de tiempos una vez que signal ya se midió
+gears.timer.delayed_call(function()
+    boot_flush()
+end)
 
 
