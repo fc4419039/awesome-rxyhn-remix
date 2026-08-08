@@ -161,6 +161,19 @@
 
 Sloppy & flash focus · window swallowing · scratchpad · save floats · better resize · rounded corners · OSD volume/brightness notifications · clipboard history (cliphist) · macOS-style floating calculator · desktop context menu with wallpaper picker · blur/transparency toggles that fully re-adapt the theme · `reset-theme.sh` emergency reset · three picom configs (solid/blur/transparency) · **UI watchdog** that auto-repairs broken panels · OpenCode AI config included.
 
+### Developer Tools
+
+`config/awesome/scripts/check.sh` validates the syntax of every Lua, Shell and Python file in the config — your dotfiles' CI. Run it **before restarting awesome or pushing** to catch errors that would crash the WM into fallback mode.
+
+```bash
+config/awesome/scripts/check.sh                       # from the repo (before install)
+~/.config/awesome/scripts/check.sh                    # from your installed config
+~/.config/awesome/scripts/check.sh <another/dir>      # check any directory (e.g. the repo)
+~/.config/awesome/scripts/check.sh --watch            # continuous watch mode (every 2s)
+```
+
+Exit code `0` = all OK, `1` = syntax errors found (file:line shown).
+
 <br>
 
 ---
@@ -224,6 +237,19 @@ Sloppy & flash focus · window swallowing · scratchpad · save floats · better
 ### Extras
 
 Foco sloppy y flash · window swallowing · scratchpad · save floats · mejor redimensionado · esquinas redondeadas · OSD de volumen/brillo · historial del portapapeles (cliphist) · calculadora flotante estilo macOS · menú contextual con selector de fondo · toggles de blur/transparencia que re-adaptan el tema completo · reset de emergencia `reset-theme.sh` · tres configs de picom (sólido/blur/transparencia) · **UI watchdog** que repara paneles rotos · configuración del agente OpenCode incluida.
+
+### Herramientas de desarrollo
+
+`config/awesome/scripts/check.sh` valida la sintaxis de todos los archivos Lua, Shell y Python de la config — el "CI" de tus dotfiles. Ejecútalo **antes de reiniciar awesome o de hacer push** para detectar errores que romperían el WM y lo mandarían a modo fallback.
+
+```bash
+config/awesome/scripts/check.sh                       # desde el repo (antes de instalar)
+~/.config/awesome/scripts/check.sh                    # desde tu config instalada
+~/.config/awesome/scripts/check.sh <otro/dir>         # revisa cualquier directorio (ej. el repo)
+~/.config/awesome/scripts/check.sh --watch            # modo vigilancia continua (cada 2s)
+```
+
+Código de salida `0` = todo OK, `1` = errores de sintaxis (muestra archivo:línea).
 
 <br>
 

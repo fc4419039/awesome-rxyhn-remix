@@ -98,7 +98,6 @@ end
 
 local vol_first_time = true
 awesome.connect_signal("signal::volume", function(value, muted)
-    awful.spawn.with_shell("echo 'POPUP signal received vol=" .. value .. " muted=" .. tostring(muted) .. " first=" .. tostring(vol_first_time) .. "' >> /tmp/vol-debug.log")
     local icon = beautiful.volume_icon
 
     if vol_first_time then
@@ -117,9 +116,7 @@ awesome.connect_signal("signal::volume", function(value, muted)
 
         pop_bar.value = value
         pop_icon.icon.image = icon
-        awful.spawn.with_shell("echo 'POPUP calling toggle_pop' >> /tmp/vol-debug.log")
         toggle_pop()
-        awful.spawn.with_shell("echo 'POPUP toggle done' >> /tmp/vol-debug.log")
     end
 end)
 

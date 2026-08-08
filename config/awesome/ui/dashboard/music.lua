@@ -115,9 +115,8 @@ end
 -- playerctl
 ---------------
 
-local playerctl = require("module.bling").signal.playerctl.cli({
-  player = {"firefox", "spotify", "%any"}
-})
+local ok_pc, playerctl = pcall(require, "signal.playerctl")
+playerctl = ok_pc and playerctl or { connect_signal = function() end }
 
 playerctl:connect_signal("metadata", function(_, title, artist, album_path, __, ___)
     if title == "" then title = i18n.tr("dash.nothing_playing") end

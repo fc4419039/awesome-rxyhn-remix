@@ -5,15 +5,8 @@ local wibox = require("wibox")
 local gears = require("gears")
 local helpers = require("helpers")
 
-local bling_loaded, bling = pcall(require, "module.bling")
-local playerctl = nil
-if bling_loaded then
-    playerctl = bling.signal.playerctl.cli({
-        player = {"firefox", "spotify", "%any"}
-    })
-else
-    print("Warning: module.bling not found, music widget disabled")
-end
+local ok_pc, playerctl = pcall(require, "signal.playerctl")
+playerctl = ok_pc and playerctl or nil
 
 local music_widget = {}
 

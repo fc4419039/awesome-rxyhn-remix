@@ -7,13 +7,8 @@ local helpers = require("helpers")
 
 local desktop_music = {}
 
-local bling_loaded, bling = pcall(require, "module.bling")
-local playerctl = nil
-if bling_loaded then
-    playerctl = bling.signal.playerctl.cli({
-        player = {"firefox", "spotify", "%any"}
-    })
-end
+local ok_pc, playerctl = pcall(require, "signal.playerctl")
+playerctl = ok_pc and playerctl or nil
 
 local function create_widget(s)
     if s.desktop_music then return end
