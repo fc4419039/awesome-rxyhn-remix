@@ -82,21 +82,30 @@ end
 -- Autostart de servicios base
 awful.spawn(gfs.get_configuration_dir() .. "configuration/autostart")
 awful.spawn(os.getenv("HOME") .. "/.config/awesome/scripts/notif-sink-setup.sh")
-local blur_state = io.open("/tmp/awesome-blur-mode", "r")
-local transparency_state = io.open("/tmp/awesome-transparency-mode", "r")
-local picom_cfg = os.getenv("HOME") .. "/.config/awesome/theme/picom.conf"
+-- Estado de picom persistente en ~/.cache/awesome (sobrevive al reinicio).
+-- Fallback: /tmp (estado antiguo) y .codebak (reinicio con efecto activo).
+local home_dir = os.getenv("HOME")
+local state_dir = home_dir .. "/.cache/awesome"
+local function state_active(name)
+    local f = io.open(state_dir .. "/" .. name, "r")
+    if f then f:close(); return true end
+    f = io.open("/tmp/" .. name, "r")
+    if f then f:close(); return true end
+    return false
+end
+local blur_state = state_active("blur-mode")
+local transparency_state = state_active("transparency-mode")
+local picom_cfg = home_dir .. "/.config/awesome/theme/picom.conf"
 if blur_state then
-    picom_cfg = os.getenv("HOME") .. "/.config/awesome/theme/picom-blur.conf"
-    blur_state:close()
+    picom_cfg = home_dir .. "/.config/awesome/theme/picom-blur.conf"
 elseif transparency_state then
-    picom_cfg = os.getenv("HOME") .. "/.config/awesome/theme/picom-transparency.conf"
-    transparency_state:close()
+    picom_cfg = home_dir .. "/.config/awesome/theme/picom-transparency.conf"
 else
     -- Sin state files → verificar si .codebak persiste (reinicio con efecto activo)
-    local codebak = io.open(os.getenv("HOME") .. "/.config/awesome/.codebak", "r")
+    local codebak = io.open(home_dir .. "/.config/awesome/.codebak", "r")
     if codebak then
         codebak:close()
-        awful.spawn.with_shell(os.getenv("HOME") .. "/.config/awesome/scripts/reset-theme.sh")
+        awful.spawn.with_shell(home_dir .. "/.config/awesome/scripts/reset-theme.sh")
     end
 end
 run_once("picom --config " .. picom_cfg)
@@ -104,7 +113,8 @@ run_once("picom --config " .. picom_cfg)
 awful.spawn.with_shell('layout=$(localectl status 2>/dev/null | grep "X11 Layout:" | awk \'{print $NF}\'); [ -n "$layout" ] && setxkbmap "$layout" || setxkbmap latam')
 -- Matar todos los touchegg viejos antes de iniciar uno nuevo
 -- (evita acumulación de procesos que atrapan eventos del mouse)
-awful.spawn.with_shell("pkill -u $(whoami) -x touchegg; sleep 0.2; pgrep -x touchegg > /dev/null 2>&1 || touchegg &")
+-- Nota: solo el daemon; el client lo lanza autostart y no debe morirse
+awful.spawn.with_shell("pkill -u $(whoami) -f 'touchegg --daemon' 2>/dev/null; sleep 0.2; pgrep -u $(whoami) -f 'touchegg --daemon' > /dev/null 2>&1 || nohup touchegg > /dev/null 2>&1 &")
 
 -- Import Configuration, Signals and UI
 -- NOTA: Estos deben cargarse después de definir las variables globales y el tema

@@ -7,13 +7,13 @@ start() {
   fi
 }
 
-# music
-start mpd
-start mpd-mpris # add playerctl support to mpd
-
-# compositor
+# compositor (mpd/mpd-mpris los gestiona systemd --user)
 PICOM_CONF="$HOME/.config/awesome/theme/picom.conf"
-if [ -f /tmp/awesome-blur-mode ]; then
+if [ -f "$HOME/.cache/awesome/blur-mode" ]; then
+    PICOM_CONF="$HOME/.config/awesome/theme/picom-blur.conf"
+elif [ -f "$HOME/.cache/awesome/transparency-mode" ]; then
+    PICOM_CONF="$HOME/.config/awesome/theme/picom-transparency.conf"
+elif [ -f /tmp/awesome-blur-mode ]; then
     PICOM_CONF="$HOME/.config/awesome/theme/picom-blur.conf"
 elif [ -f /tmp/awesome-transparency-mode ]; then
     PICOM_CONF="$HOME/.config/awesome/theme/picom-transparency.conf"

@@ -2,8 +2,9 @@
 
 source "$HOME/.config/awesome/scripts/i18n.sh"
 
-STATE_FILE="/tmp/awesome-transparency-mode"
-BLUR_STATE="/tmp/awesome-blur-mode"
+STATE_DIR="$HOME/.cache/awesome"
+STATE_FILE="$STATE_DIR/transparency-mode"
+BLUR_STATE="$STATE_DIR/blur-mode"
 THEME_DIR="$HOME/.config/awesome/theme"
 THEME_LUA="$THEME_DIR/theme.lua"
 THEME_SOLID="$THEME_DIR/theme_solid.lua"
@@ -27,11 +28,15 @@ ROFI_FILES=(
 CODE_BAK="$HOME/.config/awesome/.codebak"
 TOOLTIP_BAK="$CODE_BAK/tooltip_init.lua"
 
+mkdir -p "$STATE_DIR"
+
 if [ -f "$STATE_FILE" ]; then
     rm -f "$STATE_FILE"
     if [ -f "$BLUR_STATE" ]; then
         rm -f "$BLUR_STATE"
     fi
+    # Limpiar state files legacy de /tmp (pre-persistencia)
+    rm -f /tmp/awesome-blur-mode /tmp/awesome-transparency-mode
 
     pkill picom
 

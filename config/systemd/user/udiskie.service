@@ -1,0 +1,11 @@
+[Unit]
+Description=Automounter for udisks2
+After=graphical-session.target
+
+[Service]
+ExecStart=/usr/bin/udiskie -a -s
+Environment="DISPLAY=:0"
+Restart=on-failure
+
+[Install]
+WantedBy=default.target

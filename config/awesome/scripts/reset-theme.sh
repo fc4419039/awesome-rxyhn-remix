@@ -1,19 +1,22 @@
 #!/bin/bash
-# Restaura colores sólidos si se reinició con blur/transparencia activa
-# Los state files están en /tmp (se pierden al reiniciar) pero .codebak persiste
+# Fallback de emergencia: restaura colores sólidos si se reinició con
+# blur/transparencia activa. Normalmente no se necesita porque el estado
+# ahora es persistente en ~/.cache/awesome.
 
 CODE_BAK="$HOME/.config/awesome/.codebak"
 THEME_DIR="$HOME/.config/awesome/theme"
 THEME_SOLID="$THEME_DIR/theme_solid.lua"
 
-# Siempre restaurar theme.lua desde theme_solid.lua (tema base sin transparencia)
-cp "$THEME_SOLID" "$THEME_DIR/theme.lua"
-
-# Limpiar backup si existe
-rm -f "$THEME_DIR/theme.lua.bak"
+# Restaurar theme.lua: primero el backup real (si existe), si no el sólido
+if [ -f "$THEME_DIR/theme.lua.bak" ]; then
+    cp "$THEME_DIR/theme.lua.bak" "$THEME_DIR/theme.lua"
+    rm -f "$THEME_DIR/theme.lua.bak"
+else
+    cp "$THEME_SOLID" "$THEME_DIR/theme.lua"
+fi
 
 if [ ! -d "$CODE_BAK" ]; then
-    awesome-client 'awesome.restart()'
+    pgrep -x awesome > /dev/null 2>&1 && awesome-client 'awesome.restart()'
     exit 0
 fi
 
@@ -60,4 +63,4 @@ fi
 
 rm -rf "$CODE_BAK"
 
-awesome-client 'awesome.restart()'
+pgrep -x awesome > /dev/null 2>&1 && awesome-client 'awesome.restart()'

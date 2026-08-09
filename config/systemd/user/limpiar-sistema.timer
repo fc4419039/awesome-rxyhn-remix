@@ -2,8 +2,7 @@
 Description=Ejecutar limpieza del sistema cada 3 días
 
 [Timer]
-OnCalendar=*-*-* 04:00:00
-PeriodSec=3d
+OnCalendar=*-*-1/3 04:00:00
 Persistent=true
 
 [Install]

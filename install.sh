@@ -71,7 +71,7 @@ PKGS="
     qt5-imageformats qt6-imageformats
     playerctl spotify mpd mpc ncmpcpp mpd-mpris blueman pasystray
     touchegg redshift networkmanager bluez libnotify curl ffmpeg gpick
-    imagemagick thunar firefox xorg-xrdb yad xcolor-pick cliphist xdg-utils xdg-user-dirs
+    imagemagick thunar firefox xorg-xrdb yad xcolor-pick cliphist xdg-utils xdg-user-dirs udiskie udisks2
     nerd-fonts-jetbrains-mono ttf-iosevka-nerd ttf-hack-nerd ttf-font-awesome ttf-material-design-icons ttf-weather-icons
     zsh-syntax-highlighting zsh-autosuggestions zsh-sudo zoxide feh zsh neovim
     btop lsd bat python-dbus python-gobject python-pip python-pyqt5 pipewire-alsa
@@ -186,6 +186,9 @@ echo -e "${GREEN}✓ Archivos de configuración copiados${NC}"
 # Activar timer de limpieza automática (cada 3 días)
 systemctl --user daemon-reload 2>/dev/null || true
 systemctl --user enable --now limpiar-sistema.timer 2>/dev/null && echo -e "${GREEN}✓ Timer de limpieza automática activado${NC}" || true
+
+# Activar automontaje de dispositivos USB (udiskie)
+systemctl --user enable --now udiskie.service 2>/dev/null && echo -e "${GREEN}✓ udiskie (automontaje USB) activado${NC}" || true
 
 # Generar secrets.lua desde template si no existe
 if [ ! -f "$HOME/.config/awesome/secrets.lua" ]; then

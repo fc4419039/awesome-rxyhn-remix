@@ -15,8 +15,8 @@
 
 window {
     transparency: "real";
-    width: 360px;
-    height: 480px;
+    width: 300px;
+    height: 380px;
     location: center;
     anchor: center;
     border-radius: var(rad);
