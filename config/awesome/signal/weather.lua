@@ -98,53 +98,51 @@ local weather_desc = {
 }
 
 local weather_details_script = [[
-bash -c '
-LOC_FILE="/tmp/awesomewm-location"
-LOC=""
-if [ -f "$LOC_FILE" ]; then
-    if [ $(( $(date +%s) - $(stat -c %Y "$LOC_FILE") )) -lt 21600 ]; then
-        LOC=$(cat "$LOC_FILE")
+    bash -c '
+    LOC_FILE="/tmp/awesomewm-location"
+    LOC=""
+    if [ -f "$LOC_FILE" ]; then
+        if [ $(( $(date +%s) - $(stat -c %Y "$LOC_FILE") )) -lt 21600 ]; then
+            LOC=$(cat "$LOC_FILE")
+        fi
     fi
-fi
-if [ -z "$LOC" ]; then
-    LOC=$(curl -sf --max-time 5 "http://ip-api.com/json/?fields=lat,lon,city")
-    if [ -n "$LOC" ]; then
-        echo "$LOC" > "$LOC_FILE"
+    if [ -z "$LOC" ]; then
+        LOC=$(curl -sf --max-time 5 "http://ip-api.com/json/?fields=lat,lon,city")
+        if [ -n "$LOC" ]; then
+            echo "$LOC" > "$LOC_FILE"
+        fi
     fi
-fi
 
-if [ -z "$LOC" ]; then
-    echo "..."
-    exit 0
-fi
+    if [ -z "$LOC" ]; then
+        echo "..."
+        exit 0
+    fi
 
-LAT=$(echo "$LOC" | jq -r ".lat")
-LON=$(echo "$LOC" | jq -r ".lon")
-CITY=$(echo "$LOC" | jq -r ".city")
+    LAT=$(echo "$LOC" | jq -r ".lat")
+    LON=$(echo "$LOC" | jq -r ".lon")
+    CITY=$(echo "$LOC" | jq -r ".city")
 
-weather=$(curl -sf --max-time 8 "https://api.open-meteo.com/v1/forecast?latitude=$LAT&longitude=$LON&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m,surface_pressure,is_day&wind_speed_unit=ms&timezone=auto")
+    weather=$(curl -sf --max-time 8 "https://api.open-meteo.com/v1/forecast?latitude=$LAT&longitude=$LON&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m,surface_pressure,is_day&wind_speed_unit=ms&timezone=auto")
 
-if [ -n "$weather" ]; then
-    weather_code=$(echo "$weather" | jq -r ".current.weather_code")
-    weather_temp=$(echo "$weather" | jq -r ".current.temperature_2m" | cut -d "." -f 1)
-    weather_humidity=$(echo "$weather" | jq -r ".current.relative_humidity_2m")
-    weather_wind=$(echo "$weather" | jq -r ".current.wind_speed_10m")
-    weather_pressure=$(echo "$weather" | jq -r ".current.surface_pressure")
-    weather_is_day=$(echo "$weather" | jq -r ".current.is_day")
-    echo "$weather_code|$weather_temp|$weather_humidity|$weather_wind|$weather_pressure|$CITY|$weather_is_day"
-else
-    echo "..."
-fi
-'']]
-
-
+    if [ -n "$weather" ]; then
+        weather_code=$(echo "$weather" | jq -r ".current.weather_code")
+        weather_temp=$(echo "$weather" | jq -r ".current.temperature_2m" | cut -d "." -f 1)
+        weather_humidity=$(echo "$weather" | jq -r ".current.relative_humidity_2m")
+        weather_wind=$(echo "$weather" | jq -r ".current.wind_speed_10m")
+        weather_pressure=$(echo "$weather" | jq -r ".current.surface_pressure")
+        weather_is_day=$(echo "$weather" | jq -r ".current.is_day")
+        echo "$weather_code|$weather_temp|$weather_humidity|$weather_wind|$weather_pressure|$CITY|$weather_is_day"
+    else
+        echo "..."
+    fi
+  ']]
 
 local function parse_weather(stdout)
     if not stdout or stdout == "...\n" then
         awful.spawn.with_shell("rm "..temp_file)
         local entry = weather_icons[0].day
         local weather_icon = helpers.colorize_text(entry.icon, entry.color)
-        awesome.emit_signal("signal::weather", 999, "Weather unavailable", weather_icon, "None", 0, 0, 0, "")
+        awesome.emit_signal("signal::weather", 999, "Weather unavailable", weather_icon, "None", 0, 0, 0)
         return
     end
 
