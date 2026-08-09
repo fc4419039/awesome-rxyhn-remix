@@ -141,6 +141,7 @@
 | `Mod+b` / `Mod+v` | Bluetooth / Volume |
 | `Alt+F4` | Power menu |
 | `Mod+p` | **No-sleep toggle** (keep screen on) |
+| `Ctrl+Super+t` | **Toggle night mode** (redshift 3500K) |
 | `Insert` / `Alt+Insert` | Screenshot / area screenshot |
 | `Mod+z` | Scratchpad |
 | `Mod+Ctrl+l` | Lock screen |
@@ -156,14 +157,22 @@
 | `Mod+[1-5]` / `Mod+Shift+[1-5]` | Switch / move to tag |
 | `Mod+Arrow` / `Mod+Shift+Arrow` | Directional focus / swap |
 | `Mod+=/-` | Adjust useless gap |
+| `Mod+x` | Color picker |
+| `Mod+i` / `Mod+o` | Spotify / Opera GX |
+| `Mod+Shift+n` | Music client (ncmpcpp) |
+| `Mod+Ctrl+d` | Show desktop (minimize all) |
+| `Mod+Shift+f` | Toggle fullscreen |
+| `Mod+F1` | Keybinding help |
+| `Mod+Ctrl+r` | Reload AwesomeWM |
+| `XF86Audio*` / `XF86MonBrightness*` | Volume, brightness & playback keys |
 
 ### Extras
 
-Sloppy & flash focus · window swallowing · scratchpad · save floats · better resize · rounded corners · OSD volume/brightness notifications · clipboard history (cliphist) · macOS-style floating calculator · desktop context menu with wallpaper picker · blur/transparency toggles that fully re-adapt the theme · `reset-theme.sh` emergency reset · three picom configs (solid/blur/transparency) · **UI watchdog** that auto-repairs broken panels · OpenCode AI config included.
+Sloppy & flash focus · window swallowing · scratchpad · save floats · better resize · rounded corners · OSD volume/brightness notifications · clipboard history (cliphist) · macOS-style floating calculator · desktop context menu with wallpaper picker · **blur/transparency toggles with persistent state** (survives reboot via `~/.cache/awesome`) · `reset-theme.sh` emergency reset · three picom configs (solid/blur/transparency) · **UI watchdog** that auto-repairs broken panels · OpenCode AI config included.
 
 ### Developer Tools
 
-`config/awesome/scripts/check.sh` validates the syntax of every Lua, Shell and Python file in the config — your dotfiles' CI. Run it **before restarting awesome or pushing** to catch errors that would crash the WM into fallback mode.
+`config/awesome/scripts/check.sh` validates the syntax of every Lua, Shell and Python file in the config — your dotfiles' CI. Run it **before restarting awesome or committing** to catch errors that would crash the WM into fallback mode.
 
 ```bash
 config/awesome/scripts/check.sh                       # from the repo (before install)
@@ -218,10 +227,11 @@ Exit code `0` = all OK, `1` = syntax errors found (file:line shown).
 | `Mod+b` / `Mod+v` | Bluetooth / Volumen |
 | `Alt+F4` | Menú de apagado |
 | `Mod+p` | **No-sleep** (mantener pantalla encendida) |
+| `Ctrl+Super+t` | **Modo noche** (redshift 3500K) |
 | `Insert` / `Alt+Insert` | Captura / captura de área |
 | `Mod+z` | Scratchpad |
 | `Mod+Ctrl+l` | Lock screen |
-| `Ctrl+Super+b` | Cycle accent color |
+| `Ctrl+Super+b` | Ciclar color de acento |
 | `Ctrl+Super+Shift+B` / `+T` | Quitar/poner bordes / titlebars |
 | `Alt+Tab` | Window switcher |
 | `Mod+e` | Desktop Overview |
@@ -233,14 +243,22 @@ Exit code `0` = all OK, `1` = syntax errors found (file:line shown).
 | `Mod+[1-5]` / `Mod+Shift+[1-5]` | Cambiar / mover a tag |
 | `Mod+Arrow` / `Mod+Shift+Arrow` | Foco / intercambio direccional |
 | `Mod+=/-` | Ajustar useless gap |
+| `Mod+x` | Selector de color |
+| `Mod+i` / `Mod+o` | Spotify / Opera GX |
+| `Mod+Shift+n` | Cliente de música (ncmpcpp) |
+| `Mod+Ctrl+d` | Mostrar escritorio (minimizar todo) |
+| `Mod+Shift+f` | Pantalla completa |
+| `Mod+F1` | Ayuda de atajos |
+| `Mod+Ctrl+r` | Recargar AwesomeWM |
+| `XF86Audio*` / `XF86MonBrightness*` | Volumen, brillo y reproducción |
 
 ### Extras
 
-Foco sloppy y flash · window swallowing · scratchpad · save floats · mejor redimensionado · esquinas redondeadas · OSD de volumen/brillo · historial del portapapeles (cliphist) · calculadora flotante estilo macOS · menú contextual con selector de fondo · toggles de blur/transparencia que re-adaptan el tema completo · reset de emergencia `reset-theme.sh` · tres configs de picom (sólido/blur/transparencia) · **UI watchdog** que repara paneles rotos · configuración del agente OpenCode incluida.
+Foco sloppy y flash · window swallowing · scratchpad · save floats · mejor redimensionado · esquinas redondeadas · OSD de volumen/brillo · historial del portapapeles (cliphist) · calculadora flotante estilo macOS · menú contextual con selector de fondo · **toggles de blur/transparencia con estado persistente** (sobrevive al reinicio vía `~/.cache/awesome`) · reset de emergencia `reset-theme.sh` · tres configs de picom (sólido/blur/transparencia) · **UI watchdog** que repara paneles rotos · configuración del agente OpenCode incluida.
 
 ### Herramientas de desarrollo
 
-`config/awesome/scripts/check.sh` valida la sintaxis de todos los archivos Lua, Shell y Python de la config — el "CI" de tus dotfiles. Ejecútalo **antes de reiniciar awesome o de hacer push** para detectar errores que romperían el WM y lo mandarían a modo fallback.
+`config/awesome/scripts/check.sh` valida la sintaxis de todos los archivos Lua, Shell y Python de la config — el "CI" de tus dotfiles. Ejecútalo **antes de reiniciar awesome o de hacer commit** para detectar errores que romperían el WM y lo mandarían a modo fallback.
 
 ```bash
 config/awesome/scripts/check.sh                       # desde el repo (antes de instalar)
@@ -326,7 +344,225 @@ cp -r bin/* ~/.local/bin/
 
 <br>
 
-<h2 align="center">Credits / Créditos</h2>
+<h2 align="center">Repository Structure / Estructura del Repositorio</h2>
+
+<br>
+
+```
+awesome-rxyhn-remix/
+├── bin/                      # Scripts personalizados (awesomefetch, screensht, xcolor-pick)
+├── config/
+│   ├── awesome/              # Configuración principal de AwesomeWM
+│   │   ├── configuration/    # Autostart, keybindings, rules
+│   │   ├── module/           # Módulos externos (bling, rubato, layout-machi)
+│   │   ├── scripts/          # Scripts Lua/Shell (toggles, utilidades)
+│   │   ├── signal/           # Señales (volumen, batería, playerctl)
+│   │   ├── theme/            # Temas, picom configs, rofi Rasi
+│   │   ├── ui/               # Widgets, wibar, dashboard, lockscreen
+│   │   ├── rc.lua            # Entry point
+│   │   └── secrets.lua.template
+│   ├── kitty/                # Terminal
+│   ├── mpd/                  # MPD config
+│   ├── ncmpcpp/              # Cliente MPD
+│   ├── nvim/                 # Neovim
+│   ├── rofi/                 # Menús Rofi
+│   ├── starship/             # Prompt
+│   ├── systemd/user/         # Servicios de usuario (mpd, mpd-mpris, udiskie, limpieza)
+│   └── touchegg/             # Gestos touchpad
+├── fonts/                    # Fuentes Icomoon personalizadas
+├── fondos/                   # Wallpapers
+├── sddm/                     # Tema SDDM (sugar-candy)
+├── mscdown/                  # Submódulo: buscador música YouTube
+├── misc/                     # .Xresources, .profile, .zshrc
+├── install.sh                # Instalador principal
+├── update_modules.sh         # Actualiza módulos externos (bling, rubato, machi)
+├── check.sh                  # Validador sintaxis (Lua/Shell/Python)
+└── opencode.json             # Configuración agente OpenCode
+```
+
+<br>
+
+---
+
+<br>
+
+<h2 align="center">Dependencies / Dependencias Completas</h2>
+
+<br>
+
+El instalador (`install.sh`) gestiona todo automáticamente. Lista completa para Arch/Manjaro:
+
+```bash
+yay -S --needed \
+  awesome-git picom-git kitty rofi todo-bin acpi acpid \
+  wireless_tools jq inotify-tools polkit-gnome xdotool xclip maim \
+  brightnessctl alsa-utils alsa-tools pipewire pipewire-pulse wireplumber libpulse psmisc \
+  qt5-imageformats qt6-imageformats \
+  playerctl spotify mpd mpc ncmpcpp mpd-mpris blueman pasystray \
+  touchegg redshift networkmanager bluez libnotify curl ffmpeg gpick \
+  imagemagick thunar firefox xorg-xrdb yad xcolor-pick cliphist xdg-utils xdg-user-dirs \
+  nerd-fonts-jetbrains-mono ttf-iosevka-nerd ttf-hack-nerd ttf-font-awesome \
+  ttf-material-design-icons ttf-weather-icons \
+  zsh-syntax-highlighting zsh-autosuggestions zsh-sudo zoxide feh zsh neovim \
+  btop lsd bat python-dbus python-gobject python-pip python-pyqt5 pipewire-alsa \
+  powerlevel10k fzf starship autorandr xorg-xrandr pamixer gtk3 \
+  sound-theme-freedesktop xorg-xset xorg-xprop xorg-xwininfo \
+  bc pacman-contrib xorg-setxkbmap upower lua git
+```
+
+> **¿Qué hace cada uno nuevo?**
+> - `bc` — necesario para `cycle-accent.sh` (oscurecer colores al cambiar acento)
+> - `pacman-contrib` — `paccache` usado por `limpiar_sistema.sh`
+> - `xorg-setxkbmap` — `change-keyboard.sh` y atajo de teclado
+> - `upower` — `bluetooth.sh` muestra batería de dispositivos
+> - `lua` — `luac` para `check.sh`
+> - `git` — submodules y clonar powerlevel10k
+> - `mpd-mpris` — puente MPRIS para controles multimedia (dashboard, notificaciones)
+> - `udiskie` + `udisks2` — automontaje USB/externos (activado por defecto)
+
+<br>
+
+---
+
+<br>
+
+<h2 align="center">Servicios systemd habilitados por el instalador</h2>
+
+<br>
+
+| Servicio | Tipo | Descripción |
+|---|---|---|
+| `mpd.service` | user | Servidor de música (mpd) |
+| `mpd-mpris.service` | user | Puente MPRIS → controles multimedia en dashboard/notificaciones |
+| `udiskie.service` | user | Automontaje USB/discos externos con notificaciones |
+| `limpiar-sistema.timer` | user | Limpieza automática cada 3 días (`limpiar_sistema.sh`) |
+| `touchegg.service` | system (root) | Daemon de gestos touchpad |
+
+> **Nota:** los servicios de usuario se habilitan con `systemctl --user enable --now`. El daemon `touchegg` corre como root; el cliente se lanza desde autostart.
+
+<br>
+
+---
+
+<br>
+
+<h2 align="center">Troubleshooting / Solución de problemas</h2>
+
+<br>
+
+<details>
+<summary><strong>🔍 Validar la configuración antes de reiniciar</strong></summary>
+
+<br>
+
+```bash
+# Desde el repo (antes de instalar)
+config/awesome/scripts/check.sh
+
+# Desde la config instalada
+~/.config/awesome/scripts/check.sh
+
+# Modo vigilancia continua
+~/.config/awesome/scripts/check.sh --watch
+```
+
+> Exit code `0` = OK, `1` = errores de sintaxis (muestra archivo:línea). Ejecútalo **antes de recargar Awesome (`Super+Ctrl+R`) o de hacer commit** para no romper la sesión.
+
+</details>
+
+<br>
+
+<details>
+<summary><strong>🎵 La música no suena / MPD no inicia</strong></summary>
+
+<br>
+
+```bash
+# Verificar servicios
+systemctl --user status mpd.service mpd-mpris.service
+
+# Habilitar si faltan
+systemctl --user enable --now mpd.service mpd-mpris.service
+
+# Verificar config
+cat ~/.config/mpd/mpd.conf
+# music_directory debe ser ~/Music (creado por install.sh)
+```
+
+</details>
+
+<br>
+
+<details>
+<summary><strong>🎨 Cambiar acento no oscurece bien (bc faltante)</strong></summary>
+
+<br>
+
+```bash
+sudo pacman -S bc
+```
+> `cycle-accent.sh` usa `bc -l` para calcular tonos oscuros del acento.
+
+</details>
+
+<br>
+
+<details>
+<summary><strong>⚙️ Awesome entra en modo fallback (pantalla negra/rota)</strong></summary>
+
+<br>
+
+1. `Mod+Ctrl+Shift+R` recarga la config (si responde).
+2. Si no: entra en TTY (`Ctrl+Alt+F3`), ejecuta:
+   ```bash
+   ~/.config/awesome/scripts/check.sh
+   ```
+   Corrige los errores que muestre.
+3. `awesome -k -c ~/.config/awesome/rc.lua` valida sintaxis completa.
+
+</details>
+
+<br>
+
+<details>
+<summary><strong>🔐 secrets.lua / clima no funciona</strong></summary>
+
+<br>
+
+```bash
+# Si falta, se genera del template al instalar
+cp ~/.config/awesome/secrets.lua.template ~/.config/awesome/secrets.lua
+# Edita weather_location_override si quieres forzar ubicación
+```
+
+> El widget usa **Open-Meteo** (sin API key) + IP geolocation automática.
+
+</details>
+
+<br>
+
+<details>
+<summary><strong>📦 Paquetes AUR fallan al instalar</strong></summary>
+
+<br>
+
+```bash
+# Verifica AUR helper
+command -v yay || command -v paru
+
+# Limpia cache y reintenta
+yay -S --clean
+# o
+paru -S --clean
+```
+
+</details>
+
+<br>
+
+---
+
+<br>
 
 <div align="center">
 

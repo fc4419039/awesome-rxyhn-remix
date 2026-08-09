@@ -71,6 +71,7 @@ PKGS="
     qt5-imageformats qt6-imageformats
     playerctl spotify mpd mpc ncmpcpp mpd-mpris blueman pasystray
     touchegg redshift networkmanager bluez libnotify curl ffmpeg gpick
+    bc pacman-contrib xorg-setxkbmap upower lua git
     imagemagick thunar firefox xorg-xrdb yad xcolor-pick cliphist xdg-utils xdg-user-dirs udiskie udisks2
     nerd-fonts-jetbrains-mono ttf-iosevka-nerd ttf-hack-nerd ttf-font-awesome ttf-material-design-icons ttf-weather-icons
     zsh-syntax-highlighting zsh-autosuggestions zsh-sudo zoxide feh zsh neovim
@@ -189,6 +190,10 @@ systemctl --user enable --now limpiar-sistema.timer 2>/dev/null && echo -e "${GR
 
 # Activar automontaje de dispositivos USB (udiskie)
 systemctl --user enable --now udiskie.service 2>/dev/null && echo -e "${GREEN}✓ udiskie (automontaje USB) activado${NC}" || true
+
+# Activar MPD (música) y su puente MPRIS — el autostart ya no los lanza
+systemctl --user enable --now mpd.service 2>/dev/null && echo -e "${GREEN}✓ mpd.service activado${NC}" || true
+systemctl --user enable --now mpd-mpris.service 2>/dev/null && echo -e "${GREEN}✓ mpd-mpris.service activado${NC}" || true
 
 # Generar secrets.lua desde template si no existe
 if [ ! -f "$HOME/.config/awesome/secrets.lua" ]; then
