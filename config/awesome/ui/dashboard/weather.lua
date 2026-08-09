@@ -117,7 +117,7 @@ awesome.connect_signal("signal::weather", function(temperature, description, ico
   local symbol = weather_units == "imperial" and "°F" or "°C"
 
   weather_icon.markup = icon_widget
-  weather_desc.markup = helpers.colorize_text((city and city ~= "" and city) or description, beautiful.dashboard_box_fg)
+  weather_desc.markup = helpers.colorize_text(description, beautiful.dashboard_box_fg)
   weather_temp.markup = temperature .. symbol
   weather_humidity_val.markup = helpers.colorize_text(humidity .. "%", beautiful.dashboard_box_fg)
   weather_wind_val.markup = helpers.colorize_text(wind_speed .. " m/s", beautiful.dashboard_box_fg)

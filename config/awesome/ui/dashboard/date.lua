@@ -11,6 +11,7 @@ local wibox = require("wibox")
 
 -- Helpers
 local helpers = require("helpers")
+local i18n = require("i18n")
 
 
 -- Date
