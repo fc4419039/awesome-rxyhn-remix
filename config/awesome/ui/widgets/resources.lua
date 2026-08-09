@@ -4,6 +4,7 @@ local beautiful = require("beautiful")
 local dpi = beautiful.xresources.apply_dpi
 local wibox = require("wibox")
 local helpers = require("helpers")
+local i18n = require("i18n")
 
 local resources_wibox = nil
 local resources_visible = false

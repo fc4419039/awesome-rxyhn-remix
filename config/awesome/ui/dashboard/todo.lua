@@ -5,6 +5,7 @@ local dpi = beautiful.xresources.apply_dpi
 local wibox = require("wibox")
 local naughty = require("naughty")
 local helpers = require("helpers")
+local i18n = require("i18n")
 
 local todo_title = wibox.widget{
   font = beautiful.font_name .. "Medium 8",

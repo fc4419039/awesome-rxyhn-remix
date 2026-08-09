@@ -15,7 +15,7 @@ local gears = require("gears")
 local beautiful = require("beautiful")
 local helpers = require("helpers")
 
-local units = weather_units
+local units = _G.weather_units or "metric"
 local update_interval = 1200
 local temp_file = "/tmp/awesomewm-signal-weather-"..units
 

@@ -4,6 +4,7 @@ local dpi = beautiful.xresources.apply_dpi
 local wibox = require("wibox")
 local gears = require("gears")
 local helpers = require("helpers")
+local i18n = require("i18n")
 
 local ok_pc, playerctl = pcall(require, "signal.playerctl")
 playerctl = ok_pc and playerctl or nil

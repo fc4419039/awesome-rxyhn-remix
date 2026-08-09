@@ -2,6 +2,7 @@ local beautiful = require("beautiful")
 local dpi = beautiful.xresources.apply_dpi
 local wibox = require("wibox")
 local helpers = require("helpers")
+local i18n = require("i18n")
 
 -- ── Icon ────────────────────────────────────────────────────────────
 local weather_icon = wibox.widget{
@@ -114,7 +115,8 @@ local weather = wibox.widget{
 
 -- ── Signal ──────────────────────────────────────────────────────────
 awesome.connect_signal("signal::weather", function(temperature, description, icon_widget, condition, humidity, wind_speed, pressure, city)
-  local symbol = weather_units == "imperial" and "°F" or "°C"
+  local units = _G.weather_units or "metric"
+  local symbol = units == "imperial" and "°F" or "°C"
 
   weather_icon.markup = icon_widget
   weather_desc.markup = helpers.colorize_text(description, beautiful.dashboard_box_fg)
@@ -123,17 +125,36 @@ awesome.connect_signal("signal::weather", function(temperature, description, ico
   weather_wind_val.markup = helpers.colorize_text(wind_speed .. " m/s", beautiful.dashboard_box_fg)
 
   local accent = {
-    Clear = beautiful.xcolor3,
-    Clouds = beautiful.xforeground,
-    Rain = beautiful.xcolor4,
-    Drizzle = beautiful.xcolor4,
-    Thunderstorm = beautiful.xcolor1,
-    Snow = beautiful.xcolor6,
-    Mist = beautiful.xcolor5,
-    Fog = beautiful.xcolor5,
-    Haze = beautiful.xcolor5,
+    [0]  = beautiful.xcolor3,
+    [1]  = beautiful.xforeground,
+    [2]  = beautiful.xforeground,
+    [3]  = beautiful.xforeground,
+    [45] = beautiful.xcolor5,
+    [48] = beautiful.xcolor5,
+    [51] = beautiful.xcolor4,
+    [53] = beautiful.xcolor4,
+    [55] = beautiful.xcolor4,
+    [56] = beautiful.xcolor4,
+    [57] = beautiful.xcolor4,
+    [61] = beautiful.xcolor4,
+    [63] = beautiful.xcolor4,
+    [65] = beautiful.xcolor4,
+    [66] = beautiful.xcolor4,
+    [67] = beautiful.xcolor4,
+    [71] = beautiful.xcolor6,
+    [73] = beautiful.xcolor6,
+    [75] = beautiful.xcolor6,
+    [77] = beautiful.xcolor6,
+    [80] = beautiful.xcolor4,
+    [81] = beautiful.xcolor4,
+    [82] = beautiful.xcolor4,
+    [85] = beautiful.xcolor6,
+    [86] = beautiful.xcolor6,
+    [95] = beautiful.xcolor1,
+    [96] = beautiful.xcolor1,
+    [99] = beautiful.xcolor1,
   }
-  accent_line.color = accent[condition] or beautiful.xcolor2
+  accent_line.color = accent[tonumber(condition)] or beautiful.xcolor2
 end)
 
 return weather

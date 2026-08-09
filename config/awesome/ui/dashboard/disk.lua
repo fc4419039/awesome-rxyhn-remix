@@ -4,6 +4,7 @@ local beautiful = require("beautiful")
 local dpi = beautiful.xresources.apply_dpi
 local wibox = require("wibox")
 local helpers = require("helpers")
+local i18n = require("i18n")
 
 local disk_text = wibox.widget{
     font = beautiful.font_name .. "medium 8",
