@@ -8,7 +8,7 @@
 
 [![GitHub stars](https://img.shields.io/github/stars/fc4419039/awesome-rxyhn-remix?style=for-the-badge&label=★%20STARS&color=7c3aed&labelColor=0f0f0f)](https://github.com/fc4419039/awesome-rxyhn-remix/stargazers)
 [![GitHub license](https://img.shields.io/github/license/fc4419039/awesome-rxyhn-remix?style=for-the-badge&color=67AFC1&labelColor=0f0f0f)](https://github.com/fc4419039/awesome-rxyhn-remix/blob/main/LICENSE)
-[![Install](https://img.shields.io/badge/⚡-INSTALL-7c3aed?style=for-the-badge&labelColor=0f0f0f)](https://github.com/fc4419039/awesome-rxyhn-remix#installation--instalación)
+[![Install](https://img.shields.io/badge/⚡-INSTALL-7c3aed?style=for-the-badge&labelColor=0f0f0f)](#installation--instalación)
 [![AwesomeWM](https://img.shields.io/badge/WM-Awesome-F4C2C2?style=for-the-badge&labelColor=0f0f0f&logo=awesomewm)](https://awesomewm.org/)
 [![Arch Linux](https://img.shields.io/badge/OS-Arch_Linux-1793D1?style=for-the-badge&labelColor=0f0f0f&logo=arch-linux)](https://archlinux.org/)
 [![Lua](https://img.shields.io/badge/Lua-2C2D72?style=for-the-badge&labelColor=0f0f0f&logo=lua)](https://www.lua.org/)
@@ -28,7 +28,7 @@
 </h1>
 
 <p align="center">
-  <i>rxyhn's legendary dotfiles — lost to the void, now reborn with modern AwesomeWM APIs, bug fixes, and a bag of extras.</i>
+  <i>rxyhn's legendary dotfiles — recovered, rebuilt on modern AwesomeWM APIs, bugs fixed, and extended with useful extras.</i>
 </p>
 
 <br>
@@ -62,42 +62,48 @@
 
 <br>
 
-<h2 align="center">
-  <img src="https://img.shields.io/badge/-PREVIEW-7c3aed?style=for-the-badge&labelColor=0f0f0f">
-</h2>
+## 📑 Table of Contents / Índice
+
+- [Features / Características](#features--características)
+- [Screenshots / Capturas](#screenshots--capturas)
+- [Keyboard Shortcuts / Atajos](#keyboard-shortcuts--atajos)
+- [Installation / Instalación](#installation--instalación)
+- [Repository Structure / Estructura](#repository-structure--estructura-del-repositorio)
+- [Dependencies / Dependencias](#dependencies--dependencias-completas)
+- [Systemd Services / Servicios](#systemd-services--servicios-systemd)
+- [Troubleshooting / Solución de problemas](#troubleshooting--solución-de-problemas)
+- [Credits / Créditos](#credits--créditos)
+
+---
 
 <br>
+
+## 🖼️ Screenshots / Capturas
 
 <div align="center">
   <table>
     <tr>
       <td width="50%" align="center">
         <img src=".github/assets/123.png" alt="Dashboard" style="border-radius: 12px; box-shadow: 0 4px 24px rgba(0,0,0,0.6);">
-        <br>
-        <sub><b>Dashboard</b></sub>
+        <br><sub><b>Dashboard</b></sub>
       </td>
       <td width="50%" align="center">
         <img src=".github/assets/login.png" alt="Lock Screen" style="border-radius: 12px; box-shadow: 0 4px 24px rgba(0,0,0,0.6);">
-        <br>
-        <sub><b>Lock Screen</b></sub>
+        <br><sub><b>Lock Screen</b></sub>
       </td>
     </tr>
     <tr>
       <td width="50%" align="center">
         <img src=".github/assets/preview-widgets.png" alt="Widgets" style="border-radius: 12px; box-shadow: 0 4px 24px rgba(0,0,0,0.6);">
-        <br>
-        <sub><b>Widgets & Menus</b></sub>
+        <br><sub><b>Widgets & Menus</b></sub>
       </td>
       <td width="50%" align="center">
         <img src=".github/assets/preview-btop.png" alt="BTOP" style="border-radius: 12px; box-shadow: 0 4px 24px rgba(0,0,0,0.6);">
-        <br>
-        <sub><b>System Monitor</b></sub>
+        <br><sub><b>System Monitor</b></sub>
       </td>
     </tr>
   </table>
 </div>
-
-<br>
 
 ---
 
@@ -112,23 +118,21 @@
   Based on <b>rxyhn</b>'s original work (repo deleted) and the <b>Alpharivs</b> fork.
 </p>
 
-<br>
-
 ### Features
 
-- **Wibar** — vertical bar on the left: Pac-Man taglist, battery arc, stacked clock, window list tooltips, layoutbox, notification-center button. Auto-hides on fullscreen (`Ctrl+F` to toggle).
-- **Dashboard** — slide-in from the left: profile, music with cover art & progress, media controls, clock, todo arc, **weather** (Open-Meteo, no API key — location auto-detected by IP), system stats, recent notifications.
-- **Notification Center** — scrollable history, clear-all, and a **Do Not Disturb that actually works**: popups are silenced *and queued* until you turn it back on.
-- **Notification audio** — isolated PipeWire sink, screenshot sounds, auto-router, independent volume (`Super+v`), low-latency loopback, fully silenced by DND.
-- **Rofi menus** — launcher, wifi, bluetooth, power, GTK3 volume sliders, and instant **accent cycling** across 12 colors.
-- **Window decorations** — round buttons, WiFi/IP/VPN info, 2px accent border. **Borders & titlebars on by default** (`Ctrl+Super+Shift+B` / `+T` to toggle). ncmpcpp windows get a full music titlebar with album art, seek bar & controls.
+- **Wibar** — Vertical left bar: Pac-Man taglist, battery arc, stacked clock, window list tooltips, layoutbox, notification-center button. Auto-hides on fullscreen (`Ctrl+F` to toggle).
+- **Dashboard** — Slide-in from left: profile, music with cover art & progress, media controls, clock, todo arc, **weather** (Open-Meteo, no API key — location auto-detected by IP), system stats, recent notifications.
+- **Notification Center** — Scrollable history, clear-all, and a **Do Not Disturb that actually works**: popups are silenced *and queued* until re-enabled.
+- **Notification audio** — Isolated PipeWire sink, screenshot sounds, auto-router, independent volume (`Super+v`), low-latency loopback, fully silenced by DND.
+- **Rofi menus** — Launcher, WiFi, Bluetooth, power, GTK3 volume sliders, instant **accent cycling** across 12 colors.
+- **Window decorations** — Round buttons, WiFi/IP/VPN info, 2px accent border. **Borders & titlebars on by default** (`Ctrl+Super+Shift+B` / `+T` to toggle). ncmpcpp windows get a full music titlebar with album art, seek bar & controls.
 - **Lock screen** — PAM auth, English word clock, music controls, rainbow keys (`Mod+Ctrl+L`).
-- **Alt+Tab switcher** — live window thumbnails with keyboard navigation.
-- **System Menu** — slide-out panel: blur, transparency, night mode, wallpaper, music, accent, borders/titlebars, widgets, power.
-- **Layouts** — tile, floating, centered, mstab, horizontal, machi, equalarea, deck.
-- **MSCDown** — bundled YouTube music searcher/downloader (`musica` or `musica <query>`), auto-installed with the dotfiles. The installer **skips it if already present**.
-- **Multi-monitor** — independent wibars, dashboards and tags per screen (`Mod+Ctrl+j/k`).
-- **Touchegg gestures** — 3-finger swipe for the desktop overview, 4-finger to change desktops, pinches to close windows or open the launcher.
+- **Alt+Tab switcher** — Live window thumbnails with keyboard navigation.
+- **System Menu** — Slide-out panel: blur, transparency, night mode, wallpaper, music, accent, borders/titlebars, widgets, power.
+- **Layouts** — Tile, floating, centered, mstab, horizontal, machi, equalarea, deck.
+- **MSCDown** — Bundled YouTube music searcher/downloader (`musica` or `musica <query>`), auto-installed. The installer **skips it if already present**.
+- **Multi-monitor** — Independent wibars, dashboards and tags per screen (`Mod+Ctrl+j/k`).
+- **Touchegg gestures** — 3-finger swipe for desktop overview, 4-finger to change desktops, pinches to close windows or open launcher.
 
 ### Keyboard Shortcuts
 
@@ -183,8 +187,6 @@ config/awesome/scripts/check.sh                       # from the repo (before in
 
 Exit code `0` = all OK, `1` = syntax errors found (file:line shown).
 
-<br>
-
 ---
 
 <br>
@@ -195,26 +197,24 @@ Exit code `0` = all OK, `1` = syntax errors found (file:line shown).
 
 <p align="center">
   Configuración completa de <b>AwesomeWM</b>, reparada, optimizada y extendida con funcionalidades modernas.
-  Basada en el trabajo original de <b>rxyhn</b> (repo eliminado) y el <b>Alpharivs</b> fork.
+  Basada en el trabajo original de <b>rxyhn</b> (repo eliminado) y el fork de <b>Alpharivs</b>.
 </p>
-
-<br>
 
 ### Características
 
-- **Wibar** — barra vertical a la izquierda: taglist Pac-Man, arco de batería, reloj apilado, tooltips de ventanas, layoutbox, botón del centro de notificaciones. Se oculta en pantalla completa (`Ctrl+F` para alternar).
-- **Dashboard** — panel deslizable desde la izquierda: perfil, música con carátula y progreso, controles multimedia, reloj, arco de tareas, **clima** (Open-Meteo, sin API key — ubicación detectada por IP), estadísticas del sistema y notificaciones recientes.
-- **Centro de notificaciones** — historial scrolleable, limpiar todo y un **no molestar que funciona de verdad**: silencia *y encola* los popups hasta que lo vuelvas a activar.
-- **Audio de notificaciones** — sink aislado en PipeWire, sonidos de captura, router automático, volumen independiente (`Super+v`), loopback de baja latencia, silenciado por completo con no molestar.
-- **Menús Rofi** — lanzador, wifi, bluetooth, power, sliders GTK3 de volumen y **cambio de acento** instantáneo entre 12 colores.
-- **Decoraciones de ventana** — botones redondos, widgets WiFi/IP/VPN, borde de 2px del color de acento. **Bordes y titlebars activados por defecto** (`Ctrl+Super+Shift+B` / `+T` para alternar). Las ventanas de ncmpcpp tienen una titlebar de música completa con carátula, barra de búsqueda y controles.
-- **Lock screen** — autenticación PAM, word clock en inglés, controles de música, teclas arcoíris (`Mod+Ctrl+L`).
-- **Switcher Alt+Tab** — miniaturas en vivo con navegación por teclado.
-- **System Menu** — panel deslizable: blur, transparencia, modo noche, fondo, música, acento, bordes/titlebars, widgets, power.
-- **Layouts** — tile, floating, centered, mstab, horizontal, machi, equalarea, deck.
-- **MSCDown** — buscador/descargador de música de YouTube incluido (`musica` o `musica <consulta>`), se instala automáticamente con el dotfiles. El instalador **lo salta si ya está presente**.
-- **Multi-monitor** — wibar, dashboard y tags independientes por pantalla (`Mod+Ctrl+j/k`).
-- **Gestos de Touchegg** — swipe de 3 dedos para el overview, 4 dedos para cambiar de escritorio, pinches para cerrar ventanas o abrir el lanzador.
+- **Wibar** — Barra vertical a la izquierda: taglist Pac-Man, arco de batería, reloj apilado, tooltips de ventanas, layoutbox, botón del centro de notificaciones. Se oculta en pantalla completa (`Ctrl+F` para alternar).
+- **Dashboard** — Panel deslizable desde la izquierda: perfil, música con carátula y progreso, controles multimedia, reloj, arco de tareas, **clima** (Open-Meteo, sin API key — ubicación detectada por IP), estadísticas del sistema y notificaciones recientes.
+- **Centro de notificaciones** — Historial scrolleable, limpiar todo y un **no molestar que funciona de verdad**: silencia *y encola* los popups hasta que lo vuelvas a activar.
+- **Audio de notificaciones** — Sink aislado en PipeWire, sonidos de captura, router automático, volumen independiente (`Super+v`), loopback de baja latencia, silenciado por completo con no molestar.
+- **Menús Rofi** — Lanzador, WiFi, Bluetooth, power, sliders GTK3 de volumen y **cambio de acento** instantáneo entre 12 colores.
+- **Decoraciones de ventana** — Botones redondos, widgets WiFi/IP/VPN, borde de 2px del color de acento. **Bordes y titlebars activados por defecto** (`Ctrl+Super+Shift+B` / `+T` para alternar). Las ventanas de ncmpcpp tienen una titlebar de música completa con carátula, barra de búsqueda y controles.
+- **Lock screen** — Autenticación PAM, word clock en inglés, controles de música, teclas arcoíris (`Mod+Ctrl+L`).
+- **Switcher Alt+Tab** — Miniaturas en vivo con navegación por teclado.
+- **System Menu** — Panel deslizable: blur, transparencia, modo noche, fondo, música, acento, bordes/titlebars, widgets, power.
+- **Layouts** — Tile, floating, centered, mstab, horizontal, machi, equalarea, deck.
+- **MSCDown** — Buscador/descargador de música de YouTube incluido (`musica` o `musica <consulta>`), se instala automáticamente. El instalador **lo salta si ya está presente**.
+- **Multi-monitor** — Wibar, dashboard y tags independientes por pantalla (`Mod+Ctrl+j/k`).
+- **Gestos de Touchegg** — Swipe de 3 dedos para el overview, 4 dedos para cambiar de escritorio, pinches para cerrar ventanas o abrir el lanzador.
 
 ### Atajos de teclado
 
@@ -269,20 +269,14 @@ config/awesome/scripts/check.sh                       # desde el repo (antes de 
 
 Código de salida `0` = todo OK, `1` = errores de sintaxis (muestra archivo:línea).
 
-<br>
-
 ---
 
 <br>
 
-<!-- ==================== SHARED SECTIONS ==================== -->
-
-<h2 align="center">Installation / Instalación</h2>
-
-<br>
+## ⚡ Installation / Instalación
 
 <details>
-<summary><strong>📦 Automatic / Automática</strong></summary>
+<summary><strong>📦 Automatic / Automática (recommended / recomendada)</strong></summary>
 
 <br>
 
@@ -293,10 +287,10 @@ chmod +x install.sh
 ./install.sh
 ```
 
-> The installer is **smart**: it detects already-installed packages and skips them, won't reconfigure what's already configured, and won't re-clone or re-install mscdown if it's already present.
+> The installer is **smart**: detects already-installed packages and skips them, won't reconfigure what's already configured, and won't re-clone or re-install mscdown if it's already present.
 >
-> El instalador es **inteligente**: detecta los paquetes ya instalados y los omite, no reconfigura lo ya configurado y no vuelve a clonar ni instalar mscdown si ya está presente.
-
+> El instalador es **inteligente**: detecta paquetes ya instalados y los omite, no reconfigura lo ya configurado y no vuelve a clonar ni instalar mscdown si ya está presente.
+>
 > ⚠️ `sudo` is only required for the SDDM theme installation.
 > ⚠️ El script requiere `sudo` solo para instalar el tema SDDM.
 
@@ -338,59 +332,51 @@ cp -r bin/* ~/.local/bin/
 
 </details>
 
-<br>
-
 ---
 
 <br>
 
-<h2 align="center">Repository Structure / Estructura del Repositorio</h2>
-
-<br>
+## 📁 Repository Structure / Estructura del Repositorio
 
 ```
 awesome-rxyhn-remix/
-├── bin/                      # Scripts personalizados (awesomefetch, screensht, xcolor-pick)
+├── bin/                      # Custom scripts (awesomefetch, screensht, xcolor-pick)
 ├── config/
-│   ├── awesome/              # Configuración principal de AwesomeWM
+│   ├── awesome/              # Main AwesomeWM configuration
 │   │   ├── configuration/    # Autostart, keybindings, rules
-│   │   ├── module/           # Módulos externos (bling, rubato, layout-machi)
-│   │   ├── scripts/          # Scripts Lua/Shell (toggles, utilidades)
-│   │   ├── signal/           # Señales (volumen, batería, playerctl)
-│   │   ├── theme/            # Temas, picom configs, rofi Rasi
+│   │   ├── module/           # External modules (bling, rubato, layout-machi)
+│   │   ├── scripts/          # Lua/Shell scripts (toggles, utilities)
+│   │   ├── signal/           # Signals (volume, battery, playerctl, weather)
+│   │   ├── theme/            # Themes, picom configs, rofi Rasi
 │   │   ├── ui/               # Widgets, wibar, dashboard, lockscreen
 │   │   ├── rc.lua            # Entry point
 │   │   └── secrets.lua.template
 │   ├── kitty/                # Terminal
 │   ├── mpd/                  # MPD config
-│   ├── ncmpcpp/              # Cliente MPD
+│   ├── ncmpcpp/              # MPD client
 │   ├── nvim/                 # Neovim
-│   ├── rofi/                 # Menús Rofi
+│   ├── rofi/                 # Rofi menus
 │   ├── starship/             # Prompt
-│   ├── systemd/user/         # Servicios de usuario (mpd, mpd-mpris, udiskie, limpieza)
-│   └── touchegg/             # Gestos touchpad
-├── fonts/                    # Fuentes Icomoon personalizadas
+│   ├── systemd/user/         # User services (mpd, mpd-mpris, udiskie, cleanup)
+│   └── touchegg/             # Touchpad gestures
+├── fonts/                    # Custom Icomoon fonts
 ├── fondos/                   # Wallpapers
-├── sddm/                     # Tema SDDM (sugar-candy)
-├── mscdown/                  # Submódulo: buscador música YouTube
+├── sddm/                     # SDDM theme (sugar-candy)
+├── mscdown/                  # Submodule: YouTube music searcher
 ├── misc/                     # .Xresources, .profile, .zshrc
-├── install.sh                # Instalador principal
-├── update_modules.sh         # Actualiza módulos externos (bling, rubato, machi)
-├── check.sh                  # Validador sintaxis (Lua/Shell/Python)
-└── opencode.json             # Configuración agente OpenCode
+├── install.sh                # Main installer
+├── update_modules.sh         # Updates external modules (bling, rubato, machi)
+├── check.sh                  # Syntax validator (Lua/Shell/Python)
+└── opencode.json             # OpenCode agent config
 ```
-
-<br>
 
 ---
 
 <br>
 
-<h2 align="center">Dependencies / Dependencias Completas</h2>
+## 📦 Dependencies / Dependencias Completas
 
-<br>
-
-El instalador (`install.sh`) gestiona todo automáticamente. Lista completa para Arch/Manjaro:
+The installer (`install.sh`) handles everything automatically. Full list for Arch/Manjaro:
 
 ```bash
 yay -S --needed \
@@ -410,177 +396,150 @@ yay -S --needed \
   bc pacman-contrib xorg-setxkbmap upower lua git
 ```
 
-> **¿Qué hace cada uno nuevo?**
-> - `bc` — necesario para `cycle-accent.sh` (oscurecer colores al cambiar acento)
-> - `pacman-contrib` — `paccache` usado por `limpiar_sistema.sh`
-> - `xorg-setxkbmap` — `change-keyboard.sh` y atajo de teclado
-> - `upower` — `bluetooth.sh` muestra batería de dispositivos
-> - `lua` — `luac` para `check.sh`
-> - `git` — submodules y clonar powerlevel10k
-> - `mpd-mpris` — puente MPRIS para controles multimedia (dashboard, notificaciones)
-> - `udiskie` + `udisks2` — automontaje USB/externos (activado por defecto)
-
-<br>
+> **What are the new ones for?**
+> - `bc` — needed by `cycle-accent.sh` (darken colors when cycling accent)
+> - `pacman-contrib` — `paccache` used by `limpiar_sistema.sh`
+> - `xorg-setxkbmap` — `change-keyboard.sh` and keyboard shortcut
+> - `upower` — `bluetooth.sh` shows device battery
+> - `lua` — `luac` for `check.sh`
+> - `git` — submodules and cloning powerlevel10k
+> - `mpd-mpris` — MPRIS bridge for media controls (dashboard, notifications)
+> - `udiskie` + `udisks2` — auto-mount USB/external drives (enabled by default)
 
 ---
 
 <br>
 
-<h2 align="center">Servicios systemd habilitados por el instalador</h2>
+## 🔧 Systemd Services / Servicios systemd
 
-<br>
-
-| Servicio | Tipo | Descripción |
+| Service | Type | Description |
 |---|---|---|
-| `mpd.service` | user | Servidor de música (mpd) |
-| `mpd-mpris.service` | user | Puente MPRIS → controles multimedia en dashboard/notificaciones |
-| `udiskie.service` | user | Automontaje USB/discos externos con notificaciones |
-| `limpiar-sistema.timer` | user | Limpieza automática cada 3 días (`limpiar_sistema.sh`) |
-| `touchegg.service` | system (root) | Daemon de gestos touchpad |
+| `mpd.service` | user | Music server (mpd) |
+| `mpd-mpris.service` | user | MPRIS bridge → media controls in dashboard/notifications |
+| `udiskie.service` | user | Auto-mount USB/external drives with notifications |
+| `limpiar-sistema.timer` | user | Auto cleanup every 3 days (`limpiar_sistema.sh`) |
+| `touchegg.service` | system (root) | Touchpad gestures daemon |
 
-> **Nota:** los servicios de usuario se habilitan con `systemctl --user enable --now`. El daemon `touchegg` corre como root; el cliente se lanza desde autostart.
-
-<br>
+> **Note:** user services enabled with `systemctl --user enable --now`. The `touchegg` daemon runs as root; the client launches from autostart.
 
 ---
 
 <br>
 
-<h2 align="center">Troubleshooting / Solución de problemas</h2>
-
-<br>
+## 🩹 Troubleshooting / Solución de problemas
 
 <details>
-<summary><strong>🔍 Validar la configuración antes de reiniciar</strong></summary>
+<summary><strong>🔍 Validate config before restarting</strong></summary>
 
 <br>
 
 ```bash
-# Desde el repo (antes de instalar)
+# From repo (before install)
 config/awesome/scripts/check.sh
 
-# Desde la config instalada
+# From installed config
 ~/.config/awesome/scripts/check.sh
 
-# Modo vigilancia continua
+# Continuous watch mode
 ~/.config/awesome/scripts/check.sh --watch
 ```
 
-> Exit code `0` = OK, `1` = errores de sintaxis (muestra archivo:línea). Ejecútalo **antes de recargar Awesome (`Super+Ctrl+R`) o de hacer commit** para no romper la sesión.
+> Exit code `0` = OK, `1` = syntax errors (shows file:line). Run **before reloading Awesome (`Super+Ctrl+R`) or committing** to avoid breaking your session.
 
 </details>
 
-<br>
-
 <details>
-<summary><strong>🎵 La música no suena / MPD no inicia</strong></summary>
+<summary><strong>🎵 No sound / MPD won't start</strong></summary>
 
 <br>
 
 ```bash
-# Verificar servicios
+# Check services
 systemctl --user status mpd.service mpd-mpris.service
 
-# Habilitar si faltan
+# Enable if missing
 systemctl --user enable --now mpd.service mpd-mpris.service
 
-# Verificar config
+# Verify config
 cat ~/.config/mpd/mpd.conf
-# music_directory debe ser ~/Music (creado por install.sh)
+# music_directory must be ~/Music (created by install.sh)
 ```
 
 </details>
 
-<br>
-
 <details>
-<summary><strong>🎨 Cambiar acento no oscurece bien (bc faltante)</strong></summary>
+<summary><strong>🎨 Accent cycling doesn't darken properly (missing bc)</strong></summary>
 
 <br>
 
 ```bash
 sudo pacman -S bc
 ```
-> `cycle-accent.sh` usa `bc -l` para calcular tonos oscuros del acento.
+> `cycle-accent.sh` uses `bc -l` to calculate dark accent tones.
 
 </details>
 
-<br>
-
 <details>
-<summary><strong>⚙️ Awesome entra en modo fallback (pantalla negra/rota)</strong></summary>
+<summary><strong>⚙️ Awesome enters fallback mode (black/broken screen)</strong></summary>
 
 <br>
 
-1. `Mod+Ctrl+Shift+R` recarga la config (si responde).
-2. Si no: entra en TTY (`Ctrl+Alt+F3`), ejecuta:
+1. `Mod+Ctrl+Shift+R` reloads config (if responsive).
+2. If not: switch to TTY (`Ctrl+Alt+F3`), run:
    ```bash
    ~/.config/awesome/scripts/check.sh
    ```
-   Corrige los errores que muestre.
-3. `awesome -k -c ~/.config/awesome/rc.lua` valida sintaxis completa.
+   Fix any errors shown.
+3. `awesome -k -c ~/.config/awesome/rc.lua` validates full syntax.
 
 </details>
 
-<br>
-
 <details>
-<summary><strong>🔐 secrets.lua / clima no funciona</strong></summary>
+<summary><strong>🔐 secrets.lua / weather not working</strong></summary>
 
 <br>
 
 ```bash
-# Si falta, se genera del template al instalar
+# If missing, generated from template on install
 cp ~/.config/awesome/secrets.lua.template ~/.config/awesome/secrets.lua
-# Edita weather_location_override si quieres forzar ubicación
+# Edit weather_location_override to force location
 ```
 
-> El widget usa **Open-Meteo** (sin API key) + IP geolocation automática.
+> Widget uses **Open-Meteo** (no API key) + automatic IP geolocation.
 
 </details>
 
-<br>
-
 <details>
-<summary><strong>📦 Paquetes AUR fallan al instalar</strong></summary>
+<summary><strong>📦 AUR packages fail to install</strong></summary>
 
 <br>
 
 ```bash
-# Verifica AUR helper
+# Verify AUR helper
 command -v yay || command -v paru
 
-# Limpia cache y reintenta
+# Clean cache and retry
 yay -S --clean
-# o
+# or
 paru -S --clean
 ```
 
 </details>
 
-<br>
-
 ---
 
 <br>
 
-<div align="center">
+## 🙏 Credits / Créditos
 
-**rxyhn** — Original design • **Alpharivs** — Fork base • **s4vitar** — Zsh config • **ner0z** — Colorscheme night • **ChocolateBread799**, **JavaCafe01** — Original contributions
-
-<br>
-<br>
+**rxyhn** — Original design • **Alpharivs** — Base fork • **s4vitar** — Zsh config • **ner0z** — Colorscheme night • **ChocolateBread799**, **JavaCafe01** — Original contributions
 
 | Source | Description |
 |---|---|
-| [rxyhn](https://github.com/rxyhn) (original, deleted) | Dotfiles original de AwesomeWM |
-| [Alpharivs](https://github.com/Alpharivs/dotfiles) | Fork base usado para esta remix |
-| [s4vitar](https://github.com/s4vitar) | Configuración de zsh |
+| [rxyhn](https://github.com/rxyhn) (original, deleted) | Original AwesomeWM dotfiles |
+| [Alpharivs](https://github.com/Alpharivs/dotfiles) | Base fork used for this remix |
+| [s4vitar](https://github.com/s4vitar) | Zsh configuration |
 | [ner0z](https://github.com/ner0z) | Colorscheme night |
-
-</div>
-
-<br>
 
 ---
 
