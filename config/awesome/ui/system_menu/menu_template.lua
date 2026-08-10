@@ -438,10 +438,11 @@ local transparency_btn = create_btn("", i18n.tr("sm.transparency"), beautiful
         awful.spawn.with_shell(os.getenv("HOME") .. "/.config/awesome/scripts/change-locale.sh")
     end)
 
-    local clean_btn = create_btn("", i18n.tr("sm.clean"), beautiful.xcolor2, function()
-        hide()
-        awful.spawn.with_shell(os.getenv("HOME") .. "/.config/awesome/scripts/clean-orphans.sh")
-    end)
+    -- local clean_btn = create_btn("", i18n.tr("sm.clean"), beautiful.xcolor2, function()
+    --     hide()
+    --     awful.spawn.with_shell(os.getenv("HOME") .. "/.config/awesome/scripts/clean-orphans.sh")
+    -- end)
+
 
     -- Register all buttons for keyboard navigation (2D grid matching the layout)
     button_grid = {
@@ -453,7 +454,7 @@ local transparency_btn = create_btn("", i18n.tr("sm.transparency"), beautiful
         {border_btn, sddm_btn},
         {apps_btn, opencode_btn},
         {timezone_btn, keyboard_btn},
-        {locale_btn, clean_btn},
+        {locale_btn},
         {resources_btn, calculator_btn},
         {color_temp_btn, widgets_btn},
         {powermenu_btn},
@@ -469,7 +470,7 @@ local transparency_btn = create_btn("", i18n.tr("sm.transparency"), beautiful
         row(border_btn, sddm_btn),
         row(apps_btn, opencode_btn),
         row(timezone_btn, keyboard_btn),
-        row(locale_btn, clean_btn),
+        row(locale_btn),
         row(resources_btn, calculator_btn),
         row(color_temp_btn, widgets_btn),
         row_single(powermenu_btn),

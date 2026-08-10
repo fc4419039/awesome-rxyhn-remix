@@ -41,6 +41,7 @@ local window_switcher_hide = function(window_switcher_box)
     awful.keygrabber.stop(window_switcher_grabber)
     window_switcher_box.visible = false
     window_switcher_box.widget = nil
+    collectgarbage("collect")
 end
 
 local function draw_widget(

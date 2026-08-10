@@ -200,6 +200,7 @@ local function emit_player_metadata(self)
                 end
             }
 
+            collectgarbage("collect")
         end,
     })
 end
@@ -219,6 +220,7 @@ local function emit_player_position(self)
                 end
             end
         end)
+        collectgarbage("collect")
     end)
 end
 

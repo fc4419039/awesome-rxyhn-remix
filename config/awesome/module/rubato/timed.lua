@@ -234,7 +234,7 @@ local function timed(args)
 	local function set(value)
 
 		--if it's instant just do it lol, no need to go through all this
-		if obj.is_instant then obj:fire(preprocess_pos(obj), obj.duration, obj.pos - value); return end
+		if obj.is_instant then obj:fire(preproceesvalue, obj.duration, obj.pos - value); return end
 
 		--disallow setting it twice (because it makes it go wonky sometimes)
 		if not obj.rapid_set and obj._props.target == value then return end
