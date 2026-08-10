@@ -5,7 +5,7 @@ configuration {
 }
 
 * {
-    background: #0a1419;
+    background: #0a1419b3;
     foreground: #e2e8f0;
     accent: #06b6d4;
     surface: #162026cc;
