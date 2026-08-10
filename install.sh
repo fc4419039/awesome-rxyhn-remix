@@ -62,39 +62,23 @@ echo ""
 # =====================================================================
 # 2️⃣ INSTALAR DEPENDENCIAS
 # =====================================================================
-echo -e "${YELLOW}📦 Verificando dependencias...${NC}"
+echo -e "${YELLOW}📦 Instalando dependencias...${NC}"
 
-PKGS="
-    awesome-git picom-git kitty rofi todo-bin acpi acpid
-    wireless_tools jq inotify-tools polkit-gnome xdotool xclip maim
-    brightnessctl alsa-utils alsa-tools pipewire pipewire-pulse wireplumber libpulse psmisc
-    qt5-imageformats qt6-imageformats
-    playerctl spotify mpd mpc ncmpcpp mpd-mpris blueman pasystray
-    touchegg redshift networkmanager bluez libnotify curl ffmpeg gpick
-    bc pacman-contrib xorg-setxkbmap upower lua git
-    imagemagick thunar firefox xorg-xrdb yad xcolor-pick cliphist xdg-utils xdg-user-dirs udiskie udisks2
-    nerd-fonts-jetbrains-mono ttf-iosevka-nerd ttf-hack-nerd ttf-font-awesome ttf-material-design-icons ttf-weather-icons
-    zsh-syntax-highlighting zsh-autosuggestions zsh-sudo zoxide feh zsh neovim
-    btop lsd bat python-dbus python-gobject python-pip python-pyqt5 pipewire-alsa
-    powerlevel10k fzf starship autorandr xorg-xrandr pamixer gtk3 sound-theme-freedesktop
-    xorg-xset xorg-xprop xorg-xwininfo
-"
+$AUR_HELPER -Sy --needed awesome-git picom-git kitty rofi todo-bin acpi acpid \
+    wireless_tools jq inotify-tools polkit-gnome xdotool xclip maim \
+    brightnessctl alsa-utils alsa-tools pipewire pipewire-pulse wireplumber \
+    qt5-imageformats qt6-imageformats \
+    playerctl spotify onlyoffice-bin mpd ncmpcpp mpd-mpris blueman pasystray \
+    touchegg redshift networkmanager bluez libnotify curl ffmpeg gpick \
+    imagemagick thunar firefox krita xorg-xrdb xorg-xauth \
+    nerd-fonts-jetbrains-mono ttf-iosevka-nerd ttf-font-awesome ttf-material-design-icons ttf-weather-icons \
+    zsh-syntax-highlighting zsh-autosuggestions zoxide feh zsh neovim \
+    btop lsd bat python-gobject pipewire-alsa \
+    powerlevel10k sound-theme-freedesktop \
+    i3lock slock xsecurelock \
+    --needed
 
-# Filtrar solo los paquetes que faltan
-MISSING=""
-for pkg in $PKGS; do
-    if ! pacman -Qi "$pkg" &>/dev/null && ! pacman -Qg "$pkg" &>/dev/null; then
-        MISSING="$MISSING $pkg"
-    fi
-done
-
-if [ -n "$MISSING" ]; then
-    echo -e "${YELLOW}  Paquetes faltantes detectados. Instalando...${NC}"
-    $AUR_HELPER -S --needed $MISSING
-    echo -e "${GREEN}✓ Dependencias instaladas${NC}"
-else
-    echo -e "${GREEN}✓ Todas las dependencias ya estan instaladas${NC}"
-fi
+echo -e "${GREEN}✓ Dependencias instaladas${NC}"
 
 echo ""
 
@@ -105,7 +89,8 @@ echo -e "${YELLOW}🤖 Instalando OpenCode (AI Agent)...${NC}"
 
 if ! command -v opencode &> /dev/null; then
     echo -e "${YELLOW}📦 Instalando opencode...${NC}"
-    curl -fsSL https://opencode.ai/install | bash 2>/dev/null && echo -e "${GREEN}✓ OpenCode instalado${NC}" || echo -e "${YELLOW}⚠️  No se pudo instalar OpenCode (se puede instalar después con: curl -fsSL https://opencode.ai/install | bash)${NC}"
+    curl -fsSL https://opencode.ai/install | bash
+    echo -e "${GREEN}✓ OpenCode instalado${NC}"
 else
     echo -e "${GREEN}✓ OpenCode ya está instalado${NC}"
 fi
@@ -117,16 +102,14 @@ echo ""
 # =====================================================================
 echo -e "${YELLOW}🔄 Habilitando servicios...${NC}"
 
-sudo systemctl enable acpid.service 2>/dev/null || echo -e "${YELLOW}  ⚠ No se pudo habilitar acpid.service${NC}"
-sudo systemctl start acpid.service 2>/dev/null || echo -e "${YELLOW}  ⚠ No se pudo iniciar acpid.service${NC}"
+sudo systemctl enable acpid.service
+sudo systemctl start acpid.service
 
 echo -e "${GREEN}✓ Servicios habilitados${NC}"
 
 # Configurar hooks de git (validación sintaxis Lua al commitear)
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-if [ -d "$SCRIPT_DIR/.githooks" ]; then
-    git config core.hooksPath "$SCRIPT_DIR/.githooks" 2>/dev/null && echo -e "${GREEN}✓ Git hooks configurados${NC}"
-fi
+git config core.hooksPath "$SCRIPT_DIR/.githooks" 2>/dev/null && echo -e "${GREEN}✓ Git hooks configurados${NC}"
 
 echo ""
 
@@ -163,12 +146,13 @@ if [ ! -d "bin" ]; then
     exit 1
 fi
 
-# Actualizar módulos externos antes de copiar (para que se copien las versiones frescas)
-echo -e "${YELLOW}📦 Actualizando módulos externos (bling, rubato, layout-machi)...${NC}"
-bash "$(dirname "$0")/update_modules.sh" 2>/dev/null || echo -e "${YELLOW}  ⚠ No se pudieron actualizar, se usan los versionados en el repo${NC}"
-
 cp -r config/* ~/.config/
 cp -r bin/* ~/.local/bin/
+
+# Copiar .profile si existe
+if [ -f ".profile" ]; then
+    cp .profile ~/
+fi
 
 # Copiar .Xresources si existe
 if [ -f "misc/.Xresources" ]; then
@@ -176,7 +160,7 @@ if [ -f "misc/.Xresources" ]; then
     echo -e "${GREEN}✓ .Xresources instalado${NC}"
 fi
 
-# Copiar .profile desde misc/ si no existe
+# Copiar .profile desde misc/ si no se copió antes
 if [ -f "misc/.profile" ] && [ ! -f "$HOME/.profile" ]; then
     cp misc/.profile ~/
     echo -e "${GREEN}✓ .profile instalado desde misc/${NC}"
@@ -184,42 +168,28 @@ fi
 
 echo -e "${GREEN}✓ Archivos de configuración copiados${NC}"
 
+# Actualizar módulos externos a sus últimas versiones
+echo -e "${YELLOW}📦 Actualizando módulos externos (bling, rubato, layout-machi)...${NC}"
+bash "$(dirname "$0")/update_modules.sh" 2>/dev/null || echo -e "${YELLOW}  ⚠ No se pudieron actualizar, se usan los versionados en el repo${NC}"
+
 # Activar timer de limpieza automática (cada 3 días)
 systemctl --user daemon-reload 2>/dev/null || true
 systemctl --user enable --now limpiar-sistema.timer 2>/dev/null && echo -e "${GREEN}✓ Timer de limpieza automática activado${NC}" || true
 
-# Activar automontaje de dispositivos USB (udiskie)
-systemctl --user enable --now udiskie.service 2>/dev/null && echo -e "${GREEN}✓ udiskie (automontaje USB) activado${NC}" || true
+echo ""
+echo -e "${YELLOW}🔐 Instalando librerías PAM para Lua (lockscreen)...${NC}"
 
-# Activar MPD (música) y su puente MPRIS — el autostart ya no los lanza
-systemctl --user enable --now mpd.service 2>/dev/null && echo -e "${GREEN}✓ mpd.service activado${NC}" || true
-systemctl --user enable --now mpd-mpris.service 2>/dev/null && echo -e "${GREEN}✓ mpd-mpris.service activado${NC}" || true
+# Instalar headers PAM necesarios
+sudo pacman -S --needed --noconfirm pam-devel
 
-# Generar secrets.lua desde template si no existe
-if [ ! -f "$HOME/.config/awesome/secrets.lua" ]; then
-    cp config/awesome/secrets.lua.template "$HOME/.config/awesome/secrets.lua"
-    echo -e "${YELLOW}🌤️  El clima usa Open-Meteo (sin API key) + ubicación automática por IP.${NC}"
-    echo -e "${YELLOW}   Opcional: edita weather_location_override en ~/.config/awesome/secrets.lua${NC}"
+# Instalar módulo PAM para Lua via luarocks
+if command -v luarocks &> /dev/null; then
+    luarocks install lua-pam 2>/dev/null || echo -e "${YELLOW}⚠️  lua-pam ya instalado o falló (requiere pam-devel)${NC}"
+else
+    echo -e "${YELLOW}⚠️  luarocks no encontrado, saltando lua-pam${NC}"
 fi
 
-echo ""
-
-# =====================================================================
-# 5b️⃣ CONFIGURAR TOUCHEGG (Gestos del touchpad)
-# =====================================================================
-echo -e "${YELLOW}🖐️  Configurando touchegg...${NC}"
-
-mkdir -p ~/.config/touchegg
-if [ -f "config/touchegg/touchegg.conf" ]; then
-    cp config/touchegg/touchegg.conf ~/.config/touchegg/touchegg.conf
-    echo -e "${GREEN}✓ touchegg.conf instalado${NC}"
-fi
-
-# Habilitar e iniciar servicio touchegg (corre como root)
-sudo systemctl enable touchegg.service 2>/dev/null && echo -e "${GREEN}✓ touchegg.service habilitado${NC}" || echo -e "${YELLOW}  ⚠ No se pudo habilitar touchegg.service${NC}"
-sudo systemctl start touchegg.service 2>/dev/null && echo -e "${GREEN}✓ touchegg.service iniciado${NC}" || echo -e "${YELLOW}  ⚠ No se pudo iniciar touchegg.service${NC}"
-
-echo ""
+echo -e "${GREEN}✓ liblua_pam instalado${NC}"
 
 # =====================================================================
 # 6️⃣ INSTALAR FUENTES
@@ -227,33 +197,21 @@ echo ""
 echo -e "${YELLOW}🔤 Instalando fuentes...${NC}"
 
 if [ -d "fonts" ] && [ "$(ls -A fonts)" ]; then
-    local_fonts=0
-    for f in fonts/*; do
-        if [ ! -f "$HOME/.local/share/fonts/$(basename "$f")" ]; then
-            cp "$f" "$HOME/.local/share/fonts/" 2>/dev/null || true
-            local_fonts=$((local_fonts + 1))
-        fi
-    done
-    [ "$local_fonts" -gt 0 ] && echo -e "${GREEN}✓ $local_fonts fuentes nuevas en ~/.local/share/fonts/${NC}" \
-        || echo -e "${GREEN}✓ Fuentes de usuario ya instaladas${NC}"
+    # Instalar en ~/.local/share/fonts/ (usuario actual)
+    cp -r fonts/* ~/.local/share/fonts/
+    echo -e "${GREEN}✓ Fuentes instaladas en ~/.local/share/fonts/${NC}"
 
-    sys_fonts=0
-    sudo mkdir -p /usr/share/fonts 2>/dev/null || true
-    for f in fonts/*; do
-        if [ ! -f "/usr/share/fonts/$(basename "$f")" ]; then
-            sudo cp "$f" /usr/share/fonts/ 2>/dev/null || true
-            sys_fonts=$((sys_fonts + 1))
-        fi
-    done
-    [ "$sys_fonts" -gt 0 ] && echo -e "${GREEN}✓ $sys_fonts fuentes nuevas en /usr/share/fonts/${NC}" \
-        || echo -e "${GREEN}✓ Fuentes del sistema ya instaladas${NC}"
+    # Instalar en /usr/share/fonts/ (sistema completo)
+    echo -e "${YELLOW}⚠️  Instalando fuentes en /usr/share/fonts/ (requiere sudo)...${NC}"
+    sudo mkdir -p /usr/share/fonts
+    sudo cp -r fonts/* /usr/share/fonts/
+    echo -e "${GREEN}✓ Fuentes instaladas en /usr/share/fonts/${NC}"
 
-    if [ "$local_fonts" -gt 0 ] || [ "$sys_fonts" -gt 0 ]; then
-        echo -e "${YELLOW}🔄 Actualizando cache de fuentes...${NC}"
-        fc-cache -f 2>/dev/null || true
-        sudo fc-cache -f 2>/dev/null || true
-        echo -e "${GREEN}✓ Cache de fuentes actualizado${NC}"
-    fi
+    # Actualizar cache de fuentes
+    echo -e "${YELLOW}🔄 Actualizando cache de fuentes...${NC}"
+    fc-cache -fv
+    sudo fc-cache -fv
+    echo -e "${GREEN}✓ Cache de fuentes actualizado${NC}"
 else
     echo -e "${YELLOW}⚠️  Carpeta fonts vacía o no encontrada${NC}"
 fi
@@ -319,161 +277,44 @@ if ! grep -q "TODO_PATH" ~/.zshrc 2>/dev/null; then
     echo -e "${GREEN}✓ TODO_PATH agregada a .zshrc${NC}"
 fi
 
-BACKUP_DIR="$HOME/.zsh-backup-$(date +%s)"
-
-# Backup de configuraciones existentes del usuario
-echo -e "${YELLOW}💾 Respaldando configuraciones existentes...${NC}"
-mkdir -p "$BACKUP_DIR"
-
-for f in "$HOME/.p10k.zsh" "$HOME/powerlevel10k" "$HOME/.fzf.zsh" "$HOME/.fzf"; do
-    if [ -e "$f" ] && [ ! -L "$f" ]; then
-        if cp -r "$f" "$BACKUP_DIR/" 2>/dev/null; then
-            echo -e "${GREEN}  ✓ Respaldado: $f${NC}"
-        else
-            echo -e "${YELLOW}  ⚠ No se pudo respaldar: $f${NC}"
-        fi
-    fi
-done
-
-# Asegurar que ~/powerlevel10k exista (symlink al paquete del sistema o clonar)
-if [ ! -d ~/powerlevel10k ]; then
-    if [ -d /usr/share/zsh-theme-powerlevel10k ]; then
-        ln -s /usr/share/zsh-theme-powerlevel10k ~/powerlevel10k
-        echo -e "${GREEN}✓ ~/powerlevel10k -> /usr/share/zsh-theme-powerlevel10k${NC}"
-    else
-        echo -e "${YELLOW}⏬ Clonando powerlevel10k en ~/powerlevel10k...${NC}"
-        git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ~/powerlevel10k
-        echo -e "${GREEN}✓ powerlevel10k clonado en ~/powerlevel10k${NC}"
-    fi
-fi
-
-# Asegurar que fzf.zsh exista
-if [ ! -f ~/.fzf.zsh ] && [ -f /usr/share/fzf/key-bindings.zsh ]; then
-    echo "source /usr/share/fzf/key-bindings.zsh" > ~/.fzf.zsh
-    echo "source /usr/share/fzf/completion.zsh" >> ~/.fzf.zsh
-    echo -e "${GREEN}✓ ~/.fzf.zsh creado${NC}"
-fi
-
 echo ""
 
 # =====================================================================
-# 🔟 CONFIGURAR ZSH PARA ROOT (symlinks)
+# 🔟 INSTALAR MSCDOWN (Music Searcher & Downloader)
 # =====================================================================
-echo -e "${YELLOW}👑 Configurando zsh para root...${NC}"
+echo -e "${YELLOW}🎵 Instalando MSCDown (Music Searcher & Downloader)...${NC}"
 
-# Verificar que root tenga zsh como shell
-ROOT_SHELL=$(sudo -u root sh -c 'echo "$SHELL"' 2>/dev/null || echo "")
-if [ -n "$ROOT_SHELL" ] && [ "$ROOT_SHELL" != "/usr/bin/zsh" ] && [ "$ROOT_SHELL" != "/bin/zsh" ]; then
-    echo -e "${YELLOW}⚠️  Cambiando shell de root a zsh...${NC}"
-    sudo chsh -s /usr/bin/zsh root
-    echo -e "${GREEN}✓ Shell de root cambiada a zsh${NC}"
-fi
-
-# Backup de configuraciones existentes de root
-ROOT_BACKUP_DIR="/root/.zsh-backup-$(date +%s)"
-echo -e "${YELLOW}💾 Respaldando configuraciones existentes de root...${NC}"
-sudo mkdir -p "$ROOT_BACKUP_DIR" 2>/dev/null || true
-for rf in "/root/.zshrc" "/root/.p10k.zsh" "/root/powerlevel10k" "/root/.fzf.zsh" "/root/.fzf"; do
-    if sudo test -e "$rf" 2>/dev/null && ! sudo test -L "$rf" 2>/dev/null; then
-        if sudo cp -r "$rf" "$ROOT_BACKUP_DIR/" 2>/dev/null; then
-            echo -e "${GREEN}  ✓ Respaldado: $rf${NC}"
-        else
-            echo -e "${YELLOW}  ⚠ No se pudo respaldar: $rf${NC}"
-        fi
-    fi
-done
-
-echo -e "${YELLOW}🔗 Creando symlinks de zsh para root (apuntando a config del usuario)...${NC}"
-
-USER_HOME="$HOME"
-
-# .zshrc
-if [ -f "$USER_HOME/.zshrc" ]; then
-    sudo rm -f /root/.zshrc 2>/dev/null || true
-    sudo ln -sf "$USER_HOME/.zshrc" /root/.zshrc
-    echo -e "${GREEN}  ✓ /root/.zshrc -> $USER_HOME/.zshrc${NC}"
-fi
-
-# .p10k.zsh
-if [ -f "$USER_HOME/.p10k.zsh" ]; then
-    sudo rm -f /root/.p10k.zsh 2>/dev/null || true
-    sudo ln -sf "$USER_HOME/.p10k.zsh" /root/.p10k.zsh
-    echo -e "${GREEN}  ✓ /root/.p10k.zsh -> $USER_HOME/.p10k.zsh${NC}"
-fi
-
-# powerlevel10k
-if [ -d "$USER_HOME/powerlevel10k" ]; then
-    sudo rm -rf /root/powerlevel10k 2>/dev/null || true
-    sudo ln -sfT "$USER_HOME/powerlevel10k" /root/powerlevel10k
-    echo -e "${GREEN}  ✓ /root/powerlevel10k -> $USER_HOME/powerlevel10k${NC}"
-fi
-
-# .fzf.zsh
-if [ -f "$USER_HOME/.fzf.zsh" ]; then
-    sudo rm -f /root/.fzf.zsh 2>/dev/null || true
-    sudo ln -sf "$USER_HOME/.fzf.zsh" /root/.fzf.zsh
-    echo -e "${GREEN}  ✓ /root/.fzf.zsh -> $USER_HOME/.fzf.zsh${NC}"
-fi
-
-# .fzf (directorio de fzf)
-if [ -d "$USER_HOME/.fzf" ]; then
-    sudo rm -rf /root/.fzf 2>/dev/null || true
-    sudo ln -sfT "$USER_HOME/.fzf" /root/.fzf
-    echo -e "${GREEN}  ✓ /root/.fzf -> $USER_HOME/.fzf${NC}"
-fi
-
-echo -e "${GREEN}✓ Zsh de root configurada con los mismos archivos que el usuario${NC}"
-
-echo ""
-
-# =====================================================================
-# 1️⃣1️⃣ INSTALAR MSCDOWN (Music Searcher & Downloader)
-# =====================================================================
-# Si mscdown ya está instalado, no volver a clonar/instalar
-MSCDOWN_DIR="$(dirname "$0")/mscdown"
-if [ -x "$HOME/mscdown/ejecutar.sh" ]; then
-    echo -e "${GREEN}✓ MSCDown ya está instalado en $HOME/mscdown (saltando)${NC}"
+# Inicializar submodulos (mscdown)
+if [ -f "$(dirname "$0")/mscdown/install.sh" ]; then
+    echo -e "${YELLOW}📦 Ejecutando instalador de mscdown...${NC}"
+    chmod +x "$(dirname "$0")/mscdown/install.sh"
+    cd "$(dirname "$0")/mscdown"
+    ./install.sh
+    cd "$(dirname "$0")"
+    echo -e "${GREEN}✓ MSCDown instalado${NC}"
 else
-    echo -e "${YELLOW}🎵 Instalando MSCDown (Music Searcher & Downloader)...${NC}"
-
-    # Inicializar submódulo (mscdown)
-    if [ -f "$MSCDOWN_DIR/install.sh" ]; then
-        echo -e "${YELLOW}📦 Ejecutando instalador de mscdown...${NC}"
-        chmod +x "$MSCDOWN_DIR/install.sh"
-    else
-        echo -e "${YELLOW}⚠️  Submódulo mscdown no encontrado. Inicializando...${NC}"
-        git submodule update --init --recursive
-        chmod +x "$MSCDOWN_DIR/install.sh"
-    fi
-
-    # Copiar mscdown a $HOME/mscdown para que el alias funcione
-    if [ ! -d "$HOME/mscdown" ]; then
-        cp -r "$MSCDOWN_DIR" "$HOME/mscdown"
-        echo -e "${GREEN}✓ mscdown copiado a $HOME/mscdown${NC}"
-    fi
-
-    # MSCDown install.sh contiene "sudo pacman -Syu" (full upgrade).
-    # Parcheamos para evitar eso y solo instalar dependencias.
-    sed -i 's/sudo pacman -Syu --noconfirm/sudo pacman -S --noconfirm --needed/' "$HOME/mscdown/install.sh"
-
-    # Ejecutar instalador con "musica" como alias por defecto
-    echo "musica" | bash "$HOME/mscdown/install.sh"
-    echo -e "${GREEN}✓ MSCDown instalado (alias: musica)${NC}"
+    echo -e "${YELLOW}⚠️  Submódulo mscdown no encontrado. Inicializando...${NC}"
+    git submodule update --init --recursive
+    chmod +x "$(dirname "$0")/mscdown/install.sh"
+    cd "$(dirname "$0")/mscdown"
+    ./install.sh
+    cd "$(dirname "$0")"
+    echo -e "${GREEN}✓ MSCDown instalado${NC}"
 fi
 
 echo ""
 
 # =====================================================================
-# 1️⃣2️⃣ CONFIGURACIÓN DE SDDM (SUGAR-CANDY)
+# 1️⃣1️⃣ CONFIGURACIÓN DE SDDM (SUGAR-CANDY)
 # =====================================================================
 echo -e "${YELLOW}🎨 Configurando tema de inicio de sesión (SDDM)...${NC}"
 
 if command -v sddm &> /dev/null; then
     if [ -d "sddm/sugar-candy" ]; then
         echo -e "${YELLOW}🔒 Copiando tema sugar-candy...${NC}"
-        sudo cp -rf sddm/sugar-candy /usr/share/sddm/themes/
+        sudo cp -r sddm/sugar-candy /usr/share/sddm/themes/
 
-        sudo mkdir -p /etc/sddm.conf.d 2>/dev/null || true
+        sudo mkdir -p /etc/sddm.conf.d
 
         echo -e "${YELLOW}⚙️  Activando Sugar-Candy...${NC}"
         sudo bash -c 'cat << EOF > /etc/sddm.conf.d/theme.conf
@@ -482,7 +323,7 @@ Current=sugar-candy
 EOF'
 
         echo -e "${YELLOW}🔄 Habilitando servicio SDDM...${NC}"
-        sudo systemctl enable sddm.service 2>/dev/null || echo -e "${YELLOW}  ⚠ No se pudo habilitar sddm.service${NC}"
+        sudo systemctl enable sddm.service
 
         echo -e "${GREEN}✓ SDDM configurado${NC}"
     else
@@ -505,8 +346,9 @@ echo -e "${YELLOW}📝 PRÓXIMOS PASOS:${NC}"
 echo "1. Recarga las variables de entorno:"
 echo -e "   ${GREEN}source ~/.zshrc${NC}"
 echo ""
-echo "2. El clima usa Open-Meteo (sin API key) + ubicación automática por IP:"
-echo "   Opcional: edita weather_location_override en ~/.config/awesome/secrets.lua"
+echo "2. Configura OpenWeatherMap (opcional):"
+echo -e "   ${GREEN}Edit: ~/.config/awesome/rc.lua${NC}"
+echo "   Set: openweathermap_key y openweathermap_city_id"
 echo ""
 echo "3. Control de volumen de notificaciones:"
 echo "   El script notif-sink-setup.sh (autostart) crea un sink"
