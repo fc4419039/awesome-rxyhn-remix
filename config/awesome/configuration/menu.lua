@@ -6,6 +6,9 @@ local beautiful = require("beautiful")
 -- Helpers
 local helpers = require("helpers")
 
+-- Lockscreen
+local lock_screen = require("ui.lockscreen")
+
 -- Create a launcher widget and a main menu
 awful.screen.connect_for_each_screen(function(s)
 
@@ -23,10 +26,10 @@ awful.screen.connect_for_each_screen(function(s)
         {"   " .. i18n.tr("pm.power"), function() awful.spawn.with_shell("systemctl poweroff") end},
         {"   " .. i18n.tr("pm.reboot"), function() awful.spawn.with_shell("systemctl reboot") end},
         {"   " .. i18n.tr("pm.suspend"), function()
-            lock_screen_show()
+            lock_screen.show()
             awful.spawn.with_shell("systemctl suspend")
         end},
-        {"   " .. i18n.tr("menu.lock_screen"), function() lock_screen_show() end}
+        {"   " .. i18n.tr("menu.lock_screen"), function() lock_screen.show() end}
     }
 
     -- Wallpaper submenu

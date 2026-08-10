@@ -7,14 +7,31 @@ local naughty = require("naughty")
 local helpers = require("helpers")
 
 local wallpaper_dir = os.getenv("HOME") .. "/fondos"
+local thumb_dir = os.getenv("HOME") .. "/.cache/fondos_thumb"
 local sddm_theme_dir = "/usr/share/sddm/themes/sugar-candy"
 local sddm_conf = sddm_theme_dir .. "/theme.conf"
 
 local supported_exts = { png = true, jpg = true, jpeg = true, bmp = true, webp = true }
 
+local function file_exists(path)
+    local f = io.open(path, "r")
+    if f then f:close(); return true end
+    return false
+end
+
+local function q(s)
+    return "'" .. s:gsub("'", "'\\''") .. "'"
+end
+
+local function thumb_for(path)
+    local name = path:match("([^/]+)$") or path
+    name = name:gsub("%.[^%.]+$", ""):gsub("[^%w._%-]", "_")
+    return thumb_dir .. "/" .. name .. ".jpg"
+end
+
 local function get_wallpapers()
     local files = {}
-    local p = io.popen('ls -1 "' .. wallpaper_dir .. '" 2>/dev/null')
+    local p = io.popen('ls -1 ' .. q(wallpaper_dir) .. ' 2>/dev/null')
     if p then
         for name in p:lines() do
             local ext = name:match("%.([^%.]+)$")
@@ -28,34 +45,26 @@ local function get_wallpapers()
     return files
 end
 
-local function get_current_sddm_bg()
-    local f = io.open(sddm_conf, "r")
-    if f then
-        for line in f:lines() do
-            local bg = line:match("^Background%s*=%s*(.+)")
-            if bg then
-                f:close()
-                return bg:match("^\"?(.-)\"?$")
-            end
+local function ensure_thumbs(wallpapers)
+    local missing = {}
+    for _, path in ipairs(wallpapers) do
+        local tp = thumb_for(path)
+        if not file_exists(tp) then
+            missing[#missing + 1] = "convert " .. q(path) .. " -auto-orient -thumbnail 320x180 -strip -quality 82 " .. q(tp)
         end
-        f:close()
     end
-    return nil
-end
-
-local function esc(s)
-    return s:gsub("'", "'\\''")
+    if #missing > 0 then
+        awful.spawn.with_shell("mkdir -p " .. q(thumb_dir) .. "; ( " .. table.concat(missing, " & ") .. " ) &")
+    end
 end
 
 local M = {}
 M.active = false
 M.overlay = nil
 
-local bg_color = "#0d0d1a"
-local surface_color = "#1a1a2e"
+local surface_color = "#162026"
 local accent_color = "#06b6d4"
 local fg_color = "#e2e8f0"
-local muted_color = "#3d3d5c"
 
 local card_w = dpi(220)
 local card_h = dpi(124)
@@ -68,283 +77,168 @@ local function hide()
         M.overlay.visible = false
         M.overlay = nil
     end
-    M.cards = nil
-    M.selected = nil
 end
 
-function M.toggle()
-    if M.active then
-        hide()
-        return
-    end
+local function apply_sddm(path)
+    local basename = path:match("([^/]+)$")
+    awful.spawn.with_shell(
+        "pkexec bash -c \"cp " .. q(path) .. " " .. q(sddm_theme_dir) .. "/ && " ..
+        "sed -i 's/^Background=.*/Background=\\\"" .. basename .. "\\\"/' " .. q(sddm_conf) .. "\""
+    )
+    naughty.notify({ text = "Fondo SDDM cambiado", timeout = 3 })
+end
 
+local function show_menu()
     local wallpapers = get_wallpapers()
     if #wallpapers == 0 then
         naughty.notify({ text = "No hay imagenes en ~/fondos", timeout = 3 })
         return
     end
 
-    local current_sddm = get_current_sddm_bg()
-
-    M.active = true
-
     local screen = awful.screen.focused()
+    if not screen then return end
     local sgeo = screen.geometry
 
-    local cols = math.min(#wallpapers, 6)
-    local rows = math.ceil(#wallpapers / cols)
+    M.active = true
+    ensure_thumbs(wallpapers)
+
+    local rows = #wallpapers
+    local row_h = card_h + dpi(12)
+    local viewport_h = sgeo.height - dpi(150)
+    local scroll_offset = 0
 
     local grid = wibox.layout.fixed.vertical()
     grid.spacing = card_spacing
-    grid.expand = "none"
 
     local cards = {}
     local selected = 1
-    local idx = 1
 
-    for _ = 1, rows do
-        local row = wibox.layout.fixed.horizontal()
-        row.spacing = card_spacing
-        row.expand = "center"
-        for _ = 1, cols do
-            if idx <= #wallpapers then
-                local path = wallpapers[idx]
-                local i = idx
+    for i, path in ipairs(wallpapers) do
+        local thumb = wibox.widget {
+            forced_width = card_w,
+            forced_height = card_h,
+            horizontal_fit_policy = "cover",
+            vertical_fit_policy = "cover",
+            widget = wibox.widget.imagebox,
+        }
 
-                local inner_w = card_w - dpi(16)
-                local thumb_h = card_h - dpi(38)
+        local card_bg = wibox.widget {
+            thumb,
+            margins = dpi(8),
+            bg = surface_color,
+            border_width = dpi(2),
+            border_color = surface_color,
+            shape = helpers.rrect(dpi(8)),
+            widget = wibox.container.background,
+        }
 
-                local thumb = wibox.widget {
-                    image = path,
-                    forced_width = inner_w,
-                    forced_height = thumb_h,
-                    horizontal_fit_policy = "scale",
-                    vertical_fit_policy = "scale",
-                    upscale = true,
-                    widget = wibox.widget.imagebox,
-                }
+        card_bg.thumb_widget = thumb
+        card_bg.thumb_path = thumb_for(path)
+        card_bg.loaded = false
+        card_bg.index = i
+        cards[i] = card_bg
 
-                local fname = path:match("([^/]+)$") or ""
-                if #fname > 24 then fname = fname:sub(1, 22) .. ".." end
+        local card = wibox.widget {
+            card_bg,
+            margins = dpi(3),
+            widget = wibox.container.margin,
+        }
 
-                local marker = ""
-                if current_sddm and fname == current_sddm then
-                    marker = "  "
+        card:buttons(gears.table.join(
+            awful.button({}, 1, function()
+                apply_sddm(path)
+                hide()
+            end)
+        ))
+
+        grid:add(card)
+    end
+
+    local function update_visibility()
+        for i, card in ipairs(cards) do
+            local y_top = (i - 1) * row_h
+            local y_bot = y_top + card_h
+            if y_bot >= scroll_offset and y_top <= scroll_offset + viewport_h then
+                if not card.loaded and file_exists(card.thumb_path) then
+                    card.thumb_widget.image = card.thumb_path
+                    card.loaded = true
                 end
-
-                local title = wibox.widget {
-                    markup = "<span font='" .. (beautiful.font_name or "") .. "8' color='" .. fg_color .. "'>" .. marker .. gears.string.xml_escape(fname) .. "</span>",
-                    align = "center",
-                    forced_width = inner_w,
-                    widget = wibox.widget.textbox,
-                }
-
-                local card_bg = wibox.widget {
-                    {
-                        thumb,
-                        title,
-                        layout = wibox.layout.fixed.vertical,
-                        spacing = dpi(4),
-                    },
-                    margins = dpi(8),
-                    bg = surface_color,
-                    border_width = dpi(2),
-                    border_color = surface_color,
-                    shape = function(cr_s, w, h)
-                        gears.shape.rounded_rect(cr_s, w, h, dpi(8))
-                    end,
-                    widget = wibox.container.background,
-                }
-
-                local card = wibox.widget {
-                    card_bg,
-                    margins = dpi(3),
-                    widget = wibox.container.margin,
-                }
-
-                cards[i] = card_bg
-
-                card:buttons(gears.table.join(
-                    awful.button({}, 1, function()
-                        selected = i
-                        M._apply(wallpapers, selected, current_sddm, function(name) current_sddm = name end)
-                        hide()
-                    end)
-                ))
-
-                row:add(card)
-                idx = idx + 1
-            else
-                break
             end
         end
-        grid:add(row)
     end
 
-    local function update_selection(prev)
-        if prev and cards[prev] then
-            cards[prev].border_color = surface_color
-        end
-        if cards[selected] then
-            cards[selected].border_color = accent_color
-        end
+    local scroller = wibox.container.scroll.vertical(grid, 20, 100, 0, false, viewport_h,
+        function(_, size, visible_size)
+            if size <= visible_size then scroll_offset = 0 return 0 end
+            scroll_offset = math.max(0, math.min(scroll_offset, size - visible_size))
+            update_visibility()
+            return scroll_offset
+        end,
+        rows * row_h + viewport_h)
+
+    local function scroll_by(delta)
+        scroll_offset = math.max(0, math.min(scroll_offset + delta, (rows * row_h) - viewport_h))
+        scroller:emit_signal("widget::redraw_needed")
+        update_visibility()
     end
 
-    local header = wibox.widget {
-        markup = "<span font='" .. (beautiful.font_name or "") .. "Bold 14' color='" .. fg_color .. "'>Pantalla de bloqueo</span>",
-        align = "center",
-        widget = wibox.widget.textbox,
-    }
-
-    local counter = wibox.widget {
-        align = "center",
-        widget = wibox.widget.textbox,
-    }
-
-    local function update_counter()
-        counter:set_markup(
-            "<span font='" .. (beautiful.font_name or "") .. "10' color='" .. muted_color .. "'>" ..
-            selected .. " / " .. #wallpapers .. "</span>"
-        )
+    local function update_selection()
+        for i, card in ipairs(cards) do
+            card.border_color = (i == selected) and accent_color or surface_color
+        end
+        local y_top = (selected - 1) * row_h
+        local y_bot = y_top + card_h
+        if y_top < scroll_offset then scroll_offset = y_top end
+        if y_bot > scroll_offset + viewport_h then scroll_offset = y_bot - viewport_h end
+        scroller:emit_signal("widget::redraw_needed")
     end
 
     local function nav(dir)
-        local prev = selected
-        selected = selected + dir
-        if selected > #wallpapers then selected = 1 end
-        if selected < 1 then selected = #wallpapers end
-        update_selection(prev)
-        update_counter()
+        selected = math.max(1, math.min(#wallpapers, selected + dir))
+        update_selection()
     end
-
-    local apply_btn = wibox.widget {
-        markup = helpers.colorize_text("  Aplicar", accent_color),
-        font = beautiful.font_name .. "10",
-        align = "center",
-        valign = "center",
-        forced_width = dpi(100),
-        forced_height = dpi(32),
-        widget = wibox.widget.textbox,
-    }
-    local apply_bg = wibox.container.background()
-    apply_bg:set_widget(apply_btn)
-    apply_bg.bg = surface_color
-    apply_bg.shape = helpers.rrect(dpi(6))
-    apply_bg:connect_signal("mouse::enter", function() apply_bg.bg = "#252840" end)
-    apply_bg:connect_signal("mouse::leave", function() apply_bg.bg = surface_color end)
-    apply_bg:buttons(gears.table.join(
-        awful.button({}, 1, function()
-            M._apply(wallpapers, selected, current_sddm, function(name) current_sddm = name end)
-            hide()
-        end)
-    ))
-
-    local close_btn = wibox.widget {
-        markup = helpers.colorize_text(" ✕ ", "#f87171"),
-        font = beautiful.font_name .. "10",
-        align = "center",
-        valign = "center",
-        forced_width = dpi(40),
-        forced_height = dpi(32),
-        widget = wibox.widget.textbox,
-    }
-    local close_bg = wibox.container.background()
-    close_bg:set_widget(close_btn)
-    close_bg.bg = surface_color
-    close_bg.shape = helpers.rrect(dpi(6))
-    close_bg:connect_signal("mouse::enter", function() close_bg.bg = "#4c1d25" end)
-    close_bg:connect_signal("mouse::leave", function() close_bg.bg = surface_color end)
-    close_bg:buttons(gears.table.join(
-        awful.button({}, 1, function() hide() end)
-    ))
-
-    local nav_bar = wibox.widget {
-        {
-            nil,
-            {
-                apply_bg,
-                close_bg,
-                spacing = dpi(6),
-                layout = wibox.layout.fixed.horizontal,
-            },
-            nil,
-            expand = "none",
-            layout = wibox.layout.align.horizontal,
-        },
-        margins = { left = dpi(12), right = dpi(12), bottom = dpi(10), top = dpi(4) },
-        widget = wibox.container.margin,
-    }
-
-    local content = wibox.widget {
-        {
-            header,
-            counter,
-            grid,
-            nav_bar,
-            layout = wibox.layout.fixed.vertical,
-            spacing = dpi(12),
-        },
-        valign = "center",
-        halign = "center",
-        widget = wibox.container.place,
-    }
 
     M.overlay = wibox {
         visible = true,
         ontop = true,
-        type = "dock",
+        type = "dialog",
         screen = screen,
-        width = sgeo.width,
-        height = sgeo.height,
-        x = sgeo.x,
-        y = sgeo.y,
-        bg = bg_color,
-        fg = fg_color,
-        opacity = 0.95,
+        width = dpi(300),
+        height = sgeo.height - dpi(30),
+        x = sgeo.x + dpi(64),
+        y = dpi(15),
+        bg = "#0a1419b3",
+        shape = helpers.rrect(dpi(14)),
     }
-    M.overlay:set_widget(content)
 
-    M.cards = cards
-    M.selected = selected
+    M.overlay:set_widget(wibox.widget{
+        {
+            { markup = "<span font='Bold 14' color='" .. fg_color .. "'>SDDM Wallpaper</span>", widget = wibox.widget.textbox, align = "center" },
+            scroller,
+            layout = wibox.layout.fixed.vertical,
+            spacing = dpi(10)
+        },
+        margins = dpi(15),
+        widget = wibox.container.margin
+    })
 
-    update_selection(nil)
-    update_counter()
+    update_selection()
+    update_visibility()
 
-    M.overlay:buttons(gears.table.join(
-        awful.button({}, 4, function() nav(-1) end),
-        awful.button({}, 5, function() nav(1) end),
-        awful.button({}, 2, function() nav(-cols) end),
-        awful.button({}, 3, function() nav(cols) end)
-    ))
-
-    awful.keygrabber.run(function(mod, key, event)
+    awful.keygrabber.run(function(_, key, event)
         if event ~= "press" then return end
-        if key == "Right" or key == "l" then
-            nav(1)
-        elseif key == "Left" or key == "h" then
-            nav(-1)
-        elseif key == "Down" or key == "j" then
-            nav(cols)
-        elseif key == "Up" or key == "k" then
-            nav(-cols)
-        elseif key == "Return" then
-            M._apply(wallpapers, selected, current_sddm, function(name) current_sddm = name end)
-            hide()
-        elseif key == "Escape" then
-            hide()
+        if key == "Down" or key == "j" then nav(1)
+        elseif key == "Up" or key == "k" then nav(-1)
+        elseif key == "Page_Down" then scroll_by(viewport_h)
+        elseif key == "Page_Up" then scroll_by(-viewport_h)
+        elseif key == "Return" then apply_sddm(wallpapers[selected]); hide()
+        elseif key == "Escape" then hide()
         end
     end)
 end
 
-function M._apply(wallpapers, idx, current_sddm, set_current)
-    local path = wallpapers[idx]
-    local basename = path:match("([^/]+)$")
-    awful.spawn.with_shell(
-        "pkexec bash -c \"cp '" .. esc(path) .. "' '" .. sddm_theme_dir .. "/' && " ..
-        "sed -i 's/^Background=.*/Background=\\\"" .. esc(basename) .. "\\\"/' '" .. sddm_conf .. "'\""
-    )
-    if set_current then set_current(basename) end
-    naughty.notify({ text = "Fondo SDDM cambiado (requiere reinicio)", timeout = 3 })
+function M.toggle()
+    if M.active then hide() else show_menu() end
 end
 
 return { toggle = M.toggle, hide = hide }

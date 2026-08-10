@@ -17,13 +17,11 @@ LOCKSCREEN="$HOME/.config/awesome/ui/lockscreen/lockscreen.lua"
 SYS_MENU="$HOME/.config/awesome/ui/system_menu/init.lua"
 TITLEBAR="$HOME/.config/awesome/ui/decorations/titlebar.lua"
 TOOLTIP="$HOME/.config/awesome/ui/tooltip/init.lua"
-ROFI_FILES=(
-    "$HOME/.config/awesome/theme/rofi.rasi"
-    "$HOME/.config/awesome/theme/network.rasi"
-    "$HOME/.config/awesome/theme/bluetooth.rasi"
-    "$HOME/.config/awesome/theme/powermenu.rasi"
-    "$HOME/.config/awesome/theme/powermenu-confirm.rasi"
-    "$HOME/.config/rofi/wifi-theme.rasi"
+DASH_ROFI=(
+    "$THEME_DIR/rofi.rasi"
+    "$THEME_DIR/rofi-menu.rasi"
+    "$THEME_DIR/system-menu.rasi"
+    "$THEME_DIR/network.rasi"
 )
 CODE_BAK="$HOME/.config/awesome/.codebak"
 TOOLTIP_BAK="$CODE_BAK/tooltip_init.lua"
@@ -57,12 +55,8 @@ if [ -f "$STATE_FILE" ]; then
             esac
         fi
     done
-    for rf in "${ROFI_FILES[@]}"; do
-        bname=$(basename "$rf")
-        if [ -f "$CODE_BAK/$bname" ]; then
-            cp "$CODE_BAK/$bname" "$rf"
-        fi
-    done
+    # Menús con forma dashboard: volver a fondo sólido
+    sed -i 's/background: #0a1419b3;/background: #0a1419;/' "${DASH_ROFI[@]}"
     rm -rf "$CODE_BAK"
 
     # Restaurar tema sólido desde theme_solid.lua
@@ -81,7 +75,7 @@ else
     touch "$STATE_FILE"
     cp "$THEME_LUA" "$BACKUP"
     mkdir -p "$CODE_BAK"
-    cp "$NOTIFS_INIT" "$NOTIFS_POPUP" "$LOCKSCREEN" "$SYS_MENU" "$TITLEBAR" "${ROFI_FILES[@]}" "$CODE_BAK/"
+    cp "$NOTIFS_INIT" "$NOTIFS_POPUP" "$LOCKSCREEN" "$SYS_MENU" "$TITLEBAR" "$CODE_BAK/"
     cp "$TOOLTIP" "$CODE_BAK/tooltip_init.lua"
 
     sed -i \
@@ -108,7 +102,8 @@ else
     # Tooltip (60% - match notif center)
     sed -i 's/bg = "#0a1419[0-9a-f]\{2\}"/bg = "#0a141999"/g' "$TOOLTIP"
 
-    sed -i 's/background-color: *#0d0d1aF2/background-color: #0d0d1ab3/' "${ROFI_FILES[@]}"
+    # Menús con forma dashboard (70%) - no se restauran de backup
+    sed -i 's/background: #0a1419;/background: #0a1419b3;/' "${DASH_ROFI[@]}"
 
     pkill picom
     picom -b --dbus --config "$PICOM_TRANS" &>/dev/null &

@@ -12,84 +12,81 @@ configuration {
 }
 
 * {
-    background: #0d0d1a;
+    background: #0a1419;
     foreground: #e2e8f0;
     accent: #06b6d4;
-    surface: #1a1a2e;
-    darker: #141428;
-    muted: #3d3d5c;
-    rad: 24px;
-    rad-sm: 14px;
+    surface: #162026cc;
+    darker: #0a1419;
+    muted: #666c79;
+    rad: 14px;
+    rad-sm: 10px;
     background-color: transparent;
     text-color: var(foreground);
 }
 
 window {
     transparency: "real";
-    width: 580px;
-    height: 680px;
-    location: center;
-    anchor: center;
+    location: north west;
+    anchor: north west;
+    x-offset: 64px;
+    y-offset: 15px;
+    width: 280px;
+    height: calc(100% - 30px);
     border-radius: var(rad);
     border: 1px;
-    border-color: var(accent);
-    background-color: #0d0d1ab3;
+    border-color: #06b6d433;
+    background-color: var(background);
 }
 
 mainbox {
-    children: [inputbar, listview];
-    spacing: 0;
-    padding: 0;
+    children: [ inputbar, listview ];
+    spacing: 12px;
+    padding: 16px;
+    background-color: transparent;
 }
 
 inputbar {
-    children: [textbox, entry];
-    spacing: 0;
-    margin: 24px 24px 0 24px;
-    padding: 0;
+    children: [ textbox, entry ];
+    spacing: 8px;
+    padding: 6px 10px;
     border-radius: var(rad-sm);
     background-color: var(surface);
     border: 1px;
-    border-color: var(muted);
+    border-color: #06b6d440;
 }
 
 textbox {
     str: "󰀻";
     expand: false;
-    padding: 0 0 0 16px;
+    padding: 0;
     horizontal-align: 0.5;
     vertical-align: 0.5;
     text-color: var(accent);
-    font: "JetBrainsMono Nerd Font 18";
+    font: "JetBrainsMono Nerd Font 14";
     background-color: transparent;
 }
 
 entry {
     expand: true;
-    padding: 14px 16px 14px 10px;
     placeholder: "Buscar aplicaciones...";
     placeholder-color: var(muted);
     border-radius: 0;
     background-color: transparent;
     text-color: var(foreground);
-    font: "JetBrainsMono Nerd Font 12";
+    font: "JetBrainsMono Nerd Font 11";
     highlight: inherit;
 }
 
 listview {
+    columns: 1;
     spacing: 2px;
-    padding: 16px 24px 24px 24px;
-    dynamic: true;
-    columns: 2;
-    lines: 7;
-    cycle: false;
-    scrollbar: false;
-    layout: vertical;
+    scrollbar: true;
     cursor: pointer;
+    background-color: transparent;
 }
 
 element {
-    padding: 8px 12px;
+    padding: 8px 10px;
     border-radius: var(rad-sm);
     background-color: transparent;
     cursor: pointer;
@@ -103,19 +100,19 @@ element normal.normal {
 }
 
 element selected {
-    background-color: var(darker);
+    background-color: #16202680;
     text-color: var(accent);
     border-color: var(muted);
 }
 
 element selected.normal {
-    background-color: var(darker);
+    background-color: #16202680;
     border-color: var(muted);
 }
 
 element-icon {
-    size: 38px;
-    padding: 0 12px 0 0;
+    size: 22px;
+    padding: 0 10px 0 0;
     horizontal-align: 0;
     vertical-align: 0.5;
     background-color: transparent;
@@ -141,7 +138,7 @@ element alternate.normal {
 }
 
 element selected.alternate {
-    background-color: var(darker);
+    background-color: #16202680;
     border-color: var(muted);
 }
 
@@ -156,7 +153,7 @@ scrollbar {
 }
 
 button {
-    background-color: var(darker);
+    background-color: var(surface);
     text-color: var(foreground);
     border-radius: var(rad-sm);
     cursor: pointer;

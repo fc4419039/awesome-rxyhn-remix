@@ -1,127 +1,89 @@
 @theme "/dev/null"
 
+configuration {
+    font: "JetBrainsMono Nerd Font 10";
+}
+
 * {
-    background: #0d0d1a;
+    background: #0a1419;
     foreground: #e2e8f0;
     accent: #06b6d4;
-    surface: #1a1a2e;
-    darker: #141428;
-    muted: #3d3d5c;
-    rad: 24px;
-    rad-sm: 14px;
+    surface: #162026cc;
+    muted: #666c79;
+    rad: 14px;
+    rad-sm: 10px;
     background-color: transparent;
     text-color: var(foreground);
 }
 
 window {
     transparency: "real";
-    width: 340px;
-    height: 480px;
-    location: center;
-    anchor: center;
+    location: north west;
+    anchor: north west;
+    x-offset: 64px;
+    y-offset: 15px;
+    width: 280px;
+    height: calc(100% - 30px);
     border-radius: var(rad);
     border: 1px;
-    border-color: var(accent);
-    background-color: #0d0d1ab3;
+    border-color: #06b6d433;
+    background-color: var(background);
 }
 
 mainbox {
-    children: [listview];
-    spacing: 0;
-    padding: 0;
+    children: [ inputbar, listview ];
+    spacing: 12px;
+    padding: 16px;
+    background-color: transparent;
 }
 
 inputbar {
-    enabled: false;
+    enabled: true;
+    children: [ entry ];
+    padding: 6px 10px;
+    border-radius: var(rad-sm);
+    background-color: var(surface);
+    border: 1px;
+    border-color: #06b6d440;
+}
+
+entry {
+    placeholder: "Buscar...";
+    placeholder-color: var(muted);
+    background-color: transparent;
+    text-color: var(foreground);
 }
 
 listview {
-    spacing: 4px;
-    padding: 14px;
-    dynamic: true;
     columns: 1;
-    scrollbar: false;
-    layout: vertical;
-    cursor: pointer;
+    spacing: 4px;
+    scrollbar: true;
+    background-color: transparent;
 }
 
 element {
-    padding: 8px 12px;
+    padding: 4px;
     border-radius: var(rad-sm);
     background-color: transparent;
-    cursor: pointer;
     border: 1px;
-    border-color: transparent;
-}
-
-element normal.normal {
-    background-color: transparent;
     border-color: transparent;
 }
 
 element selected {
-    background-color: var(darker);
+    background-color: #16202680;
     text-color: var(accent);
     border-color: var(muted);
-}
-
-element selected.normal {
-    background-color: var(darker);
-    border-color: var(muted);
-}
-
-element-icon {
-    size: 38px;
-    padding: 0 12px 0 0;
-    horizontal-align: 0;
-    vertical-align: 0.5;
-    background-color: transparent;
 }
 
 element-text {
-    padding: 2px 0;
-    horizontal-align: 0;
-    vertical-align: 0.5;
-    background-color: transparent;
-    text-color: var(foreground);
-    font: "JetBrainsMono Nerd Font 11";
-    highlight: inherit;
-}
-
-element selected element-text {
-    text-color: var(accent);
-}
-
-element alternate.normal {
-    background-color: transparent;
-    border-color: transparent;
-}
-
-element selected.alternate {
-    background-color: var(darker);
-    border-color: var(muted);
-}
-
-element-icon, element-text {
-    background-color: transparent;
+    text-color: inherit;
+    padding: 4px;
 }
 
 scrollbar {
     handle-color: var(muted);
     handle-width: 4px;
     border-radius: 2px;
-}
-
-button {
-    background-color: var(darker);
-    text-color: var(foreground);
-    border-radius: var(rad-sm);
-    cursor: pointer;
-}
-
-button selected {
-    background-color: var(accent);
-    text-color: var(background);
 }
 
 error-message {

@@ -32,8 +32,8 @@ window {
 
 mainbox {
     children: [ inputbar, listview ];
-    spacing: 12px;
-    padding: 16px;
+    spacing: 10px;
+    padding: 14px;
     background-color: transparent;
 }
 
@@ -56,13 +56,13 @@ entry {
 
 listview {
     columns: 1;
-    spacing: 4px;
+    spacing: 1px;
     scrollbar: true;
     background-color: transparent;
 }
 
 element {
-    padding: 4px;
+    padding: 4px 8px;
     border-radius: var(rad-sm);
     background-color: transparent;
     border: 1px;
@@ -77,5 +77,5 @@ element selected {
 
 element-text {
     text-color: inherit;
-    padding: 4px;
+    padding: 3px;
 }

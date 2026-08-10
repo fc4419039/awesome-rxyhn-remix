@@ -45,7 +45,7 @@ while IFS=$'\t' read -r _bytes name human; do
         "$RED" "$TRASH" "$name" "$DIM" "$human" "$name" >> "$map"
 done <<< "$sizes"
 
-selected=$(cut -f1 "$map" | rofi -dmenu -markup-rows -theme "$theme" -no-custom)
+selected=$(cut -f1 "$map" | rofi -dmenu -markup-rows -theme "$theme" -no-custom -i)
 [ -z "$selected" ] && exit 0
 
 line=$(grep -F "$selected" "$map" | head -1)

@@ -44,7 +44,7 @@ case "$choice" in
             systemctl reboot
         fi ;;
     *"$opt_lock"*)
-        echo 'lock_screen_show()' | awesome-client ;;
+        echo 'local lock_screen = require("ui.lockscreen"); lock_screen.show()' | awesome-client ;;
     *"$opt_suspend"*)
         systemctl suspend ;;
     *"$opt_logout"*)

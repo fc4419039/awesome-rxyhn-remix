@@ -10,8 +10,8 @@
     active: #06b6d4;
     active-dim: #0891b2;
     muted: #3d3d5c;
-    rad: 16px;
-    rad-sm: 10px;
+    rad: 8px;
+    rad-sm: 8px;
     background-color: transparent;
     text-color: var(foreground);
 }

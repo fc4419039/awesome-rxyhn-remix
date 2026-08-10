@@ -69,6 +69,9 @@ sm.timezone	Zona horaria	Timezone	Fuso horário	Fuseau horaire	Zeitzone	Fuso ora
 sm.keyboard	Teclado	Keyboard	Teclado	Clavier	Tastatur	Tastiera	キーボード	키보드	键盘	Клавиатура	لوحة المفاتيح
 sm.language	Idioma	Language	Idioma	Langue	Sprache	Lingua	言語	언어	语言	Язык	اللغة
 sm.clean	Limpiar	Clean	Limpar	Nettoyer	Bereinigen	Pulisci	クリーンアップ	정리	清理	Очистка	تنظيف
+sm.color_temp	Temp. Color	Color Temp	Temp. Cor	Temp. Couleur	Farbtemperatur	Temp. Colore	色温度	색온도	色温	Цветовая температура	درجة حرارة اللون
+ct.title	Temperatura de Color	Color Temperature	Temperatura de Cor	Température de couleur	Farbtemperatur	Temperatura Colore	色温度	색온도	色温	Цветовая температура	درجة حرارة اللون
+ct.no_monitors	No hay monitores conectados	No monitors connected	Nenhum monitor conectado	Aucun moniteur connecté	Keine Monitore verbunden	Nessun monitor connesso	モニターが接続されていません	연결된 모니터 없음	无连接显示器	Мониторы не подключены	لا توجد شاشات متصلة
 tt.uptime	Tiempo activo	Uptime	Tempo ativo	Temps de fonctionnement	Betriebszeit	Tempo di attività	稼働時間	가동 시간	运行时间	Время работы	مدة التشغيل
 tt.scanning	Escaneando...	Scanning...	Escaneando...	Analyse...	Scannen...	Scansione...	スキャン中...	스캔 중...	正在扫描...	Сканирование...	جارٍ الفحص...
 tt.no_networks	No se encontraron redes	No networks found	Nenhuma rede encontrada	Aucun réseau trouvé	Keine Netzwerke gefunden	Nessuna rete trovata	ネットワークが見つかりません	네트워크를 찾을 수 없습니다	未找到网络	Сети не найдены	لم يتم العثور على شبكات

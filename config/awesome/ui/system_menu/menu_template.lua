@@ -5,6 +5,7 @@ local dpi = beautiful.xresources.apply_dpi
 local wibox = require("wibox")
 local rubato = require("module.rubato")
 local helpers = require("helpers")
+local i18n = require("i18n")
 
 local function find_opencode()
     local handle = io.popen("command -v opencode 2>/dev/null")
@@ -31,7 +32,7 @@ local opencode_bin = find_opencode()
 
 local function create_menu(s, style)
     style = style or {}
-    local menu_w = style.width or dpi(270)
+    local menu_w = style.menu_w or beautiful.dashboard_width or dpi(300)
     local menu_bg = style.bg or beautiful.xbackground
     local border_c = style.border_color or beautiful.darker_bg
     local btn_bg = style.button_bg or beautiful.dashboard_box_bg
@@ -44,9 +45,14 @@ local function create_menu(s, style)
     local margin = style.margin or dpi(8)
     local show_accent = style.show_accent ~= false
     local accent_op = style.accent_opacity or "40"
-    local btn_w = (menu_w - margin * 2 - row_spacing) / 2
+    local col_spacing = style.col_spacing or dpi(10)
+    local btn_w = (menu_w - margin * 2 - row_spacing - col_spacing) / 2
 
-    local screen_width = s.geometry.width
+    local screen_height = s.geometry.height
+
+    local header_font = style.header_font or beautiful.font_name .. "8"
+    local header_text = style.header_text or "ESC para cerrar"
+    local header_color = style.header_color or beautiful.xcolor6
 
     local function create_btn(icon, label, color, callback)
         local icon_w = wibox.widget{
@@ -95,7 +101,7 @@ local function create_menu(s, style)
         bg.bg = btn_bg
         bg.shape = helpers.rrect(dpi(5))
         bg.forced_height = btn_h
-        bg.forced_width = btn_w
+        bg._callback = callback
 
         bg:connect_signal("mouse::enter", function()
             bg.bg = hover_c
@@ -116,46 +122,62 @@ local function create_menu(s, style)
         return bg
     end
 
+    local header_w = wibox.widget{
+        markup = helpers.colorize_text(header_text, header_color),
+        font = header_font,
+        align = "center",
+        valign = "center",
+        forced_height = dpi(18),
+        widget = wibox.widget.textbox
+    }
+
     local function row(btn1, btn2)
         if btn2 then
-            return wibox.widget{
+            local w = wibox.widget{
                 btn1,
                 btn2,
-                spacing = row_spacing,
+                spacing = col_spacing,
                 layout = wibox.layout.fixed.horizontal
             }
+            btn1.forced_width = btn_w
+            btn2.forced_width = btn_w
+            return w
         end
-        return wibox.widget{
+        local w = wibox.widget{
             btn1,
             spacing = row_spacing,
             layout = wibox.layout.fixed.horizontal
         }
+        btn1.forced_width = btn_w
+        return w
     end
 
-    local count_rows = 13
-    local menu_h = count_rows * btn_h + (count_rows - 1) * row_spacing + margin * 2
+    local function row_single(btn)
+        btn.forced_width = menu_w - margin * 2
+        return btn
+    end
+
+    local count_rows = 17
+    local menu_h = screen_height - dpi(30)
 
     local menu = wibox({
         type = "dialog",
         screen = s,
         height = menu_h,
         width = menu_w,
-        shape = helpers.rrect(dpi(12)),
+        shape = helpers.rrect(beautiful.dashboard_radius),
         bg = menu_bg,
         ontop = true,
         visible = false,
-        border_width = dpi(1),
-        border_color = border_c,
     })
 
-    menu.y = dpi(30)
-    menu.x = screen_width + dpi(50)
+    menu.y = dpi(15)
 
     local slide = rubato.timed{
-        pos = screen_width + dpi(50),
+        pos = s.geometry.x + dpi(-290),
         rate = 60,
         intro = 0.05,
-        duration = 0.35,
+        duration = 0.4,
         easing = rubato.quadratic,
         awestore_compat = true,
         subscribed = function(pos) menu.x = pos end
@@ -168,37 +190,129 @@ local function create_menu(s, style)
 
     local function show()
         menu.visible = true
-        slide:set(screen_width - menu_w - dpi(10))
+        slide:set(s.geometry.x + dpi(64))
         menu_open = true
-        if menu._open_timer then menu._open_timer:again() end
     end
 
     local function hide()
-        slide:set(screen_width + dpi(50))
+        slide:set(s.geometry.x - 375)
         menu_open = false
-        if menu._open_timer then menu._open_timer:stop() end
-        if menu._hide_timer then menu._hide_timer:stop() end
     end
+
     menu._show = show
     menu._hide = hide
 
-    menu._open_timer = gears.timer{
-        timeout = 5,
-        autostart = false,
-        single_shot = true,
-        callback = function()
-            if menu.visible then menu._hide() end
+    local function toggle()
+        if menu_open then
+            hide()
+        else
+            show()
         end
-    }
+    end
+    menu._toggle = toggle
 
-    menu._hide_timer = gears.timer{
-        timeout = 2,
-        autostart = false,
-        single_shot = true,
-        callback = function()
-            if menu.visible then menu._hide() end
+    -- Keyboard navigation (2D grid: rows = filas, cols = botones dentro de la fila)
+    local button_grid = {}
+    local focused_row = 1
+    local focused_col = 1
+    local keygrabber_active = false
+
+    local function get_focused_btn()
+        local row = button_grid[focused_row]
+        if not row then return nil end
+        local col = math.min(focused_col, #row)
+        return row[col]
+    end
+
+    local function update_focus()
+        for _, row_btns in ipairs(button_grid) do
+            for _, btn in ipairs(row_btns) do
+                btn.bg = btn_bg
+            end
         end
-    }
+        local btn = get_focused_btn()
+        if btn then btn.bg = hover_c end
+    end
+
+    local function grab_keys()
+        -- Ensure any existing keygrabber is stopped first
+        if keygrabber_active then
+            awful.keygrabber.stop()
+            keygrabber_active = false
+        end
+        keygrabber_active = true
+        focused_row = 1
+        focused_col = 1
+        update_focus()
+        awful.keygrabber.run(function(_, key, event)
+            -- Only handle key press events, ignore release/repeat
+            if event ~= "press" then return true end
+
+            local row_count = #button_grid
+            if focused_row < 1 then focused_row = 1 end
+            if focused_row > row_count then focused_row = row_count end
+
+            if key == "Up" then
+                focused_row = focused_row - 1
+                if focused_row < 1 then focused_row = row_count end
+                focused_col = math.min(focused_col, #button_grid[focused_row])
+                update_focus()
+                return true
+            elseif key == "Down" then
+                focused_row = focused_row + 1
+                if focused_row > row_count then focused_row = 1 end
+                focused_col = math.min(focused_col, #button_grid[focused_row])
+                update_focus()
+                return true
+            elseif key == "Left" then
+                focused_col = focused_col - 1
+                if focused_col < 1 then focused_col = #button_grid[focused_row] end
+                update_focus()
+                return true
+            elseif key == "Right" then
+                focused_col = focused_col + 1
+                if focused_col > #button_grid[focused_row] then focused_col = 1 end
+                update_focus()
+                return true
+            elseif key == "Return" or key == "KP_Enter" then
+                local btn = get_focused_btn()
+                if btn and btn._callback then
+                    btn._callback()
+                end
+                return false
+            elseif key == "Escape" then
+                hide()
+                return false
+            elseif key == "Mod4" or key == "Super_L" or key == "Super_R" then
+                hide()
+                return false
+            end
+            return true
+        end)
+    end
+
+    local function ungrab_keys()
+        if keygrabber_active then
+            awful.keygrabber.stop()
+            keygrabber_active = false
+        end
+        focused_row = 1
+        focused_col = 1
+        update_focus()
+    end
+
+    local original_show = show
+    local original_hide = hide
+    show = function()
+        original_show()
+        grab_keys()
+    end
+    hide = function()
+        original_hide()
+        ungrab_keys()
+    end
+    menu._show = show
+    menu._hide = hide
 
     local network_btn = create_btn("", i18n.tr("sm.network"), beautiful.xcolor2, function()
         hide()
@@ -215,7 +329,7 @@ local function create_menu(s, style)
         awful.spawn.with_shell(os.getenv("HOME") .. "/.config/awesome/scripts/toggle-blur.sh")
     end)
 
-    local transparency_btn = create_btn("", i18n.tr("sm.transparency"), beautiful.xcolor6, function()
+local transparency_btn = create_btn("", i18n.tr("sm.transparency"), beautiful.xcolor6, function()
         hide()
         awful.spawn.with_shell(os.getenv("HOME") .. "/.config/awesome/scripts/toggle-transparency.sh")
     end)
@@ -279,6 +393,11 @@ local function create_menu(s, style)
         require("ui.widgets.calculator").toggle()
     end)
 
+    local color_temp_btn = create_btn("", i18n.tr("sm.color_temp"), beautiful.xcolor3, function()
+        hide()
+        require("ui.system_menu.color_temp").create(awful.screen.focused())._toggle()
+    end)
+
     local function toggle_osd_widgets()
         for s in screen do
             if s.datetime_widget then
@@ -324,7 +443,24 @@ local function create_menu(s, style)
         awful.spawn.with_shell(os.getenv("HOME") .. "/.config/awesome/scripts/clean-orphans.sh")
     end)
 
+    -- Register all buttons for keyboard navigation (2D grid matching the layout)
+    button_grid = {
+        {network_btn, bluetooth_btn},
+        {blur_btn, transparency_btn},
+        {night_mode_btn, wallpaper_btn},
+        {volume_btn, music_btn},
+        {accent_btn, titlebar_btn},
+        {border_btn, sddm_btn},
+        {apps_btn, opencode_btn},
+        {timezone_btn, keyboard_btn},
+        {locale_btn, clean_btn},
+        {resources_btn, calculator_btn},
+        {color_temp_btn, widgets_btn},
+        {powermenu_btn},
+    }
+
     local rows = wibox.widget{
+        header_w,
         row(network_btn, bluetooth_btn),
         row(blur_btn, transparency_btn),
         row(night_mode_btn, wallpaper_btn),
@@ -335,19 +471,20 @@ local function create_menu(s, style)
         row(timezone_btn, keyboard_btn),
         row(locale_btn, clean_btn),
         row(resources_btn, calculator_btn),
-        row(widgets_btn, powermenu_btn),
+        row(color_temp_btn, widgets_btn),
+        row_single(powermenu_btn),
         spacing = row_spacing,
         layout = wibox.layout.fixed.vertical
     }
 
-    menu:connect_signal("mouse::enter", function()
-        if menu._open_timer then menu._open_timer:stop() end
-        if menu._hide_timer then menu._hide_timer:stop() end
-    end)
+    -- menu:connect_signal("mouse::enter", function()
+    --     if menu._open_timer then menu._open_timer:stop() end
+    --     if menu._hide_timer then menu._hide_timer:stop() end
+    -- end)
 
-    menu:connect_signal("mouse::leave", function()
-        if menu._hide_timer then menu._hide_timer:again() end
-    end)
+    -- menu:connect_signal("mouse::leave", function()
+    --     if menu._hide_timer then menu._hide_timer:again() end
+    -- end)
 
     local container = wibox.container.margin()
     container:set_widget(rows)

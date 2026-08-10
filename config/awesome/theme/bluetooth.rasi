@@ -7,8 +7,8 @@
     surface: #1a1a2e;
     darker: #141428;
     muted: #3d3d5c;
-    rad: 24px;
-    rad-sm: 14px;
+    rad: 8px;
+    rad-sm: 10px;
     background-color: transparent;
     text-color: var(foreground);
 }

@@ -39,6 +39,18 @@ awful.keyboard.append_global_keybindings({
             awful.spawn(launcher)
         end,
         {description = "open applications menu", group = "launcher"}),
+        awful.key({modkey}, "m", function()
+            local c = client.focus
+            if c then
+                c.maximized = not c.maximized
+                c:raise()
+            end
+        end,
+        {description = "toggle maximize", group = "launcher"}),
+        awful.key({modkey}, "s", function()
+            system_menu_toggle()
+        end,
+        {description = "toggle system menu", group = "launcher"}),
         awful.key({modkey, shift}, "d", function()
             dashboard_toggle()
         end,
@@ -230,9 +242,15 @@ awful.keyboard.append_global_keybindings({
 
     -- Lockscreen
     awful.key({modkey, ctrl}, "l", function()
-        lock_screen_show()
+        local lock_screen = require("ui.lockscreen")
+        lock_screen.show()
     end,
     {description = "lock screen", group = "hotkeys"}),
+    awful.key({modkey}, "l", function()
+        local lock_screen = require("ui.lockscreen")
+        lock_screen.show()
+    end,
+    {description = "lock screen (Super+L)", group = "hotkeys"}),
 
     -- Power menu
     awful.key({alt}, "F4", function()
@@ -387,7 +405,7 @@ awful.keyboard.append_global_keybindings({
         awful.layout.set(awful.layout.suit.max)
     end,
     {description = "set max layout", group = "tag"}),
-    awful.key({modkey}, "s", function()
+    awful.key({modkey}, "t", function()
         awful.layout.set(awful.layout.suit.tile)
     end,
     {description = "set tile layout", group = "tag"}),
@@ -450,10 +468,6 @@ client.connect_signal("request::default_keybindings", function()
             -- minimized, since minimized clients can't have the focus.
             c.minimized = true
         end, {description = "minimize", group = "client"}),
-        awful.key({modkey}, "m", function(c)
-            c.maximized = not c.maximized
-            c:raise()
-        end, {description = "(un)maximize", group = "client"}),
         awful.key({modkey, "Control"}, "m", function(c)
             c.maximized_vertical = not c.maximized_vertical
             c:raise()

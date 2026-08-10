@@ -24,6 +24,7 @@ config/awesome/ui/notifs/notif-center/dont-disturb/disturb_status
 config/awesome/.datetime-widget-*
 config/awesome/.desktop-music-pos-*
 config/awesome/.desktop-sysmon-pos-*
+config/awesome/.color_temp_prefs
 # config/ncmpcpp/config
 
 # Claude / OpenCode (config compartida para IA - ver opencode.json)

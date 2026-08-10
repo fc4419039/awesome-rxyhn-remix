@@ -41,26 +41,6 @@ for f in init.lua popup.lua lockscreen.lua sys_menu.lua titlebar.lua tooltip_ini
     fi
 done
 
-# Restaurar archivos rofi
-ROFI_SRC=("rofi.rasi" "network.rasi" "bluetooth.rasi" "powermenu.rasi" "powermenu-confirm.rasi")
-ROFI_DST=(
-    "$THEME_DIR/rofi.rasi"
-    "$THEME_DIR/network.rasi"
-    "$THEME_DIR/bluetooth.rasi"
-    "$THEME_DIR/powermenu.rasi"
-    "$THEME_DIR/powermenu-confirm.rasi"
-)
-for i in "${!ROFI_SRC[@]}"; do
-    if [ -f "$CODE_BAK/${ROFI_SRC[$i]}" ]; then
-        cp "$CODE_BAK/${ROFI_SRC[$i]}" "${ROFI_DST[$i]}"
-    fi
-done
-
-# wifi-theme.rasi está en ~/.config/rofi/
-if [ -f "$CODE_BAK/wifi-theme.rasi" ]; then
-    cp "$CODE_BAK/wifi-theme.rasi" "$HOME/.config/rofi/wifi-theme.rasi"
-fi
-
 rm -rf "$CODE_BAK"
 
 pgrep -x awesome > /dev/null 2>&1 && awesome-client 'awesome.restart()'

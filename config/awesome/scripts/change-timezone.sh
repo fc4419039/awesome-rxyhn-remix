@@ -64,6 +64,22 @@ while IFS=$'\t' read -r z o; do
     [ -n "$z" ] && OFF["$z"]="$o"
 done < "$offf"
 
+declare -A CC
+while read -r cc _ tzname _; do
+    [[ -z "$cc" || "$cc" == "#"* ]] && continue
+    [ -n "$tzname" ] && CC["$tzname"]="$cc"
+done < /usr/share/zoneinfo/zone.tab 2>/dev/null
+
+flag_for() {
+    local cc="$1" out="" i ch cp
+    for ((i=0; i<${#cc}; i++)); do
+        ch="${cc:i:1}"
+        printf -v cp "%d" "'$ch"
+        printf -v out "%s%b" "$out" "$(printf '\\U%08X' $(( cp - 65 + 0x1F1E6 )))"
+    done
+    printf "%s" "$out"
+}
+
 fmt_utc() {
     local o="$1"
     if [[ "$o" =~ ^([+-])([0-9]{2})([0-9]{2})$ ]]; then
@@ -74,15 +90,16 @@ fmt_utc() {
 is_current() { [ "$1" = "$current" ] && printf 1 || printf 0; }
 
 zone_row() {
-    local z="$1" city region
+    local z="$1" city region flag
     city="${z##*/}"; city="${city//_/ }"
     region="${z%%/*}"
+    flag="$(flag_for "${CC[$z]:-}")"
     if [ "$(is_current "$z")" = 1 ]; then
-        printf "<span foreground='%s'>%s</span>  %s  <span foreground='%s' size='small'>%s · %s</span>  <span foreground='%s'>%s</span>\t%s" \
-            "$GREEN" "$CLOCK" "$city" "$DIM" "$region" "$(fmt_utc "${OFF[$z]:-}")" "$GREEN" "$CHECK" "$z"
+        printf "<span foreground='%s'>%s</span>  %s %s  <span foreground='%s' size='small'>%s · %s</span>  <span foreground='%s'>%s</span>\t%s" \
+            "$GREEN" "$CLOCK" "$flag" "$city" "$DIM" "$region" "$(fmt_utc "${OFF[$z]:-}")" "$GREEN" "$CHECK" "$z"
     else
-        printf "<span foreground='%s'>%s</span>  %s  <span foreground='%s' size='small'>%s · %s</span>\t%s" \
-            "$SLATE" "$CLOCK" "$city" "$DIM" "$region" "$(fmt_utc "${OFF[$z]:-}")" "$z"
+        printf "<span foreground='%s'>%s</span>  %s %s  <span foreground='%s' size='small'>%s · %s</span>\t%s" \
+            "$SLATE" "$CLOCK" "$flag" "$city" "$DIM" "$region" "$(fmt_utc "${OFF[$z]:-}")" "$z"
     fi
 }
 
