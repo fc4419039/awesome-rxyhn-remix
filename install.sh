@@ -123,7 +123,25 @@ mkdir -p ~/.local/bin
 mkdir -p ~/.local/share/fonts
 mkdir -p ~/fondos
 mkdir -p ~/Music
-mkdir -p ~/.config/todo
+mkdir -p ~/.config
+mkdir -p ~/.local/bin
+mkdir -p ~/.local/share/fonts
+mkdir -p ~/fondos
+mkdir -p ~/Music
+mkdir -p ~/.config
+mkdir -p ~/.local/bin
+mkdir -p ~/.local/share/fonts
+mkdir -p ~/fondos
+mkdir -p ~/Music
+mkdir -p ~/.config
+mkdir -p ~/.local/bin
+mkdir -p ~/.local/share/fonts
+mkdir -p ~/fondos
+mkdir -p ~/Music
+mkdir -p ~/.config/todo || true
+mkdir -p ~/.config/mpd/playlists
+mkdir -p ~/.config/mpd/playlists
+mkdir -p ~/.config/mpd/playlists
 mkdir -p ~/.config/mpd/playlists
 
 echo -e "${GREEN}✓ Directorios creados${NC}"
@@ -180,7 +198,7 @@ echo ""
 echo -e "${YELLOW}🔐 Instalando librerías PAM para Lua (lockscreen)...${NC}"
 
 # Instalar headers PAM necesarios
-sudo pacman -S --needed --noconfirm pam-devel
+sudo pacman -S --needed --noconfirm pam
 
 # Instalar módulo PAM para Lua via luarocks
 if command -v luarocks &> /dev/null; then
