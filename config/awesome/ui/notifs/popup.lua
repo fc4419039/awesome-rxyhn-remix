@@ -183,7 +183,7 @@ local layout_popup = awful.popup {
     placement = awful.placement.centered,
     ontop = true,
     visible = false,
-    bg = "#0a1419e6"
+    bg = "#0a141999"
 }
 
 function gears.table.iterate_value(t, value, step_size, filter, start_at)
