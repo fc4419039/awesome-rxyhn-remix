@@ -1,3 +1,18 @@
+-- Fail-safe: si la pantalla estaba bloqueada al crashear Awesome, lanzar
+-- i3lock ANTES de cargar cualquier código. Evita que un error en rc.lua
+-- o en los módulos de Awesome deje la pantalla desbloqueada.
+do
+    local c = os.getenv("XDG_CACHE_HOME") or (os.getenv("HOME") .. "/.cache")
+    local f = io.open(c .. "/lockscreen/awesome-locked", "r")
+    if f then
+        f:close()
+        os.execute("i3lock -n -e >/dev/null 2>&1")
+        os.remove(c .. "/lockscreen/awesome-locked")
+        os.remove(c .. "/lockscreen/x-session-env")
+        os.remove(c .. "/lockscreen/xauth-cache")
+    end
+end
+
 --[[
  _____ __ _ __ _____ _____ _____ _______ _____
 |     |  | |  |  ___|  ___|     |       |  ___|
@@ -207,6 +222,7 @@ gears.timer({
     end
 })
 
+-- Volcar el log de tiempos una vez que signal ya se midió
 -- Volcar el log de tiempos una vez que signal ya se midió
 gears.timer.delayed_call(function()
     boot_flush()

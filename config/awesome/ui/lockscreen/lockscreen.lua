@@ -6,26 +6,14 @@ local awful = require("awful")
 local beautiful = require("beautiful")
 local dpi = beautiful.xresources.apply_dpi
 
--- Notification library
-local naughty = require("naughty")
-
 -- Widget library
 local wibox = require("wibox")
-
--- rubato
-local rubato = require("module.rubato")
 
 -- Helpers
 local helpers = require("helpers")
 
--- i18n
-local i18n = require("i18n")
-
 -- Lock
 local lock_screen = require("ui.lockscreen")
-
--- Playerctl
-local playerctl = require("signal.playerctl")
 
 
 -- Lock Screen
@@ -247,131 +235,6 @@ local word_clock_timer = gears.timer {
     end
 }
 
--- Lock screen music
-local music_art = wibox.widget{
-    image = gears.filesystem.get_configuration_dir() .. "theme/assets/no_music.png",
-    resize = true,
-    forced_height = dpi(80),
-    forced_width = dpi(80),
-    clip_shape = gears.shape.circle,
-    widget = wibox.widget.imagebox
-}
-
-local music_title = wibox.widget{
-    font = beautiful.font_name .. "bold 12",
-    align = "center",
-    valign = "center",
-    widget = wibox.widget.textbox
-}
-
-local music_artist = wibox.widget{
-    font = beautiful.font_name .. "medium 10",
-    align = "center",
-    valign = "center",
-    widget = wibox.widget.textbox
-}
-
-local prev_btn = wibox.widget{
-    markup = helpers.colorize_text("⏮", beautiful.xcolor4),
-    font = beautiful.font_name .. "16",
-    align = "center",
-    valign = "center",
-    widget = wibox.widget.textbox
-}
-
-local play_btn = wibox.widget{
-    markup = helpers.colorize_text("▶", beautiful.xcolor2),
-    font = beautiful.font_name .. "16",
-    align = "center",
-    valign = "center",
-    widget = wibox.widget.textbox
-}
-
-local next_btn = wibox.widget{
-    markup = helpers.colorize_text("⏭", beautiful.xcolor4),
-    font = beautiful.font_name .. "16",
-    align = "center",
-    valign = "center",
-    widget = wibox.widget.textbox
-}
-
-for _, btn in ipairs({prev_btn, play_btn, next_btn}) do
-    btn:connect_signal("mouse::enter", function()
-        btn.markup = helpers.colorize_text(btn.text, beautiful.xforeground)
-    end)
-    btn:connect_signal("mouse::leave", function()
-        btn.markup = helpers.colorize_text(btn.text, beautiful.xcolor4)
-    end)
-    helpers.add_hover_cursor(btn, "hand2")
-end
-
-prev_btn:buttons(gears.table.join(
-    awful.button({}, 1, function() awful.spawn("playerctl previous") end)
-))
-
-play_btn:buttons(gears.table.join(
-    awful.button({}, 1, function()
-        awful.spawn("playerctl play-pause")
-    end)
-))
-
-next_btn:buttons(gears.table.join(
-    awful.button({}, 1, function() awful.spawn("playerctl next") end)
-))
-
-playerctl:connect_signal("metadata", function(_, title, artist, album_path)
-    if title and title ~= "" then
-        music_title.markup = helpers.colorize_text(title, beautiful.xforeground)
-    else
-        music_title.markup = helpers.colorize_text(i18n.tr("dash.nothing_playing"), beautiful.xcolor5)
-    end
-    if artist and artist ~= "" then
-        music_artist.markup = helpers.colorize_text(artist, beautiful.xcolor5)
-    else
-        music_artist.markup = ""
-    end
-    if album_path and album_path ~= "" then
-        music_art:set_image(gears.surface.load_uncached(album_path))
-    else
-        music_art:set_image(gears.filesystem.get_configuration_dir() .. "theme/assets/no_music.png")
-    end
-end)
-
-playerctl:connect_signal("playback_status", function(_, status)
-    if status == "playing" then
-        play_btn.markup = helpers.colorize_text("⏸", beautiful.xcolor2)
-    else
-        play_btn.markup = helpers.colorize_text("▶", beautiful.xcolor2)
-    end
-end)
-
-local music_widget = wibox.widget{
-    {
-        music_art,
-        {
-            {
-                music_title,
-                music_artist,
-                spacing = dpi(4),
-                layout = wibox.layout.fixed.vertical
-            },
-            {
-                prev_btn,
-                play_btn,
-                next_btn,
-                spacing = dpi(24),
-                layout = wibox.layout.fixed.horizontal
-            },
-            spacing = dpi(8),
-            layout = wibox.layout.fixed.vertical
-        },
-        spacing = dpi(12),
-        layout = wibox.layout.fixed.horizontal
-    },
-    margins = dpi(8),
-    widget = wibox.container.margin
-}
-
 -- Lock animation
 local lock_screen_symbol = ""
 local lock_screen_fail_symbol = ""
@@ -457,66 +320,119 @@ local function key_animation(char_inserted)
     lock_animation_widget_rotate.direction = direction
 end
 
+-- Guardar/restaurar atajos globales de Awesome mientras está bloqueado.
+-- Esto evita que combos como Ctrl+C, Ctrl+Super+R, Super, etc. se ejecuten
+-- durante el bloqueo: solo se aceptan caracteres de contraseña.
+local saved_root_keys
+
+local function clear_global_keys()
+    saved_root_keys = root.keys()
+    root.keys({})
+end
+
+local function restore_global_keys()
+    if saved_root_keys then
+        root.keys(saved_root_keys)
+        saved_root_keys = nil
+    end
+end
+
 local function set_visibility(v)
     for s in screen do
         s.mylockscreen.visible = v
     end
     if v then
+        clear_global_keys()
         word_clock_timer:start()
     else
+        restore_global_keys()
         word_clock_timer:stop()
     end
 end
 
--- Get input from user
-local some_textbox = wibox.widget.textbox()
-local function grab_password()
-    awful.prompt.run {
-        hooks = {
-            -- Custom escape behaviour: Do not cancel input with Escape
-            -- Instead, this will just clear any input received so far.
-            {{ }, 'Escape',
-                function(_)
-                    reset()
-                    grab_password()
-                end
-            },
-            -- Fix for Control+Delete crashing the keygrabber
-            {{ 'Control' }, 'Delete', function ()
-                reset()
-                grab_password()
-            end}
-        },
-        keypressed_callback  = function(mod, key, cmd)
-            -- Only count single character keys (thus preventing
-            -- "Shift", "Escape", etc from triggering the animation)
-            if #key == 1 then
-                characters_entered = characters_entered + 1
-                key_animation(true)
-            elseif key == "BackSpace" then
-                if characters_entered > 0 then
-                    characters_entered = characters_entered - 1
-                end
-                key_animation(false)
-            end
+    -- Keygrabber estricto: mientras el lockscreen está activo, SOLO se aceptan
+    -- caracteres de la contraseña (sin modificadores). Cualquier otro atajo
+    -- (Super, Ctrl+C, Ctrl+Super+R, Escape, F-keys, combos, ...) se consume e
+    -- ignora, de modo que no puede desbloquear ni disparar acciones.
+    --
+    -- IMPORTANTE: los eventos de *release* deben retornar false para que pasen
+    -- al procesamiento normal de Awesome y actualizar el estado interno de
+    -- modificadoras. Si se retorna true (consumir), las modificadoras quedan
+    -- "atascadas" tras desbloquear: al bloquear con Super+L el modificador Super
+    -- (Mod4) queda presionado; si su release se consume, Awesome nunca lo
+    -- libera y los atajos de teclado (Ctrl, Super, etc.) dejan de funcionar.
+    -- No se re-inicia grab_password() en release (la versión .codebak lo hacía)
+    -- porque eso reiniciaba el buffer de la contraseña en cada liberación,
+    -- bloqueando contraseñas de más de un carácter.
+    local function grab_password()
+        local password_buffer = ""
+        awful.keygrabber.run(function(mod, key, event)
+        if event == "release" then
+            return false
+        end
+        if event ~= "press" then
+            return true
+        end
 
-            -- Debug
-            -- naughty.notify { title = 'You pressed:', text = key }
-        end,
-        exe_callback = function(input)
-            -- Check input
-            if lock_screen.authenticate(input) then
+        -- Enter: autenticar
+        if key == "Return" or key == "KP_Enter" then
+            local ok = lock_screen.authenticate(password_buffer)
+            if ok then
                 -- YAY
                 reset()
                 set_visibility(false)
-            else
-                -- NAY
+                awful.keygrabber.stop()
+                -- Forzar liberación de modificadores (Hack preventivo)
+                for _, mod in ipairs({"Control", "Mod1", "Mod4", "Mod5"}) do
+                    root.fake_input("key_release", mod)
+                end
+                if lock_screen_on_unlock then lock_screen_on_unlock() end
+                return false
+             else
+                -- NAY: contraseña incorrecta. Mostrar animación de error y
+                -- permitir reintentar en el mismo lockscreen. El fail-secure
+                -- con i3lock/slock se reserva para el caso de crasheo de
+                -- awesome (manejado por el watchdog) o PAM no disponible.
+                password_buffer = ""
                 fail()
-                grab_password()
+                return true
             end
-        end,
-        textbox = some_textbox,
-    }
+        end
+
+        -- BackSpace: borrar el último carácter
+        if key == "BackSpace" then
+            if #password_buffer > 0 then
+                password_buffer = password_buffer:sub(1, -2)
+                characters_entered = characters_entered - 1
+                if characters_entered < 0 then characters_entered = 0 end
+            end
+            key_animation(false)
+            return true
+        end
+
+        -- Escape: limpiar el buffer visual sin bloquear (no desbloquea)
+        if key == "Escape" then
+            password_buffer = ""
+            characters_entered = 0
+            reset()
+            return true
+        end
+
+        -- Carácter de contraseña: tecla de un carácter (o espacio), sin
+        -- modificadores salvo Shift (para mayúsculas/símbolos).
+        local is_char = #key == 1 or key == "space"
+        local blocked = mod.Control or mod.Mod1 or mod.Mod2 or mod.Mod3
+            or mod.Mod4 or mod.Mod5 or mod.AltGr or mod.Lock
+        if is_char and not blocked then
+            password_buffer = password_buffer .. key
+            characters_entered = characters_entered + 1
+            key_animation(true)
+            return true
+        end
+
+        -- Cualquier otra tecla/combo: ignorarla por completo. NO ejecuta atajos.
+        return true
+    end)
 end
 
 function lock_screen_show()
@@ -534,7 +450,6 @@ lock_screen_box:setup {
             {
                 {
                     helpers.vertical_pad(dpi(10)),
-                    music_widget,
                     time,
                     lock_animation,
                     spacing = dpi(20),
