@@ -73,6 +73,8 @@ if [ -f "$STATE_FILE" ]; then
     notify-send -t 1500 "$(t ttr.title)" "$(t tb.deactivated)"
 else
     touch "$STATE_FILE"
+    # Al activar transparencia, limpiar el estado de blur (evita ramas muertas)
+    rm -f "$BLUR_STATE"
     cp "$THEME_LUA" "$BACKUP"
     mkdir -p "$CODE_BAK"
     cp "$NOTIFS_INIT" "$NOTIFS_POPUP" "$LOCKSCREEN" "$SYS_MENU" "$TITLEBAR" "$CODE_BAK/"

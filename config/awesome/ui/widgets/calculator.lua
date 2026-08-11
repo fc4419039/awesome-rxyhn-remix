@@ -17,26 +17,26 @@ local sci_rows = nil
 local calc_container = nil
 local calc_escape_key = nil
 
-local accent = "#06b6d4"
-local accent_dim = "#0e7490"
-local bg_main = "#0d0d1a"
-local bg_surface = "#1a1a2e"
-local bg_display = "#141428"
-local bg_input = "#1a1a2e"
-local fg_main = "#e2e8f0"
-local fg_dim = "#3d3d5c"
-local fg_bright = "#f1f5f9"
-local red = "#f87171"
-local red_dim = "#4c1d25"
-local green = "#34d399"
-local green_dim = "#1a3a2a"
-local blue = "#06b6d4"
-local blue_dim = "#0c3a4a"
-local purple = "#a78bfa"
-local purple_dim = "#2d1f5e"
-local muted = "#3d3d5c"
-local border_glow = "#3d3d5c"
-local border_accent = "#06b6d4"
+local accent       = "#7acfe4"
+local accent_soft  = "#9bdeee"
+local accent_dim   = "#67afc1"
+local accent_dark  = "#7acfe414"
+local accent_hover = "#7acfe42e"
+local accent_fg    = "#0b1b22"
+local bg_main      = beautiful.xbackground
+local bg_surface   = beautiful.lighter_bg
+local bg_raised    = "#ffffff14"
+local bg_pressed   = "#00000033"
+local bg_display   = beautiful.darker_bg
+local fg_main      = "#d9d7d6"
+local fg_bright    = "#f2f2f1"
+local fg_dim       = "#8a949c"
+local red          = "#df5b61"
+local red_dim      = "#df5b6114"
+local red_hover    = "#df5b612e"
+local green        = "#78b892"
+local border       = beautiful.darker_bg
+local border_accent = "#2b6a78"
 
 local function update_display()
     if display_widget then
@@ -141,15 +141,15 @@ local function toggle_scientific()
     end
     if calc_wibox then
         if scientific_mode then
-            calc_wibox.height = dpi(500)
+            calc_wibox.height = dpi(456)
         else
-            calc_wibox.height = dpi(390)
+            calc_wibox.height = dpi(354)
         end
         awful.placement.centered(calc_wibox, {honor_workarea = true})
     end
 end
 
-local function make_button(text, bg, fg, hover_bg, width, height, callback, font_size)
+local function make_button(text, bg, fg, hover_bg, width, height, callback, font_size, hover_fg)
     local label = wibox.widget{
         markup = helpers.colorize_text(text, fg or fg_main),
         font = beautiful.font_name .. "bold " .. tostring(font_size or 12),
@@ -166,25 +166,21 @@ local function make_button(text, bg, fg, hover_bg, width, height, callback, font
         },
         forced_width = width,
         forced_height = height,
-        shape = helpers.rrect(dpi(8)),
+        shape = helpers.rrect(dpi(11)),
         bg = bg,
-        border_width = dpi(1),
-        border_color = border_glow,
         widget = wibox.container.background
     }
 
     btn:connect_signal("mouse::enter", function()
         btn.bg = hover_bg or bg
-        btn.border_color = border_accent
-        label.markup = helpers.colorize_text(text, "#ffffff")
+        label.markup = helpers.colorize_text(text, hover_fg or "#ffffff")
     end)
     btn:connect_signal("mouse::leave", function()
         btn.bg = bg
-        btn.border_color = border_glow
         label.markup = helpers.colorize_text(text, fg or fg_main)
     end)
     btn:connect_signal("button::press", function()
-        btn.bg = hover_bg or bg
+        btn.bg = bg_pressed
     end)
     btn:connect_signal("button::release", function()
         btn.bg = bg
@@ -218,7 +214,7 @@ local function start_resize(w)
     mousegrabber.run(function(m)
         if not m.buttons[3] then return false end
         local new_w = math.max(dpi(280), m.x + ox - g.x)
-        local new_h = math.max(dpi(300), m.y + oy - g.y)
+        local new_h = math.max(dpi(320), m.y + oy - g.y)
         w.width = new_w
         w.height = new_h
         return true
@@ -247,9 +243,9 @@ local function create()
     if calc_wibox then return end
 
     local screen = awful.screen.focused()
-    local btn_w = dpi(48)
-    local btn_h = dpi(38)
-    local spacing = dpi(5)
+    local btn_w = dpi(52)
+    local btn_h = dpi(42)
+    local spacing = dpi(6)
 
     -- Title bar buttons
     local close_btn = wibox.widget{
@@ -260,7 +256,7 @@ local function create()
         widget = wibox.container.background
     }
     close_btn:connect_signal("mouse::enter", function()
-        close_btn.bg = "#ff8a98"
+        close_btn.bg = "#f0868c"
     end)
     close_btn:connect_signal("mouse::leave", function()
         close_btn.bg = red
@@ -311,7 +307,7 @@ local function create()
 
     local title_text = wibox.widget{
         markup = helpers.colorize_text(i18n.tr("widget.calculator"), fg_dim),
-        font = beautiful.font_name .. "9",
+        font = beautiful.font_name .. "medium 10",
         align = "center",
         valign = "center",
         widget = wibox.widget.textbox
@@ -322,7 +318,7 @@ local function create()
             window_dots,
             title_text,
             {
-                forced_width = dpi(72),
+                forced_width = dpi(78),
                 widget = wibox.container.background
             },
             expand = "none",
@@ -330,7 +326,7 @@ local function create()
         },
         bg = bg_surface,
         shape = function(cr, w, h)
-            gears.shape.partially_rounded_rect(cr, w, h, true, true, false, false, dpi(12))
+            gears.shape.partially_rounded_rect(cr, w, h, true, true, false, false, dpi(16))
         end,
         widget = wibox.container.background
     }
@@ -340,22 +336,30 @@ local function create()
         awful.button({"Mod4"}, 1, function() start_move(calc_wibox) end)
     ))
 
+    -- Thin accent divider under the title bar
+    local accent_strip = wibox.widget{
+        forced_height = dpi(2),
+        shape = helpers.rrect(dpi(1)),
+        bg = accent,
+        widget = wibox.container.background
+    }
+
     -- Display
     display_widget = wibox.widget{
         markup = helpers.colorize_text("0", fg_bright),
         font = beautiful.font_name .. "bold 22",
         align = "right",
         valign = "center",
-        forced_width = dpi(280),
+        forced_width = dpi(276),
         widget = wibox.widget.textbox
     }
 
     result_widget = wibox.widget{
         markup = helpers.colorize_text("", accent),
-        font = beautiful.font_name .. "10",
+        font = beautiful.font_name .. "11",
         align = "right",
         valign = "center",
-        forced_width = dpi(280),
+        forced_width = dpi(276),
         widget = wibox.widget.textbox
     }
 
@@ -368,12 +372,10 @@ local function create()
 
     local display_container = wibox.widget{
         display_area,
-        margins = { left = dpi(14), right = dpi(14), top = dpi(12), bottom = dpi(12) },
+        margins = { left = dpi(16), right = dpi(16), top = dpi(12), bottom = dpi(12) },
         bg = bg_display,
-        shape = helpers.rrect(dpi(8)),
-        border_width = dpi(1),
-        border_color = border_glow,
-        widget = wibox.container.margin
+        shape = helpers.rrect(dpi(12)),
+        widget = wibox.container.background
     }
 
     -- Scientific buttons
@@ -391,35 +393,42 @@ local function create()
         { text = "e",   fn = function() append_to_input("e") end },
         { text = "(",   fn = function() append_to_input("(") end },
         { text = ")",   fn = function() append_to_input(")") end },
+        { text = "%",   fn = function() append_to_input("%") end },
+        { text = "abs", fn = function() append_to_input("abs(") end },
     }
 
-    local sci_btn_w = dpi(48)
-    local sci_btn_h = dpi(32)
+    local sci_btn_w = dpi(52)
+    local sci_btn_h = dpi(30)
+    local sci_bg = beautiful.lighter_bg
+    local sci_fg = fg_dim
+    local sci_hover = "#ffffff14"
 
     local sci_row1 = wibox.widget{
-        make_button(sci_fns[1].text, purple_dim, purple, "#3d2a7a", sci_btn_w, sci_btn_h, sci_fns[1].fn, 10),
-        make_button(sci_fns[2].text, purple_dim, purple, "#3d2a7a", sci_btn_w, sci_btn_h, sci_fns[2].fn, 10),
-        make_button(sci_fns[3].text, purple_dim, purple, "#3d2a7a", sci_btn_w, sci_btn_h, sci_fns[3].fn, 10),
-        make_button(sci_fns[4].text, purple_dim, purple, "#3d2a7a", sci_btn_w, sci_btn_h, sci_fns[4].fn, 10),
-        make_button(sci_fns[5].text, purple_dim, purple, "#3d2a7a", sci_btn_w, sci_btn_h, sci_fns[5].fn, 10),
+        make_button(sci_fns[1].text, sci_bg, sci_fg, sci_hover, sci_btn_w, sci_btn_h, sci_fns[1].fn, 10),
+        make_button(sci_fns[2].text, sci_bg, sci_fg, sci_hover, sci_btn_w, sci_btn_h, sci_fns[2].fn, 10),
+        make_button(sci_fns[3].text, sci_bg, sci_fg, sci_hover, sci_btn_w, sci_btn_h, sci_fns[3].fn, 10),
+        make_button(sci_fns[4].text, sci_bg, sci_fg, sci_hover, sci_btn_w, sci_btn_h, sci_fns[4].fn, 10),
+        make_button(sci_fns[5].text, sci_bg, sci_fg, sci_hover, sci_btn_w, sci_btn_h, sci_fns[5].fn, 10),
         spacing = spacing,
         layout = wibox.layout.fixed.horizontal
     }
 
     local sci_row2 = wibox.widget{
-        make_button(sci_fns[6].text, purple_dim, purple, "#3d2a7a", sci_btn_w, sci_btn_h, sci_fns[6].fn, 10),
-        make_button(sci_fns[7].text, purple_dim, purple, "#3d2a7a", sci_btn_w, sci_btn_h, sci_fns[7].fn, 10),
-        make_button(sci_fns[8].text, purple_dim, purple, "#3d2a7a", sci_btn_w, sci_btn_h, sci_fns[8].fn, 10),
-        make_button(sci_fns[9].text, purple_dim, purple, "#3d2a7a", sci_btn_w, sci_btn_h, sci_fns[9].fn, 10),
-        make_button(sci_fns[10].text, purple_dim, purple, "#3d2a7a", sci_btn_w, sci_btn_h, sci_fns[10].fn, 10),
+        make_button(sci_fns[6].text, sci_bg, sci_fg, sci_hover, sci_btn_w, sci_btn_h, sci_fns[6].fn, 10),
+        make_button(sci_fns[7].text, sci_bg, sci_fg, sci_hover, sci_btn_w, sci_btn_h, sci_fns[7].fn, 10),
+        make_button(sci_fns[8].text, sci_bg, sci_fg, sci_hover, sci_btn_w, sci_btn_h, sci_fns[8].fn, 10),
+        make_button(sci_fns[9].text, sci_bg, sci_fg, sci_hover, sci_btn_w, sci_btn_h, sci_fns[9].fn, 10),
+        make_button(sci_fns[10].text, sci_bg, sci_fg, sci_hover, sci_btn_w, sci_btn_h, sci_fns[10].fn, 10),
         spacing = spacing,
         layout = wibox.layout.fixed.horizontal
     }
 
     local sci_row3 = wibox.widget{
-        make_button(sci_fns[11].text, purple_dim, purple, "#3d2a7a", sci_btn_w, sci_btn_h, sci_fns[11].fn, 10),
-        make_button(sci_fns[12].text, purple_dim, purple, "#3d2a7a", sci_btn_w, sci_btn_h, sci_fns[12].fn, 10),
-        make_button(sci_fns[13].text, purple_dim, purple, "#3d2a7a", sci_btn_w, sci_btn_h, sci_fns[13].fn, 10),
+        make_button(sci_fns[11].text, sci_bg, sci_fg, sci_hover, sci_btn_w, sci_btn_h, sci_fns[11].fn, 10),
+        make_button(sci_fns[12].text, sci_bg, sci_fg, sci_hover, sci_btn_w, sci_btn_h, sci_fns[12].fn, 10),
+        make_button(sci_fns[13].text, sci_bg, sci_fg, sci_hover, sci_btn_w, sci_btn_h, sci_fns[13].fn, 10),
+        make_button(sci_fns[14].text, sci_bg, sci_fg, sci_hover, sci_btn_w, sci_btn_h, sci_fns[14].fn, 10),
+        make_button(sci_fns[15].text, sci_bg, sci_fg, sci_hover, sci_btn_w, sci_btn_h, sci_fns[15].fn, 9),
         spacing = spacing,
         layout = wibox.layout.fixed.horizontal
     }
@@ -435,41 +444,41 @@ local function create()
 
     -- Basic buttons
     local row1 = wibox.widget{
-        make_button("7", bg_input, nil, "#252840", btn_w, btn_h, function() append_to_input("7") end),
-        make_button("8", bg_input, nil, "#252840", btn_w, btn_h, function() append_to_input("8") end),
-        make_button("9", bg_input, nil, "#252840", btn_w, btn_h, function() append_to_input("9") end),
-        make_button("÷", blue_dim, blue, "#0e4a5a", btn_w, btn_h, function() append_to_input("÷") end),
-        make_button("C", red_dim, red, "#6b1d2d", btn_w, btn_h, clear_all),
+        make_button("7", bg_surface, fg_main, bg_raised, btn_w, btn_h, function() append_to_input("7") end, 13),
+        make_button("8", bg_surface, fg_main, bg_raised, btn_w, btn_h, function() append_to_input("8") end, 13),
+        make_button("9", bg_surface, fg_main, bg_raised, btn_w, btn_h, function() append_to_input("9") end, 13),
+        make_button("÷", accent_dark, accent, accent_hover, btn_w, btn_h, function() append_to_input("÷") end, 13),
+        make_button("C", red_dim, red, red_hover, btn_w, btn_h, clear_all, 13),
         spacing = spacing,
         layout = wibox.layout.fixed.horizontal
     }
 
     local row2 = wibox.widget{
-        make_button("4", bg_input, nil, "#252840", btn_w, btn_h, function() append_to_input("4") end),
-        make_button("5", bg_input, nil, "#252840", btn_w, btn_h, function() append_to_input("5") end),
-        make_button("6", bg_input, nil, "#252840", btn_w, btn_h, function() append_to_input("6") end),
-        make_button("×", blue_dim, blue, "#0e4a5a", btn_w, btn_h, function() append_to_input("×") end),
-        make_button("⌫", red_dim, red, "#6b1d2d", btn_w, btn_h, backspace),
+        make_button("4", bg_surface, fg_main, bg_raised, btn_w, btn_h, function() append_to_input("4") end, 13),
+        make_button("5", bg_surface, fg_main, bg_raised, btn_w, btn_h, function() append_to_input("5") end, 13),
+        make_button("6", bg_surface, fg_main, bg_raised, btn_w, btn_h, function() append_to_input("6") end, 13),
+        make_button("×", accent_dark, accent, accent_hover, btn_w, btn_h, function() append_to_input("×") end, 13),
+        make_button("⌫", red_dim, red, red_hover, btn_w, btn_h, backspace, 13),
         spacing = spacing,
         layout = wibox.layout.fixed.horizontal
     }
 
     local row3 = wibox.widget{
-        make_button("1", bg_input, nil, "#252840", btn_w, btn_h, function() append_to_input("1") end),
-        make_button("2", bg_input, nil, "#252840", btn_w, btn_h, function() append_to_input("2") end),
-        make_button("3", bg_input, nil, "#252840", btn_w, btn_h, function() append_to_input("3") end),
-        make_button("-", blue_dim, blue, "#0e4a5a", btn_w, btn_h, function() append_to_input("-") end),
-        make_button("(", blue_dim, blue, "#0e4a5a", btn_w, btn_h, function() append_to_input("(") end),
+        make_button("1", bg_surface, fg_main, bg_raised, btn_w, btn_h, function() append_to_input("1") end, 13),
+        make_button("2", bg_surface, fg_main, bg_raised, btn_w, btn_h, function() append_to_input("2") end, 13),
+        make_button("3", bg_surface, fg_main, bg_raised, btn_w, btn_h, function() append_to_input("3") end, 13),
+        make_button("-", accent_dark, accent, accent_hover, btn_w, btn_h, function() append_to_input("-") end, 13),
+        make_button("(", accent_dark, accent, accent_hover, btn_w, btn_h, function() append_to_input("(") end, 13),
         spacing = spacing,
         layout = wibox.layout.fixed.horizontal
     }
 
     local row4 = wibox.widget{
-        make_button("0", bg_input, nil, "#252840", btn_w, btn_h, function() append_to_input("0") end),
-        make_button(".", bg_input, nil, "#252840", btn_w, btn_h, function() append_to_input(".") end),
-        make_button("=", green_dim, green, "#2a5a4a", btn_w, btn_h, calculate),
-        make_button("+", blue_dim, blue, "#0e4a5a", btn_w, btn_h, function() append_to_input("+") end),
-        make_button(")", blue_dim, blue, "#0e4a5a", btn_w, btn_h, function() append_to_input(")") end),
+        make_button("0", bg_surface, fg_main, bg_raised, btn_w, btn_h, function() append_to_input("0") end, 13),
+        make_button(".", bg_surface, fg_main, bg_raised, btn_w, btn_h, function() append_to_input(".") end, 13),
+        make_button("=", accent, accent_fg, accent_soft, btn_w, btn_h, calculate, 14, accent_fg),
+        make_button("+", accent_dark, accent, accent_hover, btn_w, btn_h, function() append_to_input("+") end, 13),
+        make_button(")", accent_dark, accent, accent_hover, btn_w, btn_h, function() append_to_input(")") end, 13),
         spacing = spacing,
         layout = wibox.layout.fixed.horizontal
     }
@@ -480,33 +489,41 @@ local function create()
         font = beautiful.font_name .. "bold 8",
         align = "center",
         valign = "center",
-        forced_width = dpi(32),
+        forced_width = dpi(34),
         forced_height = dpi(20),
-        shape = helpers.rrect(dpi(5)),
+        shape = helpers.rrect(dpi(10)),
         bg = bg_surface,
         border_width = dpi(1),
-        border_color = border_glow,
+        border_color = border_accent,
         widget = wibox.container.background
     }
     sci_toggle:connect_signal("mouse::enter", function()
-        sci_toggle.bg = "#1a1a3a"
+        sci_toggle.bg = bg_raised
         sci_toggle.border_color = accent
         sci_toggle.markup = helpers.colorize_text("SCI", accent)
     end)
     sci_toggle:connect_signal("mouse::leave", function()
-        sci_toggle.bg = bg_surface
-        sci_toggle.border_color = border_glow
-        sci_toggle.markup = helpers.colorize_text("SCI", accent_dim)
+        if scientific_mode then
+            sci_toggle.bg = accent
+            sci_toggle.border_color = accent
+            sci_toggle.markup = helpers.colorize_text("SCI", accent_fg)
+        else
+            sci_toggle.bg = bg_surface
+            sci_toggle.border_color = border_accent
+            sci_toggle.markup = helpers.colorize_text("SCI", accent_dim)
+        end
     end)
     sci_toggle:buttons(gears.table.join(
         awful.button({}, 1, function()
             toggle_scientific()
             if scientific_mode then
-                sci_toggle.markup = helpers.colorize_text("SCI", purple)
-                sci_toggle.border_color = purple
+                sci_toggle.bg = accent
+                sci_toggle.border_color = accent
+                sci_toggle.markup = helpers.colorize_text("SCI", accent_fg)
             else
+                sci_toggle.bg = bg_surface
+                sci_toggle.border_color = border_accent
                 sci_toggle.markup = helpers.colorize_text("SCI", accent_dim)
-                sci_toggle.border_color = border_glow
             end
         end)
     ))
@@ -524,6 +541,7 @@ local function create()
     calc_container = wibox.widget{
         {
             titlebar,
+            accent_strip,
             display_container,
             {
                 {
@@ -546,14 +564,14 @@ local function create()
     calc_wibox = wibox({
         type = "dialog",
         screen = screen,
-        height = dpi(390),
+        height = dpi(354),
         width = dpi(320),
-        shape = helpers.rrect(dpi(12)),
+        shape = helpers.rrect(dpi(16)),
         bg = bg_main,
         ontop = true,
         visible = false,
         border_width = dpi(1),
-        border_color = border_accent,
+        border_color = border,
     })
 
     awful.placement.centered(calc_wibox, {honor_workarea = true})
@@ -561,7 +579,7 @@ local function create()
     calc_wibox:setup{
         calc_container,
         bg = bg_main,
-        shape = helpers.rrect(dpi(12)),
+        shape = helpers.rrect(dpi(16)),
         widget = wibox.container.background
     }
 
