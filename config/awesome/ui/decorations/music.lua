@@ -268,12 +268,25 @@ vol:connect_signal("mouse::leave", function ()
     vol_button.bg = control_button_bg
 end)
 vol:buttons(gears.table.join(
-    awful.button({}, 1, function() helpers.volume_control(0) end)
+    awful.button({}, 1, function() helpers.volume_control(0) end),
+    awful.button({"Control"}, 1, function() helpers.notifications_volume(0) end)
 ))
+
+local vol_value = 0
+local notif_vol_value = 0
+local notif_muted_value = false
+
+local function update_vol_tooltip()
+    if notif_muted_value then
+        vol_tooltip.markup = helpers.colorize_text(vol_value .. "% ·  " .. notif_vol_value .. "%", vol_color)
+    else
+        vol_tooltip.markup = helpers.colorize_text(vol_value .. "% ·  " .. notif_vol_value .. "%", vol_color)
+    end
+end
 
 awesome.connect_signal("signal::volume", function(value, muted)
     local fill_color
-    local vol_value = value or 0
+    vol_value = value or 0
 
     if muted then
         vol_icon.markup = helpers.colorize_text("", beautiful.xcolor8)
@@ -285,14 +298,24 @@ awesome.connect_signal("signal::volume", function(value, muted)
 
     vol_slider.slider.value = vol_value
     vol_slider.slider.color = fill_color
-    vol_tooltip.markup = helpers.colorize_text(vol_value .. "%", vol_color)
+    update_vol_tooltip()
+end)
+
+awesome.connect_signal("signal::notifications_volume", function(value, muted)
+    notif_vol_value = value or 0
+    notif_muted_value = muted or false
+    update_vol_tooltip()
 end)
 
 vol_slider:buttons(gears.table.join(
     awful.button({}, 1, function() helpers.volume_control(0) end),
     -- Scrolling
     awful.button({}, 4, function() helpers.volume_control(5) end),
-    awful.button({}, 5, function() helpers.volume_control(-5) end)
+    awful.button({}, 5, function() helpers.volume_control(-5) end),
+    -- Ctrl+scroll: volumen de notificaciones (separado)
+    awful.button({"Control"}, 1, function() helpers.notifications_volume(0) end),
+    awful.button({"Control"}, 4, function() helpers.notifications_volume(5) end),
+    awful.button({"Control"}, 5, function() helpers.notifications_volume(-5) end)
 ))
 
 -- Playerctl (instancia propia solo para MPD)

@@ -523,15 +523,31 @@ function helpers.remote_watch(command, interval, output_file, callback)
     tick()
 end
 
--- Volume Control via wpctl (WirePlumber)
-function helpers.volume_control(step)
+-- Volume Control: sink explícito por nombre vía pactl.
+-- Evita que @DEFAULT_AUDIO_SINK@ (WirePlumber) derive al sink de hardware,
+-- que es compartido por programas y notificaciones (causaba volúmenes cruzados).
+-- El volumen queda acotado entre 0 y 100 (nunca por encima).
+local function sink_volume(sink, step)
     if step == 0 then
-        awful.spawn.with_shell("wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle 2>/dev/null || true")
-    else
-        local abs_step = math.abs(step)
-        local sign = step > 0 and "+" or "-"
-        awful.spawn.with_shell("wpctl set-volume @DEFAULT_AUDIO_SINK@ " .. abs_step .. "%" .. sign .. " 2>/dev/null || true")
+        awful.spawn.with_shell("pactl set-sink-mute " .. sink .. " toggle 2>/dev/null || true")
+        return
     end
+    local cmd = "s=\"" .. sink .. "\"; step=" .. step .. "\n" ..
+        "cur=$(pactl get-sink-volume \"$s\" 2>/dev/null | grep -o '[0-9]*%' | head -1 | tr -d '%')\n" ..
+        "cur=${cur:-0}\n" ..
+        "tgt=$((cur + step))\n" ..
+        "[ \"$tgt\" -gt 100 ] && tgt=100\n" ..
+        "[ \"$tgt\" -lt 0 ] && tgt=0\n" ..
+        "pactl set-sink-volume \"$s\" \"${tgt}%\" 2>/dev/null || true"
+    awful.spawn.with_shell(cmd)
+end
+
+function helpers.volume_control(step)
+    sink_volume("system_sink", step)
+end
+
+function helpers.notifications_volume(step)
+    sink_volume("notifications", step)
 end
 
 function helpers.music_control(state)

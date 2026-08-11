@@ -198,6 +198,20 @@ awful.keyboard.append_global_keybindings({
     end,
     {description = "mute volume", group = "hotkeys"}),
 
+    -- Volumen de notificaciones (control separado)
+    awful.key({"Control"}, "XF86AudioRaiseVolume", function()
+        helpers.notifications_volume(5)
+    end,
+    {description = "increase notification volume", group = "hotkeys"}),
+    awful.key({"Control"}, "XF86AudioLowerVolume", function()
+        helpers.notifications_volume(-5)
+    end,
+    {description = "decrease notification volume", group = "hotkeys"}),
+    awful.key({"Control"}, "XF86AudioMute", function()
+        helpers.notifications_volume(0)
+    end,
+    {description = "mute notifications", group = "hotkeys"}),
+
 -- Music (Controlado con playerctl + fallback a mpc)
     awful.key({}, "XF86AudioPlay", function()
         local ok = pcall(playerctl.play_pause, playerctl)
@@ -258,9 +272,9 @@ awful.keyboard.append_global_keybindings({
     end,
     {description = "power menu", group = "hotkeys"}),
 
-    -- Volume menu (rofi)
+    -- Volume menu (panel dashboard)
     awful.key({modkey}, "v", function()
-        awful.spawn.with_shell(os.getenv("HOME") .. "/.config/awesome/scripts/volumen")
+        require("ui.system_menu.volume_panel").toggle()
     end,
     {description = "volume control menu", group = "hotkeys"}),
 

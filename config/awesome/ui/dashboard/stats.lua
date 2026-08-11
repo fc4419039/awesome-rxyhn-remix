@@ -135,7 +135,10 @@ end)
 vol:buttons(gears.table.join(
     awful.button({}, 1, function() helpers.volume_control(0) end),
     awful.button({}, 4, function() helpers.volume_control(5) end),
-    awful.button({}, 5, function() helpers.volume_control(-5) end)
+    awful.button({}, 5, function() helpers.volume_control(-5) end),
+    awful.button({"Control"}, 1, function() helpers.notifications_volume(0) end),
+    awful.button({"Control"}, 4, function() helpers.notifications_volume(5) end),
+    awful.button({"Control"}, 5, function() helpers.notifications_volume(-5) end)
 ))
 
 brightness:buttons(gears.table.join(

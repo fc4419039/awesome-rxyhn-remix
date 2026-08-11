@@ -64,6 +64,13 @@ fi
 # 4. Elegir system_sink como default
 pactl set-default-sink "$SYSTEM_SINK_NAME"
 
+# 4b. Fijar también el default de WirePlumber (wpctl). Si deriva al hardware,
+# los streams nuevos saltan system_sink y mezclan volúmenes con notificaciones.
+SYS_PW_ID=$(wpctl status 2>/dev/null | grep -m1 "[0-9]*[.] $SYSTEM_SINK_DESC" | sed -E 's/^[^0-9]*([0-9]+).*/\1/')
+if [ -n "$SYS_PW_ID" ] && [ "$SYS_PW_ID" -eq "$SYS_PW_ID" ] 2>/dev/null; then
+  wpctl set-default "$SYS_PW_ID" 2>/dev/null && echo "Default WirePlumber: $SYSTEM_SINK_DESC ($SYS_PW_ID)"
+fi
+
 # 5. Mover streams existentes del hardware a system_sink
 pactl list sink-inputs short 2>/dev/null | awk '{print $1}' | while read -r id; do
   sink_id=$(pactl list sink-inputs 2>/dev/null | awk -v id="$id" '

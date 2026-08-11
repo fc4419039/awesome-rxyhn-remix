@@ -120,6 +120,20 @@ awesome.connect_signal("signal::volume", function(value, muted)
     end
 end)
 
+awesome.connect_signal("signal::notifications_volume", function(value, muted)
+    local icon = beautiful.notification_bell_icon
+    if muted then
+        icon = gears.color.recolor_image(icon, beautiful.xcolor8)
+        pop_bar.color = beautiful.xcolor8
+    else
+        icon = gears.color.recolor_image(icon, beautiful.pop_brightness_color)
+        pop_bar.color = beautiful.pop_brightness_color
+    end
+    pop_bar.value = value
+    pop_icon.icon.image = icon
+    toggle_pop()
+end)
+
 awesome.connect_signal("signal::brightness", function(value)
     local icon = beautiful.brightness_icon
 

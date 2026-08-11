@@ -45,7 +45,8 @@ local actions = {
     ["Borders"]      = function() toggle_window_borders() end,
     ["SDDM"]         = function() require("ui.system_menu.sddm_picker").toggle() end,
     ["Apps"]         = function() awful.spawn(launcher) end,
-    ["OpenCode"]     = function() awful.spawn.with_shell(terminal .. " -e opencode") end
+    ["OpenCode"]     = function() awful.spawn.with_shell(terminal .. " -e opencode") end,
+    ["Volume"]       = function() require("ui.system_menu.volume_panel").toggle() end
 }
 
 local function toggle_system_menu()
@@ -76,7 +77,6 @@ local function toggle_system_menu()
                 ["Blur"]         = "/scripts/toggle-blur.sh",
                 ["Transparency"] = "/scripts/toggle-transparency.sh",
                 ["Night Mode"]   = "redshift -O 3500",
-                ["Volume"]       = "/scripts/volumen",
                 ["Power Menu"]   = "/scripts/powermenu.sh",
                 -- ["Clean Orphans"]= "/scripts/clean-orphans.sh",
                 ["Timezone"]     = "/scripts/change-timezone.sh",

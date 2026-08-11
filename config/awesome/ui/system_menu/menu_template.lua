@@ -346,7 +346,7 @@ local transparency_btn = create_btn("", i18n.tr("sm.transparency"), beautiful
 
     local volume_btn = create_btn("", i18n.tr("sm.volume"), beautiful.xcolor4, function()
         hide()
-        awful.spawn.with_shell(os.getenv("HOME") .. "/.config/awesome/scripts/volumen")
+        require("ui.system_menu.volume_panel").toggle()
     end)
 
     local music_btn = create_btn("", i18n.tr("sm.music"), beautiful.xcolor5, function()
