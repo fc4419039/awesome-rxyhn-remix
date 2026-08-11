@@ -68,6 +68,7 @@
 - [Screenshots / Capturas](#screenshots--capturas)
 - [Keyboard Shortcuts / Atajos](#keyboard-shortcuts--atajos)
 - [Installation / Instalación](#installation--instalación)
+- [SDDM: keep the sugar-candy login after a theme update / Mantener el login sugar-candy](#sddm-keep-the-sugar-candy-login-after-a-theme-update--mantener-el-login-sugar-candy-tras-una-actualización)
 - [Repository Structure / Estructura](#repository-structure--estructura-del-repositorio)
 - [Dependencies / Dependencias](#dependencies--dependencias-completas)
 - [Systemd Services / Servicios](#systemd-services--servicios-systemd)
@@ -336,6 +337,35 @@ cp -r bin/* ~/.local/bin/
 
 <br>
 
+## 🎨 SDDM: keep the sugar-candy login after a theme update / Mantener el login sugar-candy tras una actualización
+
+The login screen uses the **bundled** `sddm-astronaut-theme` (Qt6) customized to look like **sugar-candy**. If you update the `sddm-astronaut-theme` AUR package, the update **overwrites** the theme with the stock look and you lose the sugar-candy style. To re-apply it, use the dedicated script:
+
+La pantalla de inicio usa el tema **incluido** `sddm-astronaut-theme` (Qt6) personalizado para verse como **sugar-candy**. Si actualizas el paquete `sddm-astronaut-theme` (AUR), la actualización **sobrescribe** el tema con el aspecto por defecto y pierdes el estilo sugar-candy. Para re-aplicarlo, usa el script dedicado:
+
+```bash
+# From the repo root / Desde la raíz del repo
+./setup-sddm-theme.sh
+```
+
+It will ask for your `sudo` password and then / Te pedirá tu contraseña `sudo` y luego:
+
+1. **Copies the bundled theme** to `/usr/share/sddm/themes/` with the sugar-candy style (transparent login fields, white borders, orange accent, left-aligned form, `Welcome!` header).
+   **Copia el tema incluido** a `/usr/share/sddm/themes/` con el estilo sugar-candy (campos transparentes, bordes blancos, acento naranja, formulario a la izquierda, cabecera `Welcome!`).
+2. **Fixes the background folder permissions** (`/usr/share/sddm/backgrounds` owned by your user) so `system_menu` → **SDDM** can change the wallpaper without root.
+   **Arregla los permisos de la carpeta de fondos** (`/usr/share/sddm/backgrounds` a tu usuario) para que `system_menu` → **SDDM** pueda cambiar el fondo sin root.
+3. **Copies an initial background** from `~/fondos/` if there isn't one yet.
+   **Copia un fondo inicial** desde `~/fondos/` si aún no hay ninguno.
+4. **Activates the theme** writing `Current=sddm-astronaut-theme` in `/etc/sddm.conf.d/theme.conf`.
+   **Activa el tema** escribiendo `Current=sddm-astronaut-theme` en `/etc/sddm.conf.d/theme.conf`.
+5. **Enables the SDDM service** if it isn't already.
+   **Habilita el servicio SDDM** si aún no está.
+
+> It's safe to run it as many times as you want (idempotent). Log out afterwards to see the result.
+> Es seguro ejecutarlo cuantas veces quieras (idempotente). Cierra sesión después para ver el resultado.
+
+<br>
+
 ## 📁 Repository Structure / Estructura del Repositorio
 
 ```
@@ -468,25 +498,7 @@ To change it whenever you want:
 
 > The installer assigns `/usr/share/sddm/backgrounds` to your user. If you ever lack permissions, the script falls back to `pkexec` (it will ask for your password graphically).
 
-### 🔁 Re-applying only the SDDM theme (no full install)
-
-If you updated the `sddm-astronaut-theme` AUR package (which overwrites the customization) or the login screen shows the default SDDM theme, you don't need to re-run the whole `install.sh`. Use the dedicated script:
-
-```bash
-# From the repo root
-chmod +x setup-sddm-theme.sh
-./setup-sddm-theme.sh
-```
-
-It will ask for your `sudo` password and then:
-
-1. **Copy the bundled theme** from `sddm/sddm-astronaut-theme/` to `/usr/share/sddm/themes/` (with the sugar-candy style: transparent login fields, white borders, orange accent, left-aligned form).
-2. **Fix the background folder permissions** (`/usr/share/sddm/backgrounds` owned by your user) so `system_menu` → **SDDM** can change the wallpaper without root.
-3. **Copy an initial background** from `~/fondos/` if there isn't one yet.
-4. **Activate the theme** writing `Current=sddm-astronaut-theme` in `/etc/sddm.conf.d/theme.conf`.
-5. **Enable the SDDM service** if it isn't already.
-
-> It's safe to run it as many times as you want (idempotent). Log out afterwards to see the result.
+> If a `sddm-astronaut-theme` AUR update overwrites the customization, re-apply the sugar-candy look with `./setup-sddm-theme.sh` — see the visible section **🎨 SDDM: keep the sugar-candy login after a theme update** above / mira la sección visible **🎨 SDDM: mantener el login sugar-candy tras una actualización** más arriba.
 
 If you see the default SDDM theme on login instead of the astronaut one:
 
