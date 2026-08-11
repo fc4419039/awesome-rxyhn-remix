@@ -17,6 +17,16 @@ setopt histignorealldups sharehistory
 # Use emacs keybindings even if our EDITOR is set to vi
 bindkey -e
 
+# Teclas Inicio/Fin (principio/fin de línea) y navegación de historial
+bindkey '^[[H' beginning-of-line
+bindkey '^[[F' end-of-line
+bindkey '^[[1~' beginning-of-line
+bindkey '^[[4~' end-of-line
+autoload -U up-line-or-beginning-search; zle -N up-line-or-beginning-search
+autoload -U down-line-or-beginning-search; zle -N down-line-or-beginning-search
+bindkey '^[[A' up-line-or-beginning-search
+bindkey '^[[B' down-line-or-beginning-search
+
 # Keep 1000 lines of history within the shell and save it to ~/.zsh_history:
 HISTSIZE=1000
 SAVEHIST=1000
@@ -66,6 +76,32 @@ alias lla='lsd -lha --group-dirs=first'
 alias ls='lsd --group-dirs=first'
 alias cat='bat'
 
+# Aliases recuperados de respaldos (~/.zshrc.bak*)
+alias sr='source ~/.zshrc'
+alias ..='cd ..'
+alias mkdir='mkdir -p'
+alias grep='grep --color=auto'
+alias v='nvim'
+alias mv='mv -v'
+alias cp='cp -vr'
+alias rm='rm -vr'
+alias wifi='nmtui-connect'
+alias grub-update='sudo grub-mkconfig -o /boot/grub/grub.cfg'
+alias psg='ps aux | grep -v grep | grep -i -e VSZ -e'
+# Archivos
+alias mtar='tar -zcvf'   # mtar <archivo> <lista>
+alias utar='tar -zxvf'   # utar <archivo>
+alias z='zip -r'         # z <archivo> <lista>
+alias uz='unzip'         # uz <archivo> -d <dir>
+# Paquetes con fzf
+alias pacs="pacman -Slq | fzf -m --preview 'cat <(pacman -Si {1}) <(pacman -Fl {1} | awk \"{print \$2}\")' | xargs -ro sudo pacman -S"
+alias yays="yay -Slq | fzf -m --preview 'cat <(yay -Si {1}) <(yay -Fl {1} | awk \"{print \$2}\")' | xargs -ro yay -S"
+alias pacr="pacman -Qq | fzf --multi --preview 'pacman -Qi {1}' | xargs -ro sudo pacman -Rns"
+alias p='pacman -Q | fzf'
+# Funciones
+mcd() { mkdir -p "$1" && cd "$1"; }
+rc() { g++ "$1" -o run && ./run; }
+
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 # Plugins
@@ -77,6 +113,12 @@ source /usr/share/zsh-sudo/sudo.plugin.zsh
 function mkt(){
 	mkdir {nmap,content,exploits,scripts}
 }
+
+# Todo rápido (widget todo)
+function td()  { echo "[ ] $*" >> ~/.todo; }
+function tdd() { sed -i "s/^\[ \] $*/[*] $*/" ~/.todo; }
+function tdr() { sed -i '/^\[\*\]/d' ~/.todo; }
+function tdc() { > ~/.todo; }
 
 # Extract nmap information
 function extractPorts(){

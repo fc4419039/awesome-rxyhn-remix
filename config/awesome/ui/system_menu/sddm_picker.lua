@@ -193,7 +193,7 @@ local function show_menu()
 
     local scroller = wibox.container.scroll.vertical(grid, 20, 100, 0, false, viewport_h,
         function(_, size, visible_size)
-            if size <= visible_size then scroll_offset = 0 return 0 end
+            if size <= visible_size then scroll_offset = 0; return 0 end
             scroll_offset = math.max(0, math.min(scroll_offset, size - visible_size))
             update_visibility()
             return scroll_offset

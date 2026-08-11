@@ -68,7 +68,7 @@ awful.keyboard.append_global_keybindings({
         end,
         {description = "open web browser", group = "launcher"}),
         awful.key({modkey}, "x", function()
-            awful.spawn.with_shell("xcolor-pick")
+            awful.spawn.with_shell(os.getenv("HOME") .. "/.local/bin/xcolor-pick")
         end,
         {description = "open color-picker", group = "launcher"}),
         awful.key({modkey}, "i", function()
@@ -82,7 +82,21 @@ awful.keyboard.append_global_keybindings({
             if found then
                 awful.spawn(found)
             else
-                naughty.notify({ text = "Opera GX no está instalado. Instálalo con: yay -S opera-gx", timeout = 5 })
+                local helper = "yay"
+                local h = io.popen("command -v paru 2>/dev/null")
+                if h and h:read() then helper = "paru" end
+                if h then h:close() end
+                local install = naughty.action { name = "Sí, instalar" }
+                install:connect_signal("invoked", function()
+                    awful.spawn.with_shell(terminal .. " --hold -e " .. helper .. " -S opera-gx")
+                end)
+                local cancel = naughty.action { name = "Cancelar" }
+                naughty.notify({
+                    title = "Opera GX no está instalado",
+                    text = "¿Quieres instalarlo ahora? (" .. helper .. " -S opera-gx)",
+                    timeout = 10,
+                    actions = { install, cancel }
+                })
             end
         end,
         {description = "open opera gx", group = "launcher"}),

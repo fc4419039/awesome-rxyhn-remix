@@ -70,13 +70,14 @@ packages=(awesome-git picom-git kitty rofi todo-bin acpi acpid \
     brightnessctl alsa-utils alsa-tools pipewire pipewire-pulse wireplumber \
     qt5-imageformats qt6-imageformats \
     playerctl spotify onlyoffice-bin mpd ncmpcpp mpd-mpris blueman pasystray \
-    touchegg redshift networkmanager bluez libnotify curl ffmpeg gpick \
-    imagemagick thunar firefox krita xorg-xrdb xorg-xauth \
+    touchegg redshift networkmanager bluez bluez-utils libnotify curl ffmpeg gpick \
+    imagemagick thunar firefox xorg-server xorg-xrdb xorg-xauth \
+    xorg-xrandr xorg-setxkbmap xorg-xset \
     nerd-fonts-jetbrains-mono ttf-iosevka-nerd ttf-font-awesome ttf-material-design-icons ttf-weather-icons \
     zsh-syntax-highlighting zsh-autosuggestions zoxide feh zsh neovim \
-    btop lsd bat python-gobject pipewire-alsa \
+    btop lsd bat python-gobject pipewire-alsa lua luarocks \
     powerlevel10k sound-theme-freedesktop \
-    i3lock slock xsecurelock \
+    i3lock slock xsecurelock sddm qt6-declarative \
     git rsync)
 
 to_install=()
@@ -207,6 +208,12 @@ fi
 if [ -f "misc/.Xresources" ]; then
     cp misc/.Xresources ~/.Xresources
     echo -e "${GREEN}✓ .Xresources instalado${NC}"
+fi
+
+# Copiar .zprofile si existe (SDDM con zsh lee ~/.zprofile, no ~/.profile)
+if [ -f "misc/.zprofile" ]; then
+    cp misc/.zprofile ~/.zprofile
+    echo -e "${GREEN}✓ .zprofile instalado${NC}"
 fi
 
 # Copiar .profile desde misc/ si no se copió antes
@@ -563,10 +570,12 @@ echo "2. Configura OpenWeatherMap (opcional):"
 echo -e "   ${GREEN}Edit: ~/.config/awesome/rc.lua${NC}"
 echo "   Set: openweathermap_key y openweathermap_city_id"
 echo ""
-echo "3. Control de volumen de notificaciones:"
-echo "   El script notif-sink-setup.sh (autostart) crea un sink"
-echo "   independiente 'notifications' con volumen separado."
-echo "   Usa Super+v para abrir el control de volumen GTK."
+echo "3. Control de volumen:"
+echo "   El script notif-sink-setup.sh (autostart) crea sinks"
+echo "   independientes 'system_sink' (programas) y 'notifications'."
+echo "   Usa Super+v para abrir el panel de volumen (dashboard):"
+echo "   sliders por app, notificaciones separadas, mute por fila."
+echo "   Ctrl+scroll en el widget de volumen = volumen de notificaciones."
 echo ""
 echo "4. MSCDown (Music Searcher & Downloader):"
 echo "   Escribe 'musica' (o el alias que elegiste) para abrir"
