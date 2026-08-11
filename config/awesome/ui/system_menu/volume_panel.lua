@@ -71,7 +71,7 @@ local function get_sink_inputs()
 end
 
 local function create_panel(s)
-    local panel_w = dpi(320)
+    local panel_w = beautiful.dashboard_width or dpi(280)
     local screen_height = s.geometry.height
 
     local popup = wibox({
@@ -142,7 +142,7 @@ local function create_panel(s)
             font = beautiful.font_name .. "bold 10",
             align = "left",
             valign = "center",
-            forced_width = panel_w - dpi(170),
+            forced_width = panel_w - dpi(128),
             forced_height = dpi(20),
             widget = wibox.widget.textbox
         }
