@@ -8,8 +8,8 @@ local helpers = require("helpers")
 
 local wallpaper_dir = os.getenv("HOME") .. "/fondos"
 local thumb_dir = os.getenv("HOME") .. "/.cache/fondos_thumb"
-local sddm_theme_dir = "/usr/share/sddm/themes/sugar-candy"
-local sddm_conf = sddm_theme_dir .. "/theme.conf"
+local sddm_bg_dir = "/usr/share/sddm/backgrounds"
+local sddm_bg_file = sddm_bg_dir .. "/sddm_wallpaper.jpg"
 
 local supported_exts = { png = true, jpg = true, jpeg = true, bmp = true, webp = true }
 
@@ -79,13 +79,37 @@ local function hide()
     end
 end
 
+local function dir_writable(dir)
+    local test = dir .. "/.sddm_write_test"
+    local f = io.open(test, "w")
+    if not f then return false end
+    f:close()
+    os.remove(test)
+    return true
+end
+
 local function apply_sddm(path)
-    local basename = path:match("([^/]+)$")
-    awful.spawn.with_shell(
-        "pkexec bash -c \"cp " .. q(path) .. " " .. q(sddm_theme_dir) .. "/ && " ..
-        "sed -i 's/^Background=.*/Background=\\\"" .. basename .. "\\\"/' " .. q(sddm_conf) .. "\""
-    )
-    naughty.notify({ text = "Fondo SDDM cambiado", timeout = 3 })
+    local convert_bin = "/usr/bin/convert"
+    local converted = q(sddm_bg_file)
+    local inner = convert_bin .. " " .. q(path) .. " -auto-orient -resize 1920x1080^ -gravity center -extent 1920x1080 " .. converted
+    if not file_exists(convert_bin) then
+        inner = "cp -f " .. q(path) .. " " .. converted
+    end
+
+    local cmd
+    if dir_writable(sddm_bg_dir) then
+        cmd = inner
+    else
+        cmd = "pkexec /bin/sh -c " .. q(inner)
+    end
+
+    awful.spawn.easy_async_with_shell(cmd, function(_, _, reason, exitcode)
+        if exitcode == 0 then
+            naughty.notify({ text = "Fondo SDDM cambiado (requiere reinicio)", timeout = 4 })
+        else
+            naughty.notify({ text = "ERROR: no se pudo cambiar el fondo SDDM (código " .. tostring(exitcode) .. ")", timeout = 6 })
+        end
+    end)
 end
 
 local function show_menu()

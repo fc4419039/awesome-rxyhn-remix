@@ -361,10 +361,11 @@ awesome-rxyhn-remix/
 │   └── touchegg/             # Touchpad gestures
 ├── fonts/                    # Custom Icomoon fonts
 ├── fondos/                   # Wallpapers
-├── sddm/                     # SDDM theme (sugar-candy)
+├── sddm/sddm-astronaut-theme/  # SDDM theme (bundled, sugar-candy style, Qt6)
 ├── mscdown/                  # Submodule: YouTube music searcher
 ├── misc/                     # .Xresources, .profile, .zshrc
 ├── install.sh                # Main installer
+├── setup-sddm-theme.sh       # Re-applies only the SDDM theme (no full install)
 ├── update_modules.sh         # Updates external modules (bling, rubato, machi)
 ├── check.sh                  # Syntax validator (Lua/Shell/Python)
 └── opencode.json             # OpenCode agent config
@@ -445,6 +446,64 @@ config/awesome/scripts/check.sh
 ```
 
 > Exit code `0` = OK, `1` = syntax errors (shows file:line). Run **before reloading Awesome (`Super+Ctrl+R`) or committing** to avoid breaking your session.
+
+</details>
+
+<details>
+<summary><strong>🎨 SDDM / Changing the login screen background</strong></summary>
+
+<br>
+
+The login theme is **sddm-astronaut-theme** (Qt6 compatible). It uses a fixed background image:
+
+```
+/usr/share/sddm/backgrounds/sddm_wallpaper.jpg
+```
+
+To change it whenever you want:
+
+1. Open `system_menu` → **SDDM** (or run `set-sddm-bg.sh`).
+2. Pick an image from `~/fondos/`.
+3. Log out to see the new background (it doesn't apply in real time).
+
+> The installer assigns `/usr/share/sddm/backgrounds` to your user. If you ever lack permissions, the script falls back to `pkexec` (it will ask for your password graphically).
+
+### 🔁 Re-applying only the SDDM theme (no full install)
+
+If you updated the `sddm-astronaut-theme` AUR package (which overwrites the customization) or the login screen shows the default SDDM theme, you don't need to re-run the whole `install.sh`. Use the dedicated script:
+
+```bash
+# From the repo root
+chmod +x setup-sddm-theme.sh
+./setup-sddm-theme.sh
+```
+
+It will ask for your `sudo` password and then:
+
+1. **Copy the bundled theme** from `sddm/sddm-astronaut-theme/` to `/usr/share/sddm/themes/` (with the sugar-candy style: transparent login fields, white borders, orange accent, left-aligned form).
+2. **Fix the background folder permissions** (`/usr/share/sddm/backgrounds` owned by your user) so `system_menu` → **SDDM** can change the wallpaper without root.
+3. **Copy an initial background** from `~/fondos/` if there isn't one yet.
+4. **Activate the theme** writing `Current=sddm-astronaut-theme` in `/etc/sddm.conf.d/theme.conf`.
+5. **Enable the SDDM service** if it isn't already.
+
+> It's safe to run it as many times as you want (idempotent). Log out afterwards to see the result.
+
+If you see the default SDDM theme on login instead of the astronaut one:
+
+```bash
+# Check the active theme
+cat /etc/sddm.conf.d/theme.conf
+# It should say: Current=sddm-astronaut-theme
+
+# Re-enable it if missing
+echo -e "[Theme]\nCurrent=sddm-astronaut-theme" | sudo tee /etc/sddm.conf.d/theme.conf
+
+# If the theme folder is missing, re-apply it with the bundled script:
+sudo cp -r sddm/sddm-astronaut-theme /usr/share/sddm/themes/
+# (or simply: ./setup-sddm-theme.sh)
+```
+
+> The original **sugar-candy** theme is no longer used: its Qt5 build fails with SDDM 0.21+/Qt6. It was replaced by **sddm-astronaut-theme**, bundled in this repo and customized with the same visual style (transparent login fields with white borders, orange accent `#fb884f`, left-aligned form, `Welcome!` header).
 
 </details>
 

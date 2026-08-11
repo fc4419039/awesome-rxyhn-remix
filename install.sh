@@ -64,7 +64,8 @@ echo ""
 # =====================================================================
 echo -e "${YELLOW}📦 Instalando dependencias...${NC}"
 
-$AUR_HELPER -Sy --needed awesome-git picom-git kitty rofi todo-bin acpi acpid \
+# Filtramos solo los paquetes que no están instalados
+packages=(awesome-git picom-git kitty rofi todo-bin acpi acpid \
     wireless_tools jq inotify-tools polkit-gnome xdotool xclip maim \
     brightnessctl alsa-utils alsa-tools pipewire pipewire-pulse wireplumber \
     qt5-imageformats qt6-imageformats \
@@ -76,7 +77,29 @@ $AUR_HELPER -Sy --needed awesome-git picom-git kitty rofi todo-bin acpi acpid \
     btop lsd bat python-gobject pipewire-alsa \
     powerlevel10k sound-theme-freedesktop \
     i3lock slock xsecurelock \
-    --needed
+    git rsync)
+
+to_install=()
+for pkg in "${packages[@]}"; do
+    if ! pacman -Qs "^$pkg$" > /dev/null; then
+        to_install+=("$pkg")
+    fi
+done
+
+if [ ${#to_install[@]} -gt 0 ]; then
+    echo -e "${YELLOW}📦 Instalando paquetes faltantes: ${to_install[*]}${NC}"
+    if ! $AUR_HELPER -Sy --needed "${to_install[@]}"; then
+        echo -e "${YELLOW}⚠️  Algunos paquetes fallaron. Intentando de nuevo en modo individual...${NC}"
+        for pkg in "${to_install[@]}"; do
+            if ! pacman -Qs "^$pkg$" > /dev/null; then
+                $AUR_HELPER -S --needed --noconfirm "$pkg" \
+                    || echo -e "${YELLOW}⚠️  No se pudo instalar $pkg, continuando...${NC}"
+            fi
+        done
+    fi
+else
+    echo -e "${GREEN}✓ Todos los paquetes ya están instalados. Saltando.${NC}"
+fi
 
 echo -e "${GREEN}✓ Dependencias instaladas${NC}"
 
@@ -85,14 +108,15 @@ echo ""
 # =====================================================================
 # 2b️⃣ INSTALAR OPENCODE (AI Agent)
 # =====================================================================
-echo -e "${YELLOW}🤖 Instalando OpenCode (AI Agent)...${NC}"
+echo -e "${YELLOW}🤖 Verificando OpenCode...${NC}"
 
-if ! command -v opencode &> /dev/null; then
-    echo -e "${YELLOW}📦 Instalando opencode...${NC}"
-    curl -fsSL https://opencode.ai/install | bash
-    echo -e "${GREEN}✓ OpenCode instalado${NC}"
+# Verificar si el comando existe o si el binario está en ~/.opencode/bin/opencode
+if command -v opencode &> /dev/null || [ -f "$HOME/.opencode/bin/opencode" ]; then
+    echo -e "${GREEN}✓ OpenCode ya está instalado.${NC}"
 else
-    echo -e "${GREEN}✓ OpenCode ya está instalado${NC}"
+    echo -e "${YELLOW}📦 Instalando OpenCode...${NC}"
+    curl -fsSL https://opencode.ai/install | bash || echo -e "${YELLOW}⚠️  Falló la instalación de OpenCode. Puedes instalarlo manualmente después.${NC}"
+    echo -e "${GREEN}✓ OpenCode instalado.${NC}"
 fi
 
 echo ""
@@ -109,7 +133,13 @@ echo -e "${GREEN}✓ Servicios habilitados${NC}"
 
 # Configurar hooks de git (validación sintaxis Lua al commitear)
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-git config core.hooksPath "$SCRIPT_DIR/.githooks" 2>/dev/null && echo -e "${GREEN}✓ Git hooks configurados${NC}"
+if [ -d "$SCRIPT_DIR/.git" ]; then
+    git config core.hooksPath "$SCRIPT_DIR/.githooks" 2>/dev/null \
+        && echo -e "${GREEN}✓ Git hooks configurados${NC}" \
+        || echo -e "${YELLOW}⚠️  No se pudieron configurar los git hooks${NC}"
+else
+    echo -e "${YELLOW}⚠️  No es un repositorio git (¿descarga ZIP?). Saltando git hooks.${NC}"
+fi
 
 echo ""
 
@@ -164,7 +194,8 @@ if [ ! -d "bin" ]; then
     exit 1
 fi
 
-cp -r config/* ~/.config/
+# Copiar archivos de configuración excluyendo directorios .git
+rsync -av --exclude='.git' config/ ~/.config/
 cp -r bin/* ~/.local/bin/
 
 # Copiar .profile si existe
@@ -303,50 +334,214 @@ echo ""
 echo -e "${YELLOW}🎵 Instalando MSCDown (Music Searcher & Downloader)...${NC}"
 
 # Inicializar submodulos (mscdown)
-if [ -f "$(dirname "$0")/mscdown/install.sh" ]; then
+ROOT_DIR="$(dirname "$0")"
+MSCDOWN_INSTALLER="$ROOT_DIR/mscdown/install.sh"
+
+if [ ! -f "$MSCDOWN_INSTALLER" ] && [ -d "$ROOT_DIR/.git" ]; then
+    echo -e "${YELLOW}⚠️  Submódulo mscdown no encontrado. Inicializando...${NC}"
+    git submodule update --init --recursive || echo -e "${YELLOW}⚠️  Falló la inicialización del submódulo.${NC}"
+fi
+
+if [ -f "$MSCDOWN_INSTALLER" ]; then
     echo -e "${YELLOW}📦 Ejecutando instalador de mscdown...${NC}"
-    chmod +x "$(dirname "$0")/mscdown/install.sh"
-    cd "$(dirname "$0")/mscdown"
-    ./install.sh
-    cd "$(dirname "$0")"
+    chmod +x "$MSCDOWN_INSTALLER"
+    ( cd "$ROOT_DIR/mscdown" && ./install.sh ) || echo -e "${YELLOW}⚠️  MSCDown no se instaló correctamente, continuando...${NC}"
     echo -e "${GREEN}✓ MSCDown instalado${NC}"
 else
-    echo -e "${YELLOW}⚠️  Submódulo mscdown no encontrado. Inicializando...${NC}"
-    git submodule update --init --recursive
-    chmod +x "$(dirname "$0")/mscdown/install.sh"
-    cd "$(dirname "$0")/mscdown"
-    ./install.sh
-    cd "$(dirname "$0")"
-    echo -e "${GREEN}✓ MSCDown instalado${NC}"
+    echo -e "${YELLOW}⚠️  No se encontró mscdown (ni como submódulo). Puedes clonarlo después: git submodule update --init.${NC}"
 fi
 
 echo ""
 
 # =====================================================================
-# 1️⃣1️⃣ CONFIGURACIÓN DE SDDM (SUGAR-CANDY)
+# 1️⃣1️⃣ CONFIGURACIÓN DE SDDM (COMPATIBLE CON QT6)
 # =====================================================================
-echo -e "${YELLOW}🎨 Configurando tema de inicio de sesión (SDDM)...${NC}"
+echo -e "${YELLOW}🎨 Configurando tema de inicio de sesión SDDM...${NC}"
 
 if command -v sddm &> /dev/null; then
-    if [ -d "sddm/sugar-candy" ]; then
-        echo -e "${YELLOW}🔒 Copiando tema sugar-candy...${NC}"
-        sudo cp -r sddm/sugar-candy /usr/share/sddm/themes/
+    sudo mkdir -p /etc/sddm.conf.d
 
-        sudo mkdir -p /etc/sddm.conf.d
+    THEME_DIR=""
+    THEME_NAME=""
 
-        echo -e "${YELLOW}⚙️  Activando Sugar-Candy...${NC}"
-        sudo bash -c 'cat << EOF > /etc/sddm.conf.d/theme.conf
-[Theme]
-Current=sugar-candy
-EOF'
-
-        echo -e "${YELLOW}🔄 Habilitando servicio SDDM...${NC}"
-        sudo systemctl enable sddm.service
-
-        echo -e "${GREEN}✓ SDDM configurado${NC}"
+    # 1) Tema incluido en el repo (sddm-astronaut-theme con estilo sugar-candy ya aplicado)
+    if [ -d "$SCRIPT_DIR/sddm/sddm-astronaut-theme" ]; then
+        echo -e "${YELLOW}📦 Instalando tema sddm-astronaut-theme desde el repositorio...${NC}"
+        sudo rm -rf /usr/share/sddm/themes/sddm-astronaut-theme
+        sudo cp -r "$SCRIPT_DIR/sddm/sddm-astronaut-theme" /usr/share/sddm/themes/sddm-astronaut-theme
+        sudo chown -R root:root /usr/share/sddm/themes/sddm-astronaut-theme
+        THEME_DIR="/usr/share/sddm/themes/sddm-astronaut-theme"
+        THEME_NAME="sddm-astronaut-theme"
     else
-        echo -e "${YELLOW}⚠️  Carpeta sugar-candy no encontrada${NC}"
+        # 2) Fallback: instalar desde AUR
+        echo -e "${YELLOW}📦 Instalando sddm-astronaut-theme desde AUR...${NC}"
+        $AUR_HELPER -S --needed --noconfirm sddm-astronaut-theme 2>/dev/null || true
+        if [ -d "/usr/share/sddm/themes/sddm-astronaut-theme" ]; then
+            THEME_DIR="/usr/share/sddm/themes/sddm-astronaut-theme"
+            THEME_NAME="sddm-astronaut-theme"
+        elif [ -d "/usr/share/sddm/themes/astronaut" ]; then
+            THEME_DIR="/usr/share/sddm/themes/astronaut"
+            THEME_NAME="astronaut"
+        fi
     fi
+
+    if [ -n "$THEME_DIR" ]; then
+        # Crear carpeta compartida para fondos de SDDM (escribible por el usuario)
+        echo -e "${YELLOW}📂 Configurando carpeta compartida de fondos SDDM...${NC}"
+        sudo mkdir -p /usr/share/sddm/backgrounds
+        sudo chown "$USER":"$USER" /usr/share/sddm/backgrounds
+        sudo chmod 775 /usr/share/sddm/backgrounds
+
+        # Copiar un fondo inicial desde ~/fondos si existe
+        FONDO_SELECCIONADO=""
+        if [ -d "$HOME/fondos" ]; then
+            FONDO_SELECCIONADO=$(find "$HOME/fondos" -type f \( -name "*.jpg" -o -name "*.png" -o -name "*.webp" \) | head -n 1)
+        fi
+
+        if [ -n "$FONDO_SELECCIONADO" ]; then
+            echo -e "${YELLOW}🖼️ Copiando fondo inicial ($FONDO_SELECCIONADO) a la carpeta compartida...${NC}"
+            sudo cp "$FONDO_SELECCIONADO" /usr/share/sddm/backgrounds/sddm_wallpaper.jpg
+            sudo chown "$USER":"$USER" /usr/share/sddm/backgrounds/sddm_wallpaper.jpg
+            sudo chmod 644 /usr/share/sddm/backgrounds/sddm_wallpaper.jpg
+        fi
+
+        # Configurar el tema para usar la ruta fija compartida
+        echo -e "${YELLOW}⚙️  Apuntando tema a la carpeta compartida...${NC}"
+
+        # Aplicar configuración al tema (formulario izquierdo, acento naranja, Welcome!, blur parcial)
+        ASTRONAUT_CONF="$THEME_DIR/Themes/astronaut.conf"
+        if [ -f "$ASTRONAUT_CONF" ]; then
+            sudo bash -c 'cat << EOF > '"$ASTRONAUT_CONF"'
+[General]
+#################### General ####################
+
+ScreenWidth="1366"
+ScreenHeight="768"
+ScreenPadding=""
+
+Font="Noto Sans"
+FontSize=""
+
+KeyboardSize="0.4"
+
+RoundCorners="20"
+
+Locale=""
+HourFormat="HH:mm"
+DateFormat="dddd, d of MMMM"
+
+HeaderText="Welcome!"
+
+#################### Background ####################
+
+BackgroundPlaceholder=""
+Background="/usr/share/sddm/backgrounds/sddm_wallpaper.jpg"
+BackgroundSpeed=""
+PauseBackground=""
+DimBackground="0.0"
+CropBackground="true"
+BackgroundHorizontalAlignment="center"
+BackgroundVerticalAlignment="center"
+
+#################### Colors ####################
+
+HeaderTextColor="#ffffff"
+DateTextColor="#ffffff"
+TimeTextColor="#ffffff"
+
+FormBackgroundColor="#444444"
+BackgroundColor="#444444"
+DimBackgroundColor="#444444"
+
+LoginFieldBackgroundColor="#ffffff"
+PasswordFieldBackgroundColor="#ffffff"
+LoginFieldTextColor="#ffffff"
+PasswordFieldTextColor="#ffffff"
+UserIconColor="#ffffff"
+PasswordIconColor="#ffffff"
+
+PlaceholderTextColor="#ffffff"
+WarningColor="#fb884f"
+
+LoginButtonTextColor="#ffffff"
+LoginButtonBackgroundColor="#ffffff"
+SystemButtonsIconsColor="#F8F8F2"
+SessionButtonTextColor="#F8F8F2"
+VirtualKeyboardButtonTextColor="#F8F8F2"
+
+DropdownTextColor="#ffffff"
+DropdownSelectedBackgroundColor="#fb884f"
+DropdownBackgroundColor="#444444"
+
+HighlightTextColor="#ffffff"
+HighlightBackgroundColor="#fb884f"
+HighlightBorderColor="#fb884f"
+
+HoverUserIconColor="#fb884f"
+HoverPasswordIconColor="#fb884f"
+HoverSystemButtonsIconsColor="#fb884f"
+HoverSessionButtonTextColor="#fb884f"
+HoverVirtualKeyboardButtonTextColor="#fb884f"
+
+#################### Form ####################
+
+PartialBlur="true"
+FullBlur="false"
+BlurMax="64"
+Blur="1.0"
+
+HaveFormBackground="false"
+FormPosition="left"
+
+#################### Virtual Keyboard ####################
+
+VirtualKeyboardPosition="left"
+
+#################### Interface Behavior ####################
+
+HideVirtualKeyboard="false"
+HideSystemButtons="false"
+HideLoginButton="false"
+
+UseRealName="false"
+ForceLastUser="true"
+PasswordFocus="true"
+HideCompletePassword="false"
+AllowEmptyPassword="false"
+BypassSystemButtonsChecks="false"
+RightToLeftLayout="false"
+
+#################### Translation ####################
+
+TranslatePlaceholderUsername=""
+TranslatePlaceholderPassword=""
+TranslateLogin=""
+TranslateLoginFailedWarning=""
+TranslateCapslockWarning=""
+TranslateSuspend=""
+TranslateHibernate=""
+TranslateReboot=""
+TranslateShutdown=""
+TranslateSessionSelection=""
+TranslateVirtualKeyboardButtonOn=""
+TranslateVirtualKeyboardButtonOff=""
+EOF'
+        elif [ -f "$THEME_DIR/theme.conf" ]; then
+            sudo sed -i 's|^Background=.*|Background="/usr/share/sddm/backgrounds/sddm_wallpaper.jpg"|' "$THEME_DIR/theme.conf"
+        fi
+
+        echo -e "${YELLOW}⚙️  Activando tema $THEME_NAME...${NC}"
+        sudo bash -c "cat << EOF > /etc/sddm.conf.d/theme.conf
+[Theme]
+Current=$THEME_NAME
+EOF"
+        echo -e "${GREEN}✓ SDDM configurado con el tema $THEME_NAME e imagen de ~/fondos${NC}"
+    else
+        echo -e "${YELLOW}⚠️  No se encontró el tema sddm-astronaut-theme. Instálalo manualmente con: $AUR_HELPER -S sddm-astronaut-theme${NC}"
+    fi
+
+    echo -e "${YELLOW}🔄 Habilitando servicio SDDM...${NC}"
+    sudo systemctl enable sddm.service
 else
     echo -e "${YELLOW}⚠️  SDDM no está instalado. Saltando configuración.${NC}"
 fi

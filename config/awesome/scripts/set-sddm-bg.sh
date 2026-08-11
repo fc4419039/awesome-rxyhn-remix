@@ -2,9 +2,9 @@
 
 source "$HOME/.config/awesome/scripts/i18n.sh"
 
-SDDM_THEME_DIR="/usr/share/sddm/themes/sugar-candy"
+SDDM_BG_DIR="/usr/share/sddm/backgrounds"
+SDDM_BG_FILE="$SDDM_BG_DIR/sddm_wallpaper.jpg"
 DIR_FONDOS="$HOME/fondos"
-SDDM_CONF="$SDDM_THEME_DIR/theme.conf"
 
 [ ! -d "$DIR_FONDOS" ] && notify-send -u critical "$(t common.error)" "$(tsub wp.dir_missing "$DIR_FONDOS")" && exit 1
 
@@ -18,6 +18,13 @@ WALLPAPER=$(find "$DIR_FONDOS" -maxdepth 1 -type f \( -name "*.png" -o -name "*.
 [ -z "$WALLPAPER" ] && exit 0
 
 FULL_PATH="$DIR_FONDOS/$WALLPAPER"
-sudo cp "$FULL_PATH" "$SDDM_THEME_DIR/" && sudo sed -i "s/^Background=.*/Background=\"$WALLPAPER\"/" "$SDDM_CONF"
+
+# Verificar si podemos escribir directamente; si no, usar pkexec (diálogo gráfico)
+if touch "$SDDM_BG_DIR/.write_test" 2>/dev/null; then
+    rm -f "$SDDM_BG_DIR/.write_test"
+    cp -f "$FULL_PATH" "$SDDM_BG_FILE"
+else
+    pkexec /bin/sh -c "cp -f '$FULL_PATH' '$SDDM_BG_FILE'"
+fi
 
 notify-send -i wallpaper "$(t sddm.prompt)" "$(tsub sddm.changed "$WALLPAPER")"
