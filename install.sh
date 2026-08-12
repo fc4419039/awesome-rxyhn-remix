@@ -89,7 +89,7 @@ done
 
 if [ ${#to_install[@]} -gt 0 ]; then
     echo -e "${YELLOW}📦 Instalando paquetes faltantes: ${to_install[*]}${NC}"
-    if ! $AUR_HELPER -Sy --needed "${to_install[@]}"; then
+    if ! $AUR_HELPER -Syu --needed "${to_install[@]}"; then
         echo -e "${YELLOW}⚠️  Algunos paquetes fallaron. Intentando de nuevo en modo individual...${NC}"
         for pkg in "${to_install[@]}"; do
             if ! pacman -Qs "^$pkg$" > /dev/null; then
