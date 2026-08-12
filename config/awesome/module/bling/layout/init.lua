@@ -9,8 +9,8 @@ local function get_layout_icon_path(name)
         :match("^.*bling"):gsub("%.", "/")
         .. "/icons/layouts/" .. name .. ".png"
 
-    for p in package.path:gmatch('([^;]+)') do
-        p = p:gsub("?.*", "")
+    for path in package.path:gmatch('([^;]+)') do
+        local p = path:gsub("?.*", "")
         local absolute_icon_path = p .. relative_icon_path
         if gears.filesystem.file_readable(absolute_icon_path) then
             return absolute_icon_path
