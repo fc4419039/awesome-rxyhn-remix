@@ -597,6 +597,34 @@ paru -S --clean
 
 </details>
 
+<details>
+<summary><strong>🖥️ Boot failure: `/boot/efi` won't mount / no internet after a kernel update</strong></summary>
+
+<br>
+
+Síntoma: al arrancar aparece `mount: /boot/efi: unknown filesystem type 'vfat'` (o «tipo de sistema de ficheros 'vfat' desconocido») y el WiFi no funciona. Significa que el kernel que arrancó **no tiene módulos coincidentes** en `/lib/modules` (normalmente porque se está booteando una imagen de kernel vieja que quedó en el ESP tras una actualización).
+
+```bash
+# 1. Verifica que el kernel que arranca tenga módulos
+ls /lib/modules/$(uname -r)   # debe existir
+
+# 2. Reinstala GRUB para que cargue /boot/grub/grub.cfg desde la partición raíz
+sudo grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=GRUB --boot-directory=/boot
+sudo grub-mkconfig -o /boot/grub/grub.cfg
+
+# 3. Asegura que vfat esté dentro del initramfs (necesario para /boot/efi)
+#    Edita /etc/mkinitcpio.conf →  MODULES=(vfat)
+sudo mkinitcpio -P
+
+# 4. Si el ESP contiene copias viejas (vmlinuz-*, initramfs-*.img) referenciadas
+#    por un grub.cfg antiguo, bórralas: la config activa debe apuntar a /boot/...
+#    de la partición raíz.
+```
+
+> **Nota:** este repo jamás toca el bootloader. `install.sh` solo instala paquetes y copia config de usuario (Awesome, zsh, fuentes, tema SDDM). Si te pasa esto, es un problema local de GRUB/ESP, no de los dotfiles.
+
+</details>
+
 ---
 
 <br>
