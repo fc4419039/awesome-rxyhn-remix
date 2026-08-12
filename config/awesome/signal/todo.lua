@@ -1,13 +1,13 @@
 local awful = require("awful")
 
 local user_home = os.getenv("HOME")
-local todo_file_path = user_home .. "/.todo"
-local todo_dir = user_home
+local todo_file_path = user_home .. "/.config/todo"
+local todo_dir = user_home .. "/.config"
 
--- Watch the directory for changes to .todo (sed -i creates a new inode)
+-- Watch the directory for changes to the todo file (sed -i creates a new inode)
 local todo_subscribe_script = [[
    bash -c "
-   while inotifywait -e modify -e close_write -e moved_to -e create -qq ]] .. todo_dir .. [[ --include '\.todo$'; do
+   while inotifywait -e modify -e close_write -e moved_to -e create -qq ]] .. todo_dir .. [[ --include 'todo$'; do
         sleep 0.2
         echo 'update'
     done
@@ -16,9 +16,8 @@ local todo_subscribe_script = [[
 
 local todo_script = [[
    bash -c "
-    todo_done=$(grep -c '^\[\*\]' ]] .. todo_file_path .. [[ 2>/dev/null || echo 0)
-    todo_undone=$(grep -c '^\[ \]' ]] .. todo_file_path .. [[ 2>/dev/null || echo 0)
-    echo \"\${todo_done}@@\${todo_undone}\"
+    read todo_done todo_undone <<< \"$(awk '/^\[\*\]/{d++} /^\[ \]/{u++} END{print d+0, u+0}' ]] .. todo_file_path .. [[ 2>/dev/null)\"
+    echo \"\${todo_done:-0}@@\${todo_undone:-0}\"
 "
 ]]
 

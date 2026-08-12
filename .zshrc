@@ -115,10 +115,11 @@ function mkt(){
 }
 
 # Todo rápido (widget todo)
-function td()  { echo "[ ] $*" >> ~/.todo; }
-function tdd() { sed -i "s/^\[ \] $*/[*] $*/" ~/.todo; }
-function tdr() { sed -i '/^\[\*\]/d' ~/.todo; }
-function tdc() { > ~/.todo; }
+export TODO_PATH="$HOME/.config/todo"
+function td()  { echo "[ ] $*" >> "$TODO_PATH"; }
+function tdd() { sed -i "s/^\[ \] $*/[*] $*/" "$TODO_PATH"; }
+function tdr() { sed -i '/^\[\*\]/d' "$TODO_PATH"; }
+function tdc() { > "$TODO_PATH"; }
 
 # Extract nmap information
 function extractPorts(){
@@ -183,6 +184,5 @@ elif [ -f ~/powerlevel10k/powerlevel10k.zsh-theme ]; then
 fi
 
 # AwesomeWM Remix
-export TODO_PATH="$HOME/.config/todo"
 alias opencode='$HOME/.opencode/bin/opencode'
 

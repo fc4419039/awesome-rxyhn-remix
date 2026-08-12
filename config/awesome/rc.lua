@@ -62,7 +62,7 @@ spotify = "spotify"
 editor = "kitty nvim"
 nvim = "kitty nvim"
 browser = "env MOZ_GTK_TITLEBAR_DECORATION=none firefox"
-launcher = "rofi -show drun -theme " .. os.getenv("HOME") .. "/.config/awesome/theme/rofi.rasi"
+launcher = "rofi -show combi -combi-modi \"drun,run\" -combi-display-format \"{text}\" -theme " .. os.getenv("HOME") .. "/.config/awesome/theme/rofi.rasi"
 file_manager = "thunar"
 music_client = "kitty --session " .. os.getenv("HOME") .. "/.config/ncmpcpp/session.conf --class music --title ncmpcpp --config " .. os.getenv("HOME") .. "/.config/ncmpcpp/kitty-music.conf"
 
