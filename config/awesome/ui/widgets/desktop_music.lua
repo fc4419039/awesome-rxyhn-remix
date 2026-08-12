@@ -16,6 +16,10 @@ local function create_widget(s)
     if not playerctl then return end
     local screen_geo = s.geometry
 
+    local base_w = 188
+    local base_h = 97
+    local current_scale = 1
+
     local art_bg = wibox.widget{
         forced_width = dpi(56),
         forced_height = dpi(56),
@@ -193,23 +197,63 @@ local function create_widget(s)
         layout = wibox.layout.fixed.vertical
     }
 
+    local content_margin = wibox.widget{
+        content,
+        margins = dpi(2),
+        widget = wibox.container.margin
+    }
+
     local container = wibox.widget{
-        {
-            content,
-            margins = dpi(8),
-            widget = wibox.container.margin
-        },
+        content_margin,
         bg = "#00000000",
         widget = wibox.container.background
     }
+
+    local function apply_scale(scale)
+        local function d(n) return math.max(1, math.floor(dpi(n * scale))) end
+        local function fs(n) return math.max(6, math.floor(n * scale + 0.5)) end
+        art_bg.forced_width = d(56)
+        art_bg.forced_height = d(56)
+        art.forced_width = d(56)
+        art.forced_height = d(56)
+        title.forced_width = d(120)
+        title.forced_height = d(14)
+        title.font = beautiful.font_name .. "bold " .. fs(9)
+        artist.forced_width = d(120)
+        artist.forced_height = d(12)
+        artist.font = beautiful.font_name .. fs(8)
+        progress.forced_width = d(130)
+        progress.forced_height = d(3)
+        progress.bar_height = math.max(1, math.floor(dpi(3) * scale))
+        progress.color = {
+            type = "linear",
+            from = {0, 0},
+            to = {d(130), 0},
+            stops = {
+                {0, beautiful.deco_cyan},
+                {1, beautiful.deco_blue or beautiful.xcolor4},
+            }
+        }
+        prev_btn.forced_width = d(22)
+        prev_btn.forced_height = d(22)
+        prev_btn.font = beautiful.icon_font_name .. fs(14)
+        play_btn.forced_width = d(22)
+        play_btn.forced_height = d(22)
+        play_btn.font = beautiful.icon_font_name .. fs(16)
+        next_btn.forced_width = d(22)
+        next_btn.forced_height = d(22)
+        next_btn.font = beautiful.icon_font_name .. fs(14)
+        controls.spacing = d(4)
+        top_row.spacing = d(8)
+        content.spacing = d(6)
+        content_margin.margins = d(2)
+    end
 
     local pos_file = os.getenv("HOME") .. "/.config/awesome/.desktop-music-pos-" .. s.index
 
     local w = wibox{
         type = "desktop",
         screen = s,
-        width = dpi(210),
-        height = dpi(110),
         x = screen_geo.x + dpi(80),
         y = screen_geo.y + screen_geo.height - dpi(340),
         bg = "#00000000",
@@ -257,14 +301,16 @@ local function create_widget(s)
 
         mousegrabber.run(function(m)
             if not m.buttons[3] then save_pos(); return false end
-            local dx, dy = m.x - mx, m.y - my
-            local nw, nh = ow, oh
-            local nx, ny = ox, oy
-            if rfx == "left" then nw = math.max(dpi(160), ow - dx); nx = ox + (ow - nw)
-            elseif rfx == "right" then nw = math.max(dpi(160), ow + dx) end
-            if rfy == "top" then nh = math.max(dpi(80), oh - dy); ny = oy + (oh - nh)
-            elseif rfy == "bottom" then nh = math.max(dpi(80), oh + dy) end
-            w:geometry({x = nx, y = ny, width = nw, height = nh})
+            local dx = m.x - mx
+            local nw = ow
+            local nx = ox
+            if rfx == "left" then nw = math.max(dpi(120), ow - dx); nx = ox + (ow - nw)
+            elseif rfx == "right" then nw = math.max(dpi(120), ow + dx) end
+            local scale = nw / dpi(base_w)
+            current_scale = scale
+            apply_scale(scale)
+            local nh = math.max(dpi(30), math.floor(dpi(base_h) * scale))
+            w:geometry({x = nx, y = oy, width = nw, height = nh})
             return true
         end, "bottom_right_corner")
     end
@@ -276,13 +322,15 @@ local function create_widget(s)
         active_menu = awful.menu({
             items = {
                 { i18n.tr("dw.increase"), function()
-                    local g = w:geometry()
-                    w:geometry({width = g.width + dpi(20), height = g.height + dpi(15)})
+                    current_scale = current_scale + 0.1
+                    apply_scale(current_scale)
+                    w:geometry({width = dpi(base_w * current_scale), height = dpi(base_h * current_scale)})
                     save_pos()
                 end},
                 { i18n.tr("dw.decrease"), function()
-                    local g = w:geometry()
-                    w:geometry({width = math.max(dpi(140), g.width - dpi(20)), height = math.max(dpi(80), g.height - dpi(15))})
+                    current_scale = math.max(0.5, current_scale - 0.1)
+                    apply_scale(current_scale)
+                    w:geometry({width = dpi(base_w * current_scale), height = dpi(base_h * current_scale)})
                     save_pos()
                 end},
                 { i18n.tr("dw.hide"), function()
@@ -305,15 +353,28 @@ local function create_widget(s)
         widget = wibox.container.background
     }
 
+    helpers.fit_wibox(w, s)
+
     local f = io.open(pos_file, "r")
     if f then
         local saved = f:read("*a")
         f:close()
-        local sx, sy, sw, sh = saved:match("(-?%d+),(-?%d+),(-?%d+),(-?%d+)")
+        local sx, sy, sw = saved:match("(-?%d+),(-?%d+),(%d+)")
         if sx then
-            w:geometry({x = tonumber(sx), y = tonumber(sy), width = tonumber(sw), height = tonumber(sh)})
+            w.x = tonumber(sx)
+            w.y = tonumber(sy)
+        end
+        if sw and tonumber(sw) > 0 then
+            local base_w_px = dpi(base_w)
+            local max_w = s.geometry.width - dpi(20)
+            local scale = math.max(0.5, math.min(tonumber(sw) / base_w_px, max_w / base_w_px))
+            current_scale = scale
+            apply_scale(scale)
+            w:geometry({ width = math.floor(base_w_px * scale), height = math.floor(dpi(base_h) * scale) })
         end
     end
+
+    helpers.clamp_wibox_on_screen(w, s)
 
     s.desktop_music = w
 end

@@ -134,6 +134,41 @@ function helpers.colorize_text(txt, fg)
     return "<span foreground='" .. fg .. "'>" .. (txt or "") .. "</span>"
 end
 
+-- Ajusta una wibox al tamaño natural de su contenido (tight fit).
+-- Sin esto, una wibox sin width/height explícito queda en 1x1.
+function helpers.fit_wibox(w, s)
+    if not w or not w.valid then return end
+    local widget = w:get_widget()
+    if not widget then return end
+    local ctx = {
+        screen = s,
+        dpi = s.dpi,
+        drawable = w._drawable,
+    }
+    local fw, fh = widget:fit(ctx, s.geometry.width, s.geometry.height)
+    if fw and fh and fw > 0 and fh > 0 then
+        w:geometry({ width = fw, height = fh })
+    end
+end
+
+-- Asegura que una wibox quede siempre dentro de la pantalla (no se pueda
+-- perder fuera del viewport tras restaurar su posición guardada).
+function helpers.clamp_wibox_on_screen(w, s)
+    if not w or not w.valid or not s then return end
+    local g = w:geometry()
+    local geo = s.geometry
+    local margin = 10
+    local min_x = geo.x + margin
+    local max_x = geo.x + geo.width - g.width - margin
+    local min_y = geo.y + margin
+    local max_y = geo.y + geo.height - g.height - margin
+    local x = math.max(min_x, math.min(max_x, g.x))
+    local y = math.max(min_y, math.min(max_y, g.y))
+    if x ~= g.x or y ~= g.y then
+        w:geometry({ x = x, y = y })
+    end
+end
+
 function helpers.client_menu_toggle()
     local instance = nil
 

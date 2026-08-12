@@ -35,6 +35,8 @@ local function create_widget(s)
     local base_h = 110
     local base_w_px = dpi(base_w)
     local base_h_px = dpi(base_h)
+    local natural_w = base_w_px
+    local natural_h = dpi(base_h)
 
     local day_w = wibox.widget {
         align = "center",
@@ -55,6 +57,8 @@ local function create_widget(s)
     }
 
     local current_scale = 1
+    local refit
+    local content_margin = nil
     local color_file = os.getenv("HOME") .. "/.config/awesome/.datetime-widget-color-" .. s.index
     local text_color = "#ffffff"
     local show_date_file = os.getenv("HOME") .. "/.config/awesome/.datetime-widget-showdate-" .. s.index
@@ -97,25 +101,22 @@ local function create_widget(s)
         date_w.visible = show_date
         time_w:set_markup_silently("<span font='Quicksand Light " .. ts .. "' foreground='" .. text_color .. "'>- " .. os.date("%I:%M %p") .. " -</span>")
         time_w.visible = show_time
+        if content_margin then
+            content_margin.margins = math.max(1, math.floor(dpi(2) * current_scale))
+        end
     end
 
     render_all()
 
+    local last_day = os.date("%A")
+
     gears.timer.start_new(1, function()
         render_all()
-        local old_day = os.date("%A", os.time() - 86400)
-        local new_day = os.date("%A")
-        if old_day ~= new_day then
-            local dw = day_w:get_preferred_size()
-            local min_w = math.max(dpi(120), dw + dpi(16))
-            if w and w.geometry then
-                local g = w:geometry()
-                if min_w > g.width then
-                    local nh = math.floor(min_w * base_h / base_w + 0.5)
-                    w:geometry({width = min_w, height = nh})
-                    update_scale(min_w / base_w_px)
-                end
-            end
+        local today = os.date("%A")
+        if today ~= last_day then
+            last_day = today
+            render_all()
+            refit()
         end
         return true
     end)
@@ -147,27 +148,27 @@ local function create_widget(s)
         layout = wibox.layout.align.vertical
     }
 
+    content_margin = wibox.widget {
+        widget_bg,
+        margins = dpi(2),
+        widget = wibox.container.margin
+    }
+
     local container_bg = wibox.widget {
-        {
-            widget_bg,
-            margins = dpi(8),
-            widget = wibox.container.margin
-        },
+        content_margin,
         bg = "#00000000",
         shape = gears.shape.rounded_rect,
         widget = wibox.container.background
     }
 
     local function update_scale(scale)
-        current_scale = scale
+        current_scale = math.max(0.4, scale)
         render_all()
     end
 
     local w = wibox {
         type = "desktop",
         screen = s,
-        width = base_w_px,
-        height = base_h_px,
         x = screen_geo.x + screen_geo.width - dpi(220),
         y = screen_geo.y + dpi(100),
         bg = "#00000000",
@@ -235,14 +236,15 @@ local function create_widget(s)
                 nw = math.max(dpi(120), ow + dx)
             end
 
-            local nh = math.max(dpi(60), math.floor(nw * base_h / base_w + 0.5))
+            local scale = nw / natural_w
+            local nh = math.max(dpi(22), math.floor(natural_h * scale + 0.5))
 
             if resize_from_y == "top" then
                 new_y = oy + (oh - nh)
             end
 
             w:geometry({x = new_x, y = new_y, width = nw, height = nh})
-            update_scale(nw / base_w_px)
+            update_scale(scale)
             return true
         end, cursor)
     end
@@ -328,25 +330,26 @@ local function create_widget(s)
                     local fc = io.open(show_date_file, "w")
                     if fc then fc:write(tostring(show_date)); fc:close() end
                     render_all()
+                    refit()
                 end},
                 { i18n.format("dw.time_toggle", show_time and "ON" or "OFF"), function()
                     show_time = not show_time
                     local fc = io.open(show_time_file, "w")
                     if fc then fc:write(tostring(show_time)); fc:close() end
                     render_all()
+                    refit()
                 end},
                 { i18n.tr("dw.increase"), function()
-                    local max_w = s.geometry.width - dpi(40)
-                    current_scale = math.min(max_w / base_w_px, current_scale + 0.1)
-                    local nw = math.floor(base_w_px * current_scale)
-                    local nh = math.floor(nw * base_h / base_w + 0.5)
+                    current_scale = current_scale + 0.1
+                    local nw = math.floor(natural_w * current_scale)
+                    local nh = math.floor(natural_h * current_scale + 0.5)
                     w:geometry({width = nw, height = nh})
                     update_scale(current_scale)
                 end},
                 { i18n.tr("dw.decrease"), function()
                     current_scale = math.max(0.4, current_scale - 0.1)
-                    local nw = math.max(dpi(120), math.floor(base_w_px * current_scale))
-                    local nh = math.floor(nw * base_h / base_w + 0.5)
+                    local nw = math.max(dpi(60), math.floor(natural_w * current_scale))
+                    local nh = math.floor(natural_h * current_scale + 0.5)
                     w:geometry({width = nw, height = nh})
                     update_scale(current_scale)
                 end},
@@ -371,16 +374,42 @@ local function create_widget(s)
         widget = wibox.container.background
     }
 
+    helpers.fit_wibox(w, s)
+
+    refit = function()
+        helpers.fit_wibox(w, s)
+        local g = w:geometry()
+        local pad_x = math.max(dpi(6), math.floor(dpi(3) * current_scale))
+        local pad_y = math.max(dpi(4), math.floor(dpi(2) * current_scale))
+        local nw = math.min(s.geometry.width - dpi(20), g.width + pad_x)
+        local nh = g.height + pad_y
+        w:geometry({ width = nw, height = nh })
+        natural_w = math.max(1, math.floor(nw / current_scale))
+        natural_h = math.max(1, math.floor(nh / current_scale))
+    end
+
+    refit()
+
     local f = io.open(pos_file, "r")
     if f then
         local saved_data = f:read("*a")
         f:close()
-        local sx, sy, sw, sh = saved_data:match("(-?%d+),(-?%d+),(-?%d+),(-?%d+)")
+        local sx, sy, sw = saved_data:match("(-?%d+),(-?%d+),(%d+)")
         if sx then
-            w:geometry({x = tonumber(sx), y = tonumber(sy), width = tonumber(sw), height = tonumber(sh)})
-            update_scale(tonumber(sw) / base_w_px)
+            w.x = tonumber(sx)
+            w.y = tonumber(sy)
+        end
+        if sw and tonumber(sw) > 0 then
+            local max_w = s.geometry.width - dpi(20)
+            local scale = math.max(0.4, math.min(tonumber(sw) / natural_w, max_w / natural_w))
+            update_scale(scale)
+            local nw = math.floor(natural_w * scale)
+            local nh = math.max(dpi(22), math.floor(natural_h * scale + 0.5))
+            w:geometry({ width = nw, height = nh })
         end
     end
+
+    helpers.clamp_wibox_on_screen(w, s)
 
     s.datetime_widget = w
 end
