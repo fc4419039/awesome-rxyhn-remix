@@ -307,12 +307,23 @@ chmod +x install.sh
 **Dependencies / Dependencias** (Arch Linux):
 
 ```bash
-yay -S awesome-git picom-git kitty rofi todo-bin acpi acpid \
-wireless_tools jq inotify-tools polkit-gnome xdotool xclip maim \
-brightnessctl alsa-utils alsa-tools pipewire pipewire-pulse wireplumber \
-playerctl feh zsh neovim btop lsd bat python-gobject pipewire-alsa xcolor-pick \
-touchegg cliphist xorg-xset mpc xorg-xprop xorg-xwininfo xdg-utils \
-xdg-user-dirs libpulse psmisc --needed
+yay -S --needed \
+  awesome-git picom-git kitty rofi todo-bin acpi acpid \
+  wireless_tools jq inotify-tools polkit-gnome xdotool xclip maim cliphist \
+  brightnessctl alsa-utils alsa-tools pipewire pipewire-pulse wireplumber libpulse \
+  qt5-imageformats qt6-imageformats \
+  playerctl spotify onlyoffice-bin mpd mpc ncmpcpp mpd-mpris blueman pasystray \
+  touchegg redshift networkmanager bluez bluez-utils libnotify curl ffmpeg gpick \
+  imagemagick thunar firefox xorg-server xorg-xrdb xorg-xauth \
+  xorg-xrandr xorg-setxkbmap xorg-xset xorg-xprop xdg-utils xdg-user-dirs \
+  ttf-jetbrains-mono-nerd ttf-iosevka-nerd ttf-hack-nerd ttf-font-awesome \
+  ttf-material-design-icons ttf-weather-icons \
+  zsh-syntax-highlighting zsh-autosuggestions zsh-sudo zoxide fzf feh zsh neovim \
+  btop lsd bat python-gobject python-dbus pipewire-alsa lua luarocks \
+  zsh-theme-powerlevel10k sound-theme-freedesktop \
+  i3lock slock xsecurelock sddm qt6-declarative \
+  bc pacman-contrib upower autorandr udiskie udisks2 \
+  git rsync
 ```
 
 **Fonts / Fuentes:** Iosevka Nerd Font, JetBrains Mono Nerd Font, Hack Nerd Font, Material Design Icons, Weather Icons + icomoon fonts in `fonts/`
@@ -322,12 +333,19 @@ xdg-user-dirs libpulse psmisc --needed
 ```bash
 cp -r config/* ~/.config/
 cp -r bin/* ~/.local/bin/
+cp misc/.p10k.zsh ~/.p10k.zsh   # solo si no tienes una config propia
 ```
 
 **No API keys needed / Sin API keys:** the weather widget uses **Open-Meteo** and auto-detects your location by IP.
 **Sin API keys:** el widget de clima usa **Open-Meteo** y detecta tu ubicación por IP.
 
 **Wallpapers:** place images in `~/fondos/`
+
+**Root zsh (same config as your user / misma config que tu usuario):**
+
+```bash
+./zsh-root.sh   # symlinks /root/.zshrc y /root/.p10k.zsh → tu config
+```
 
 **Logout & select AwesomeWM / Cerrar sesión e iniciar AwesomeWM**
 
@@ -375,7 +393,7 @@ awesome-rxyhn-remix/
 │   ├── awesome/              # Main AwesomeWM configuration
 │   │   ├── configuration/    # Autostart, keybindings, rules
 │   │   ├── module/           # External modules (bling, rubato, layout-machi)
-│   │   ├── scripts/          # Lua/Shell scripts (toggles, utilities)
+│   │   ├── scripts/          # Scripts (toggles, check.sh validator, utilities)
 │   │   ├── signal/           # Signals (volume, battery, playerctl, weather)
 │   │   ├── theme/            # Themes, picom configs, rofi Rasi
 │   │   ├── ui/               # Widgets, wibar, dashboard, lockscreen
@@ -393,11 +411,12 @@ awesome-rxyhn-remix/
 ├── fondos/                   # Wallpapers
 ├── sddm/sddm-astronaut-theme/  # SDDM theme (bundled, sugar-candy style, Qt6)
 ├── mscdown/                  # Submodule: YouTube music searcher
-├── misc/                     # .Xresources, .profile, .zshrc
+├── misc/                     # .Xresources, .profile, .zshrc, .p10k.zsh, grub-mkconfig.hook
 ├── install.sh                # Main installer
+├── setup-grub-hook.sh        # Installs pacman hook that auto-regen grub.cfg
 ├── setup-sddm-theme.sh       # Re-applies only the SDDM theme (no full install)
 ├── update_modules.sh         # Updates external modules (bling, rubato, machi)
-├── check.sh                  # Syntax validator (Lua/Shell/Python)
+├── zsh-root.sh               # Symlinks /root zsh config → user's config
 └── opencode.json             # OpenCode agent config
 ```
 
@@ -412,30 +431,39 @@ The installer (`install.sh`) handles everything automatically. Full list for Arc
 ```bash
 yay -S --needed \
   awesome-git picom-git kitty rofi todo-bin acpi acpid \
-  wireless_tools jq inotify-tools polkit-gnome xdotool xclip maim \
-  brightnessctl alsa-utils alsa-tools pipewire pipewire-pulse wireplumber libpulse psmisc \
+  wireless_tools jq inotify-tools polkit-gnome xdotool xclip maim cliphist \
+  brightnessctl alsa-utils alsa-tools pipewire pipewire-pulse wireplumber libpulse \
   qt5-imageformats qt6-imageformats \
-  playerctl spotify mpd mpc ncmpcpp mpd-mpris blueman pasystray \
-  touchegg redshift networkmanager bluez libnotify curl ffmpeg gpick \
-  imagemagick thunar firefox xorg-xrdb yad xcolor-pick cliphist xdg-utils xdg-user-dirs \
-  nerd-fonts-jetbrains-mono ttf-iosevka-nerd ttf-hack-nerd ttf-font-awesome \
+  playerctl spotify onlyoffice-bin mpd mpc ncmpcpp mpd-mpris blueman pasystray \
+  touchegg redshift networkmanager bluez bluez-utils libnotify curl ffmpeg gpick \
+  imagemagick thunar firefox xorg-server xorg-xrdb xorg-xauth \
+  xorg-xrandr xorg-setxkbmap xorg-xset xorg-xprop xdg-utils xdg-user-dirs \
+  ttf-jetbrains-mono-nerd ttf-iosevka-nerd ttf-hack-nerd ttf-font-awesome \
   ttf-material-design-icons ttf-weather-icons \
-  zsh-syntax-highlighting zsh-autosuggestions zsh-sudo zoxide feh zsh neovim \
-  btop lsd bat python-dbus python-gobject python-pip python-pyqt5 pipewire-alsa \
-  powerlevel10k fzf starship autorandr xorg-xrandr pamixer gtk3 \
-  sound-theme-freedesktop xorg-xset xorg-xprop xorg-xwininfo \
-  bc pacman-contrib xorg-setxkbmap upower lua git
+  zsh-syntax-highlighting zsh-autosuggestions zsh-sudo zoxide fzf feh zsh neovim \
+  btop lsd bat python-gobject python-dbus pipewire-alsa lua luarocks \
+  zsh-theme-powerlevel10k sound-theme-freedesktop \
+  i3lock slock xsecurelock sddm qt6-declarative \
+  bc pacman-contrib upower autorandr udiskie udisks2 \
+  git rsync
 ```
 
 > **What are the new ones for?**
+> - `cliphist` — clipboard history (`Super+Shift+V`)
+> - `mpc` — media keys fallback + cover art in widgets
 > - `bc` — needed by `cycle-accent.sh` (darken colors when cycling accent)
 > - `pacman-contrib` — `paccache` used by `limpiar_sistema.sh`
-> - `xorg-setxkbmap` — `change-keyboard.sh` and keyboard shortcut
+> - `xorg-xprop` — `awesomefetch` reads the WM name
+> - `xdg-user-dirs` / `xdg-utils` — `screensht` save dir + `xdg-open`
+> - `autorandr` — auto-detect external monitors on start/hotplug (`rc.lua`)
+> - `udiskie` + `udisks2` — auto-mount USB/external drives (user service enabled)
 > - `upower` — `bluetooth.sh` shows device battery
+> - `zsh-sudo` / `fzf` — `.zshrc` aliases and package search
+> - `ttf-hack-nerd` — kitty's `HackNerdFont`
+> - `python-dbus` — `bt_agent.py` (Bluetooth pairing agent)
 > - `lua` — `luac` for `check.sh`
 > - `git` — submodules and cloning powerlevel10k
 > - `mpd-mpris` — MPRIS bridge for media controls (dashboard, notifications)
-> - `udiskie` + `udisks2` — auto-mount USB/external drives (enabled by default)
 
 ---
 
@@ -620,6 +648,14 @@ sudo mkinitcpio -P
 #    por un grub.cfg antiguo, bórralas: la config activa debe apuntar a /boot/...
 #    de la partición raíz.
 ```
+
+**Prevención (importante):** para que nunca vuelva a pasar tras actualizar el kernel, instala el hook de pacman que regenera `grub.cfg` automáticamente después de cada actualización de kernel:
+
+```bash
+./setup-grub-hook.sh        # pide sudo; copia misc/grub-mkconfig.hook a /etc/pacman.d/hooks/
+```
+
+El hook hace exactamente lo mismo que `sudo grub-mkconfig -o /boot/grub/grub.cfg`, pero de forma automática en cada `pacman -Syu`. Tu `.zshrc` ya tiene el alias `grub-update` por si lo quieres hacer manual.
 
 > **Nota:** este repo jamás toca el bootloader. `install.sh` solo instala paquetes y copia config de usuario (Awesome, zsh, fuentes, tema SDDM). Si te pasa esto, es un problema local de GRUB/ESP, no de los dotfiles.
 

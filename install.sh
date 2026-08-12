@@ -66,18 +66,19 @@ echo -e "${YELLOW}📦 Instalando dependencias...${NC}"
 
 # Filtramos solo los paquetes que no están instalados
 packages=(awesome-git picom-git kitty rofi todo-bin acpi acpid \
-    wireless_tools jq inotify-tools polkit-gnome xdotool xclip maim \
-    brightnessctl alsa-utils alsa-tools pipewire pipewire-pulse wireplumber \
+    wireless_tools jq inotify-tools polkit-gnome xdotool xclip maim cliphist \
+    brightnessctl alsa-utils alsa-tools pipewire pipewire-pulse wireplumber libpulse \
     qt5-imageformats qt6-imageformats \
-    playerctl spotify onlyoffice-bin mpd ncmpcpp mpd-mpris blueman pasystray \
+    playerctl spotify onlyoffice-bin mpd mpc ncmpcpp mpd-mpris blueman pasystray \
     touchegg redshift networkmanager bluez bluez-utils libnotify curl ffmpeg gpick \
     imagemagick thunar firefox xorg-server xorg-xrdb xorg-xauth \
-    xorg-xrandr xorg-setxkbmap xorg-xset \
-    nerd-fonts-jetbrains-mono ttf-iosevka-nerd ttf-font-awesome ttf-material-design-icons ttf-weather-icons \
-    zsh-syntax-highlighting zsh-autosuggestions zoxide feh zsh neovim \
-    btop lsd bat python-gobject pipewire-alsa lua luarocks \
-    powerlevel10k sound-theme-freedesktop \
+    xorg-xrandr xorg-setxkbmap xorg-xset xorg-xprop xdg-utils xdg-user-dirs \
+    ttf-jetbrains-mono-nerd ttf-iosevka-nerd ttf-hack-nerd ttf-font-awesome ttf-material-design-icons ttf-weather-icons \
+    zsh-syntax-highlighting zsh-autosuggestions zsh-sudo zoxide fzf feh zsh neovim \
+    btop lsd bat python-gobject python-dbus pipewire-alsa lua luarocks \
+    zsh-theme-powerlevel10k sound-theme-freedesktop \
     i3lock slock xsecurelock sddm qt6-declarative \
+    bc pacman-contrib upower autorandr udiskie udisks2 \
     git rsync)
 
 to_install=()
@@ -154,25 +155,7 @@ mkdir -p ~/.local/bin
 mkdir -p ~/.local/share/fonts
 mkdir -p ~/fondos
 mkdir -p ~/Music
-mkdir -p ~/.config
-mkdir -p ~/.local/bin
-mkdir -p ~/.local/share/fonts
-mkdir -p ~/fondos
-mkdir -p ~/Music
-mkdir -p ~/.config
-mkdir -p ~/.local/bin
-mkdir -p ~/.local/share/fonts
-mkdir -p ~/fondos
-mkdir -p ~/Music
-mkdir -p ~/.config
-mkdir -p ~/.local/bin
-mkdir -p ~/.local/share/fonts
-mkdir -p ~/fondos
-mkdir -p ~/Music
 mkdir -p ~/.config/todo || true
-mkdir -p ~/.config/mpd/playlists
-mkdir -p ~/.config/mpd/playlists
-mkdir -p ~/.config/mpd/playlists
 mkdir -p ~/.config/mpd/playlists
 
 echo -e "${GREEN}✓ Directorios creados${NC}"
@@ -197,7 +180,11 @@ fi
 
 # Copiar archivos de configuración excluyendo directorios .git
 rsync -av --exclude='.git' config/ ~/.config/
-cp -r bin/* ~/.local/bin/
+if [ -d "bin" ] && [ "$(ls -A bin 2>/dev/null)" ]; then
+    cp -r bin/* ~/.local/bin/
+else
+    echo -e "${YELLOW}⚠️  Carpeta bin vacía o no encontrada, saltando${NC}"
+fi
 
 # Copiar .profile si existe
 if [ -f ".profile" ]; then
@@ -224,6 +211,12 @@ fi
 
 echo -e "${GREEN}✓ Archivos de configuración copiados${NC}"
 
+# Generar secrets.lua desde el template si no existe (config del clima, sin API key)
+if [ -f ~/.config/awesome/secrets.lua.template ] && [ ! -f ~/.config/awesome/secrets.lua ]; then
+    cp ~/.config/awesome/secrets.lua.template ~/.config/awesome/secrets.lua
+    echo -e "${GREEN}✓ secrets.lua generado desde el template${NC}"
+fi
+
 # Actualizar módulos externos a sus últimas versiones
 echo -e "${YELLOW}📦 Actualizando módulos externos (bling, rubato, layout-machi)...${NC}"
 bash "$(dirname "$0")/update_modules.sh" 2>/dev/null || echo -e "${YELLOW}  ⚠ No se pudieron actualizar, se usan los versionados en el repo${NC}"
@@ -231,6 +224,12 @@ bash "$(dirname "$0")/update_modules.sh" 2>/dev/null || echo -e "${YELLOW}  ⚠ 
 # Activar timer de limpieza automática (cada 3 días)
 systemctl --user daemon-reload 2>/dev/null || true
 systemctl --user enable --now limpiar-sistema.timer 2>/dev/null && echo -e "${GREEN}✓ Timer de limpieza automática activado${NC}" || true
+
+# Activar servicios de usuario (mpd, mpd-mpris, udiskie) si hay sesión
+# (no detienen la instalación si no hay sesión activa)
+systemctl --user enable --now mpd.service mpd-mpris.service udiskie.service 2>/dev/null \
+    && echo -e "${GREEN}✓ Servicios de usuario activados (mpd, mpd-mpris, udiskie)${NC}" \
+    || echo -e "${YELLOW}⚠️  No se pudieron activar los servicios de usuario (sin sesión). Se activarán al iniciar sesión.${NC}"
 
 echo ""
 echo -e "${YELLOW}🔐 Instalando librerías PAM para Lua (lockscreen)...${NC}"
@@ -259,14 +258,14 @@ if [ -d "fonts" ] && [ "$(ls -A fonts)" ]; then
 
     # Instalar en /usr/share/fonts/ (sistema completo)
     echo -e "${YELLOW}⚠️  Instalando fuentes en /usr/share/fonts/ (requiere sudo)...${NC}"
-    sudo mkdir -p /usr/share/fonts
-    sudo cp -r fonts/* /usr/share/fonts/
-    echo -e "${GREEN}✓ Fuentes instaladas en /usr/share/fonts/${NC}"
+    sudo mkdir -p /usr/share/fonts && sudo cp -r fonts/* /usr/share/fonts/ \
+        && echo -e "${GREEN}✓ Fuentes instaladas en /usr/share/fonts/${NC}" \
+        || echo -e "${YELLOW}⚠️  No se pudieron instalar las fuentes en /usr/share/fonts (sin sudo). Las del usuario siguen activas.${NC}"
 
     # Actualizar cache de fuentes
     echo -e "${YELLOW}🔄 Actualizando cache de fuentes...${NC}"
-    fc-cache -fv
-    sudo fc-cache -fv
+    fc-cache -fv >/dev/null 2>&1 || true
+    sudo fc-cache -fv >/dev/null 2>&1 || true
     echo -e "${GREEN}✓ Cache de fuentes actualizado${NC}"
 else
     echo -e "${YELLOW}⚠️  Carpeta fonts vacía o no encontrada${NC}"
@@ -331,6 +330,13 @@ if ! grep -q "TODO_PATH" ~/.zshrc 2>/dev/null; then
     echo "# AwesomeWM Remix" >> ~/.zshrc
     echo 'export TODO_PATH="$HOME/.config/todo"' >> ~/.zshrc
     echo -e "${GREEN}✓ TODO_PATH agregada a .zshrc${NC}"
+fi
+
+# Config de powerlevel10k: respetar la del usuario si ya existe;
+# si no hay ninguna, instalar la incluida en el repo
+if [ -f "misc/.p10k.zsh" ] && [ ! -f ~/.p10k.zsh ]; then
+    cp misc/.p10k.zsh ~/.p10k.zsh
+    echo -e "${GREEN}✓ .p10k.zsh instalado (config de powerlevel10k del repo)${NC}"
 fi
 
 echo ""
@@ -552,6 +558,14 @@ EOF"
 else
     echo -e "${YELLOW}⚠️  SDDM no está instalado. Saltando configuración.${NC}"
 fi
+
+echo ""
+
+# =====================================================================
+# 1️⃣2️⃣ CONFIGURAR ZSH DE ROOT (symlinks a la config del usuario)
+# =====================================================================
+echo -e "${YELLOW}👑 Configurando zsh de root (symlinks)...${NC}"
+bash "$(dirname "$0")/zsh-root.sh" || echo -e "${YELLOW}⚠️  No se pudo configurar root (requiere sudo). Puedes ejecutar zsh-root.sh después.${NC}"
 
 echo ""
 
