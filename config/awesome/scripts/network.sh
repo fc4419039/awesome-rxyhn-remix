@@ -129,9 +129,16 @@ done
 
 sort -t$'\t' -k1,1rn "$raw_file" | cut -f2 > "$list_file"
 
+radio_state=$(nmcli radio wifi 2>/dev/null)
+
 build_menu() {
     local networks
     networks=$(cat "$list_file" 2>/dev/null)
+    if [ "$radio_state" = "enabled" ]; then
+        printf "<span foreground='#f87171'>󰤮</span>   %s\n" "$(t wifi.disable)"
+    elif [ "$radio_state" = "disabled" ]; then
+        printf "<span foreground='#22c55e'>󰤨</span>   %s\n" "$(t wifi.enable)"
+    fi
     printf "<span foreground='#f97316'></span>   %s\n" "$(t wifi.scan)"
     if [ -z "$networks" ]; then
         printf "<span foreground='#64748b'>󰤭   %s</span>\n" "$(t wifi.nonetworks)"
@@ -148,6 +155,20 @@ choice=$(echo "$menu" | rofi -dmenu -markup-rows -theme "$theme" -i)
 [ -z "$choice" ] && rm -f "$list_file" "$sec_file" "$raw_file" "$saved_file" && exit 0
 
 echo "$choice" | grep -qF "$(t wifi.close)" && rm -f "$list_file" "$sec_file" "$raw_file" "$saved_file" && exit 0
+
+# Apagar / prender la radio WiFi
+if echo "$choice" | grep -qF "$(t wifi.disable)"; then
+    nmcli radio wifi off 2>/dev/null
+    notify-send -i network-wireless "$(t wifi.notif_title)" "$(t wifi.radio_off)"
+    rm -f "$list_file" "$sec_file" "$raw_file" "$saved_file"
+    exit 0
+fi
+if echo "$choice" | grep -qF "$(t wifi.enable)"; then
+    nmcli radio wifi on 2>/dev/null
+    notify-send -i network-wireless "$(t wifi.notif_title)" "$(t wifi.radio_on)"
+    rm -f "$list_file" "$sec_file" "$raw_file" "$saved_file"
+    exit 0
+fi
 
 # "Escanear" o el aviso de "Sin redes" siempre fuerzan un escaneo nuevo
 # (nunca se intenta conectar a la opción de "Sin redes").

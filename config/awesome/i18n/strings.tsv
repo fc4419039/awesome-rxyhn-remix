@@ -25,6 +25,10 @@ wifi.connecting	Conectando a %s...	Connecting to %s...	Conectando a %s...	Connex
 wifi.connected	Conectado a %s	Connected to %s	Conectado a %s	Connecté à %s	Verbunden mit %s	Connesso a %s	%s に接続しました	%s에 연결됨	已连接到 %s	Подключено к %s	متصل بـ %s
 wifi.error	Error al conectar a %s	Failed to connect to %s	Erro ao conectar a %s	Échec de la connexion à %s	Verbindung zu %s fehlgeschlagen	Errore di connessione a %s	%s への接続に失敗しました	%s에 연결하지 못했습니다	连接到 %s 失败	Не удалось подключиться к %s	فشل الاتصال بـ %s
 wifi.show_password	Alt+1  mostrar / ocultar contraseña	Alt+1  show / hide password	Alt+1  mostrar / ocultar senha	Alt+1  afficher / masquer le mot de passe	Alt+1  Passwort anzeigen / ausblenden	Alt+1  mostra / nascondi password	Alt+1  パスワードを表示 / 非表示	Alt+1  비밀번호 표시 / 숨기기	Alt+1  显示 / 隐藏密码	Alt+1  показать / скрыть пароль	Alt+1  إظهار / إخفاء كلمة المرور
+wifi.enable	Prender WiFi	Turn WiFi on	Ligar WiFi	Activer le WiFi	WiFi einschalten	Accendi WiFi	WiFiをオン	WiFi 켜기	打开 WiFi	Включить Wi-Fi	تشغيل Wi-Fi
+wifi.disable	Apagar WiFi	Turn WiFi off	Desligar WiFi	Désactiver le WiFi	WiFi ausschalten	Spegni WiFi	WiFiをオフ	WiFi 끄기	关闭 WiFi	Выключить Wi-Fi	إيقاف تشغيل Wi-Fi
+wifi.radio_on	WiFi encendido	WiFi turned on	WiFi ligado	WiFi activé	WiFi eingeschaltet	WiFi acceso	WiFiをオンにしました	WiFi가 켜졌습니다	已打开 WiFi	Wi-Fi включён	تم تشغيل Wi-Fi
+wifi.radio_off	WiFi apagado	WiFi turned off	WiFi desligado	WiFi désactivé	WiFi ausgeschaltet	WiFi spento	WiFiをオフにしました	WiFi가 꺼졌습니다	已关闭 WiFi	Wi-Fi выключен	تم إيقاف تشغيل Wi-Fi
 menu.hotkeys	Atajos	Hotkeys	Atalhos	Raccourcis	Tastenkürzel	Scorciatoie	ショートカット	단축키	快捷键	Горячие клавиши	اختصارات
 menu.manual	Manual	Manual	Manual	Manuel	Handbuch	Manuale	マニュアル	매뉴얼	手册	Справка	الدليل
 menu.edit_config	Editar configuración	Edit Config	Editar configuração	Modifier la configuration	Konfiguration bearbeiten	Modifica configurazione	設定を編集	설정 편집	编辑配置	Изменить конфигурацию	تعديل الإعدادات
