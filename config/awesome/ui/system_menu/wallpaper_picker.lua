@@ -71,9 +71,11 @@ local accent_color = "#06b6d4"
 local fg_color = "#e2e8f0"
 local muted_color = "#666c79"
 
+local cols = 2
 local card_w = dpi(220)
 local card_h = dpi(124)
 local card_spacing = dpi(10)
+local row_h = card_h + dpi(32)
 
 local function stop_thumb_timer()
     if M.thumb_timer then
@@ -114,10 +116,7 @@ local function show_menu()
     M.active = true
     ensure_thumbs(wallpapers)
 
-    local cols = 1
-    local rows = #wallpapers
-
-    local row_h = card_h + dpi(12)
+    local rows = math.ceil(#wallpapers / cols)
     local viewport_h = sgeo.height - dpi(150)
     local scroll_offset = 0
 
@@ -127,12 +126,18 @@ local function show_menu()
     local cards = {}
     local selected = 1
 
+    local row
     for i, path in ipairs(wallpapers) do
+        if (i - 1) % cols == 0 then
+            row = wibox.layout.fixed.horizontal()
+            row.spacing = card_spacing
+            grid:add(row)
+        end
+
         local tp = thumb_for(path)
         local thumb = wibox.widget {
             forced_width = card_w,
             forced_height = card_h,
-            -- Ajustamos para que la imagen llene el espacio recortando lo necesario (aspect fill)
             horizontal_fit_policy = "cover",
             vertical_fit_policy = "cover",
             widget = wibox.widget.imagebox,
@@ -166,12 +171,13 @@ local function show_menu()
             end)
         ))
 
-        grid:add(card)
+        row:add(card)
     end
 
     local function update_visibility()
         for i, card in ipairs(cards) do
-            local y_top = (i - 1) * row_h
+            local r = math.floor((i - 1) / cols)
+            local y_top = r * row_h
             local y_bot = y_top + card_h
             if y_bot >= scroll_offset and y_top <= scroll_offset + viewport_h then
                 if not card.loaded and file_exists(card.thumb_path) then
@@ -184,7 +190,7 @@ local function show_menu()
 
     local scroller = wibox.container.scroll.vertical(grid, 20, 100, 0, false, viewport_h,
         function(_, size, visible_size)
-            if size <= visible_size then scroll_offset = 0 return 0 end
+            if size <= visible_size then scroll_offset = 0; return 0 end
             scroll_offset = math.max(0, math.min(scroll_offset, size - visible_size))
             update_visibility()
             return scroll_offset
@@ -201,7 +207,8 @@ local function show_menu()
         for i, card in ipairs(cards) do
             card.border_color = (i == selected) and accent_color or surface_color
         end
-        local y_top = (selected - 1) * row_h
+        local r = math.floor((selected - 1) / cols)
+        local y_top = r * row_h
         local y_bot = y_top + card_h
         if y_top < scroll_offset then scroll_offset = y_top end
         if y_bot > scroll_offset + viewport_h then scroll_offset = y_bot - viewport_h end
@@ -218,7 +225,7 @@ local function show_menu()
         ontop = true,
         type = "dialog",
         screen = screen,
-        width = dpi(300),
+        width = dpi(525),
         height = sgeo.height - dpi(30),
         x = sgeo.x + dpi(64),
         y = dpi(15),
@@ -269,8 +276,12 @@ local function show_menu()
 
     awful.keygrabber.run(function(_, key, event)
         if event ~= "press" then return end
-        if key == "Down" or key == "j" then nav(1)
-        elseif key == "Up" or key == "k" then nav(-1)
+        if key == "Down" or key == "j" then nav(cols)
+        elseif key == "Up" or key == "k" then nav(-cols)
+        elseif key == "Right" or key == "l" then nav(1)
+        elseif key == "Left" or key == "h" then nav(-1)
+        elseif key == "Page_Down" then scroll_by(viewport_h)
+        elseif key == "Page_Up" then scroll_by(-viewport_h)
         elseif key == "Return" then apply_wallpaper(wallpapers[selected]); hide()
         elseif key == "Escape" then hide()
         end
