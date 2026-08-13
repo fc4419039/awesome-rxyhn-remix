@@ -64,9 +64,9 @@
 
 ## 📑 Table of Contents / Índice
 
-- [Features / Características](#features--características)
+- [Features](#features) / [Características](#características)
 - [Screenshots / Capturas](#screenshots--capturas)
-- [Keyboard Shortcuts / Atajos](#keyboard-shortcuts--atajos)
+- [Keyboard Shortcuts](#keyboard-shortcuts) / [Atajos de teclado](#atajos-de-teclado)
 - [Installation / Instalación](#installation--instalación)
 - [SDDM: keep the sugar-candy login after a theme update / Mantener el login sugar-candy](#sddm-keep-the-sugar-candy-login-after-a-theme-update--mantener-el-login-sugar-candy-tras-una-actualización)
 - [Repository Structure / Estructura](#repository-structure--estructura-del-repositorio)
