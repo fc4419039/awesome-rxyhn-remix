@@ -1,7 +1,4 @@
--- Standalone script: apply saved color temperature preferences via xrandr.
--- Called by color_temp.sh during Awesome startup and on monitor hotplug.
-
-local prefs_file = os.getenv("HOME") .. "/.config/awesome/.color_temp_prefs"
+local prefs_file = (os.getenv("HOME") or "/tmp") .. "/.config/awesome/.color_temp_prefs"
 
 local function temp_to_gamma(temp)
     local t = temp / 100
@@ -58,7 +55,6 @@ if f then
     end
     f:close()
 else
-    -- No prefs yet — apply sensible defaults
     apply("eDP-1", 6500)
     os.execute("xrandr --output HDMI-1 --gamma 0.872:0.933:1.128 2>/dev/null")
 end

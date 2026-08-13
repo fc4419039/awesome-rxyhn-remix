@@ -9,7 +9,7 @@ local rubato = require("module.rubato")
 
 local color_temp = {}
 
-local prefs_file = os.getenv("HOME") .. "/.config/awesome/.color_temp_prefs"
+local prefs_file = (os.getenv("HOME") or "/tmp") .. "/.config/awesome/.color_temp_prefs"
 
 local function save_temp(monitor, temp)
     local entries = {}
@@ -46,38 +46,10 @@ local function load_temp(monitor, default)
     return default
 end
 
-local function get_connected_monitors()
-    local monitors = {}
-    awful.spawn.easy_async_with_shell("xrandr --query | grep ' connected'", function(stdout)
-        for line in stdout:gmatch("[^\r\n]+") do
-            local name = line:match("^([%w%-]+) connected")
-            if name then
-                table.insert(monitors, name)
-            end
-        end
-    end)
-    return monitors
-end
-
-local function get_current_gamma(monitor)
-    local gamma = {1.0, 1.0, 1.0}
-    awful.spawn.easy_async_with_shell("xrandr --verbose | grep -A 5 '" .. monitor .. "' | grep 'Gamma:'", function(stdout)
-        local r, g, b = stdout:match("Gamma:%s+([%d%.]+)%s+([%d%.]+)%s+([%d%.]+)")
-        if r and g and b then
-            gamma = {tonumber(r), tonumber(g), tonumber(b)}
-        end
-    end)
-    return gamma
-end
-
-local function set_monitor_gamma(monitor, r, g, b)
-    awful.spawn.with_shell(string.format("xrandr --output %s --gamma %.2f:%.2f:%.2f", monitor, r, g, b))
-end
-
 local function temp_to_gamma(temp)
     local t = temp / 100
     local r, g, b
-    
+
     if t <= 66 then
         r = 255
     else
@@ -85,7 +57,7 @@ local function temp_to_gamma(temp)
         r = 329.698727446 * (r ^ -0.1332047592)
         r = math.min(255, math.max(0, r))
     end
-    
+
     if t <= 66 then
         g = t
         g = 99.4708025861 * math.log(g) - 161.1195681661
@@ -95,7 +67,7 @@ local function temp_to_gamma(temp)
         g = 288.1221695283 * (g ^ -0.0755148492)
         g = math.min(255, math.max(0, g))
     end
-    
+
     if t >= 66 then
         b = 255
     elseif t <= 19 then
@@ -105,15 +77,35 @@ local function temp_to_gamma(temp)
         b = 138.5177312231 * math.log(b) - 305.0447927307
         b = math.min(255, math.max(0, b))
     end
-    
+
     return r / 255, g / 255, b / 255
+end
+
+local function set_monitor_gamma(monitor, r, g, b)
+    awful.spawn({
+        "xrandr", "--output", monitor, "--gamma",
+        string.format("%.4f:%.4f:%.4f", r, g, b)
+    })
+end
+
+local function get_connected_monitors(callback)
+    awful.spawn.easy_async_with_shell("xrandr --query | grep ' connected'", function(stdout)
+        local monitors = {}
+        for line in stdout:gmatch("[^\r\n]+") do
+            local name = line:match("^([%w%-]+) connected")
+            if name then
+                table.insert(monitors, name)
+            end
+        end
+        callback(monitors)
+    end)
 end
 
 function color_temp.create(s)
     local monitors = {}
-    local sliders = {}
     local monitor_widgets = {}
     local screen_height = s.geometry.height
+    local grabber = nil
 
     local popup = wibox({
         type = "dialog",
@@ -144,7 +136,6 @@ function color_temp.create(s)
     local popup_open = false
 
     local function create_monitor_widget(monitor_name)
-        local current_gamma = get_current_gamma(monitor_name)
         local current_temp = load_temp(monitor_name, 6500)
 
         local name_label = wibox.widget{
@@ -208,7 +199,7 @@ function color_temp.create(s)
         slider:set_value(current_temp)
 
         local warm_label = wibox.widget{
-            markup = helpers.colorize_text("☀ Cálido", beautiful.xcolor3),
+            markup = helpers.colorize_text(i18n.tr("ct.warm") or "☀ Warm", beautiful.xcolor3),
             font = beautiful.font_name .. "8",
             align = "left",
             valign = "center",
@@ -216,7 +207,7 @@ function color_temp.create(s)
         }
 
         local cool_label = wibox.widget{
-            markup = helpers.colorize_text("❄ Frío", beautiful.xcolor4),
+            markup = helpers.colorize_text(i18n.tr("ct.cool") or "❄ Cool", beautiful.xcolor4),
             font = beautiful.font_name .. "8",
             align = "right",
             valign = "center",
@@ -257,22 +248,21 @@ function color_temp.create(s)
 
         return {widget = widget, slider = slider, temp_value = temp_value, monitor = monitor_name}
     end
-    
+
+    local monitors_container = wibox.widget{
+        spacing = dpi(12),
+        layout = wibox.layout.fixed.vertical
+    }
+
     local function refresh_monitors()
-        awful.spawn.easy_async_with_shell("xrandr --query | grep ' connected'", function(stdout)
-            monitors = {}
-            for line in stdout:gmatch("[^\r\n]+") do
-                local name = line:match("^([%w%-]+) connected")
-                if name then
-                    table.insert(monitors, name)
-                end
-            end
+        get_connected_monitors(function(detected_monitors)
+            monitors = detected_monitors
             monitors_container:reset()
             monitor_widgets = {}
-            
+
             if #monitors == 0 then
                 local no_monitors = wibox.widget{
-                    markup = helpers.colorize_text(i18n.tr("ct.no_monitors") or "No hay monitores conectados", beautiful.xcolor8),
+                    markup = helpers.colorize_text(i18n.tr("ct.no_monitors") or "No monitors connected", beautiful.xcolor8),
                     font = beautiful.font_name .. "10",
                     align = "center",
                     valign = "center",
@@ -290,14 +280,14 @@ function color_temp.create(s)
             monitors_container:emit_signal("widget::layout_changed")
         end)
     end
-    
+
     local function show()
         refresh_monitors()
         popup.visible = true
         slide:set(s.geometry.x + dpi(64))
         popup_open = true
     end
-    
+
     local function hide()
         slide:set(s.geometry.x - dpi(290))
         popup_open = false
@@ -305,10 +295,10 @@ function color_temp.create(s)
             if not popup_open then popup.visible = false end
         end)
     end
-    
+
     popup._show = show
     popup._hide = hide
-    
+
     local function toggle()
         if popup_open then hide() else show() end
     end
@@ -330,9 +320,9 @@ function color_temp.create(s)
     popup:connect_signal("mouse::leave", function()
         popup_hide_timer:again()
     end)
-    
+
     local esc_hint = wibox.widget{
-        markup = helpers.colorize_text("ESC para cerrar", beautiful.xcolor6),
+        markup = helpers.colorize_text(i18n.tr("ct.esc_hint") or "ESC to close", beautiful.xcolor6),
         font = beautiful.font_name .. "8",
         align = "center",
         valign = "center",
@@ -341,14 +331,14 @@ function color_temp.create(s)
     }
 
     local title = wibox.widget{
-        markup = helpers.colorize_text(i18n.tr("ct.title") or "Temperatura de Color", beautiful.xforeground),
+        markup = helpers.colorize_text(i18n.tr("ct.title") or "Color Temperature", beautiful.xforeground),
         font = beautiful.font_name .. "bold 12",
         align = "center",
         valign = "center",
         forced_height = dpi(40),
         widget = wibox.widget.textbox
     }
-    
+
     local header = wibox.widget{
         {
             esc_hint,
@@ -358,13 +348,31 @@ function color_temp.create(s)
         layout = wibox.layout.align.horizontal
     }
     header = wibox.container.margin(header, dpi(16), dpi(16), dpi(8), dpi(8))
-    
-    local monitors_container = wibox.widget{
-        spacing = dpi(12),
-        layout = wibox.layout.fixed.vertical
-    }
-    
-    -- Initial monitor detection (sync for immediate display)
+
+    local content = wibox.container.margin(monitors_container, dpi(16), dpi(16), 0, dpi(16))
+
+    local main_layout = wibox.layout.fixed.vertical()
+    main_layout:add(header)
+    main_layout:add(content)
+
+    popup:set_widget(main_layout)
+
+    popup:buttons(gears.table.join(
+        awful.button({}, 3, function() hide() end)
+    ))
+
+    popup:connect_signal("property::visible", function()
+        if popup.visible then
+            grabber = awful.keygrabber.run(function(_, key, event)
+                if event == "press" and key == "Escape" then hide() end
+            end)
+        else
+            if grabber then pcall(awful.keygrabber.stop, grabber) end
+            grabber = nil
+        end
+    end)
+
+    -- Initial sync detection
     local function detect_monitors_sync()
         local handle = io.popen("xrandr --query | grep ' connected'")
         if handle then
@@ -379,10 +387,10 @@ function color_temp.create(s)
             end
             monitors_container:reset()
             monitor_widgets = {}
-            
+
             if #monitors == 0 then
                 local no_monitors = wibox.widget{
-                    markup = helpers.colorize_text(i18n.tr("ct.no_monitors") or "No hay monitores conectados", beautiful.xcolor8),
+                    markup = helpers.colorize_text(i18n.tr("ct.no_monitors") or "No monitors connected", beautiful.xcolor8),
                     font = beautiful.font_name .. "10",
                     align = "center",
                     valign = "center",
@@ -400,32 +408,8 @@ function color_temp.create(s)
             monitors_container:emit_signal("widget::layout_changed")
         end
     end
-    
-    detect_monitors_sync()
-    
-    -- Skip scroll for now, use container directly
-    local content = wibox.container.margin(monitors_container, dpi(16), dpi(16), 0, dpi(16))
-    
-    local main_layout = wibox.layout.fixed.vertical()
-    main_layout:add(header)
-    main_layout:add(content)
-    
-popup:set_widget(main_layout)
-    
-    popup:buttons(gears.table.join(
-        awful.button({}, 3, function() hide() end)
-    ))
 
-    popup:connect_signal("property::visible", function()
-        if popup.visible then
-            grabber = awful.keygrabber.run(function(_, key, event)
-                if event == "press" and key == "Escape" then hide() end
-            end)
-        else
-            if grabber then pcall(awful.keygrabber.stop, grabber) end
-            grabber = nil
-        end
-    end)
+    detect_monitors_sync()
 
     return popup
 end
@@ -446,7 +430,5 @@ function color_temp.apply_saved()
         f:close()
     end
 end
-
-color_temp.apply_saved()
 
 return color_temp

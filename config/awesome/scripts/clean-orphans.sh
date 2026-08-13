@@ -15,8 +15,28 @@ TRASH="󰇔"
 NO="󰄰"
 YES="󰄱"
 
-orphans=$(pacman -Qdtq 2>/dev/null)
-if [ -z "$orphans" ]; then
+# Obtener huérfanos y filtrar protegidos (incluyendo qt5/qt6/pyqt y drivers de video)
+all_orphans=$(pacman -Qdtq 2>/dev/null)
+orphans=""
+for pkg in $all_orphans; do
+    is_protected=false
+    # Proteger qt5, qt6, pyqt, drivers de video y los listados
+    if [[ "$pkg" == qt5-* ]] || [[ "$pkg" == qt6-* ]] || [[ "$pkg" == *pyqt* ]] || [[ "$pkg" == xf86-video-* ]]; then
+        is_protected=true
+    else
+        for p in sddm lightdm gdm lxdm awesome bspwm i3-wm networkmanager dhcpcd iwd grub efibootmgr pulseaudio pipewire; do
+            if [[ "$pkg" == "$p" ]]; then
+                is_protected=true
+                break
+            fi
+        done
+    fi
+    if [ "$is_protected" = false ]; then
+        orphans="$orphans $pkg"
+    fi
+done
+
+if [ -z "$(echo $orphans | xargs)" ]; then
     notify-send "$(t co.title)" "$(t co.none)" -i edit-clear
     exit 0
 fi

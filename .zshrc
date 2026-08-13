@@ -184,5 +184,8 @@ elif [ -f ~/powerlevel10k/powerlevel10k.zsh-theme ]; then
 fi
 
 # AwesomeWM Remix
-alias opencode='$HOME/.opencode/bin/opencode'
+alias opencode='~/.opencode/bin/opencode'
 
+
+# opencode
+export PATH=/home/spectre/.opencode/bin:$PATH

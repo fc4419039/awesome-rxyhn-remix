@@ -72,6 +72,9 @@ sm.clean	Limpiar	Clean	Limpar	Nettoyer	Bereinigen	Pulisci	クリーンアップ	
 sm.color_temp	Temp. Color	Color Temp	Temp. Cor	Temp. Couleur	Farbtemperatur	Temp. Colore	色温度	색온도	色温	Цветовая температура	درجة حرارة اللون
 ct.title	Temperatura de Color	Color Temperature	Temperatura de Cor	Température de couleur	Farbtemperatur	Temperatura Colore	色温度	색온도	色温	Цветовая температура	درجة حرارة اللون
 ct.no_monitors	No hay monitores conectados	No monitors connected	Nenhum monitor conectado	Aucun moniteur connecté	Keine Monitore verbunden	Nessun monitor connesso	モニターが接続されていません	연결된 모니터 없음	无连接显示器	Мониторы не подключены	لا توجد شاشات متصلة
+ct.warm	☀ Cálido	☀ Warm	☀ Quente	☀ Chaud	☀ Warm	☀ Caldo	☀ 暖色	☀ 따뜻함	☀ 暖色	☀ Тёплый	☀ دافئ
+ct.cool	❄ Frío	❄ Cool	❄ Frio	❄ Froid	❄ Kalt	❄ Freddo	❄ 冷色	❄ 차가움	❄ 冷色	❄ Холодный	❄ بارد
+ct.esc_hint	ESC para cerrar	ESC to close	ESC para fechar	ESC pour fermer	ESC zum Schließen	ESC per chiudere	ESCで閉じる	ESC로 닫기	ESC 关闭	ESC для закрытия	ESC للإغلاق
 tt.uptime	Tiempo activo	Uptime	Tempo ativo	Temps de fonctionnement	Betriebszeit	Tempo di attività	稼働時間	가동 시간	运行时间	Время работы	مدة التشغيل
 tt.scanning	Escaneando...	Scanning...	Escaneando...	Analyse...	Scannen...	Scansione...	スキャン中...	스캔 중...	正在扫描...	Сканирование...	جارٍ الفحص...
 tt.no_networks	No se encontraron redes	No networks found	Nenhuma rede encontrada	Aucun réseau trouvé	Keine Netzwerke gefunden	Nessuna rete trovata	ネットワークが見つかりません	네트워크를 찾을 수 없습니다	未找到网络	Сети не найдены	لم يتم العثور على شبكات
@@ -231,3 +234,7 @@ cb.empty	Sin historial	No history	Sem histórico	Aucun historique	Kein Verlauf	N
 cb.back	Atrás	Back	Voltar	Retour	Zurück	Indietro	戻る	뒤로	返回	Назад	رجوع
 cb.exit	Salir	Exit	Sair	Quitter	Beenden	Esci	終了	나가기	退出	Выход	خروج
 cb.copied	Copiado al portapapeles	Copied to clipboard	Copiado para a área de transferência	Copié dans le presse-papiers	In die Zwischenablage kopiert	Copiato negli appunti	クリップボードにコピーしました	클립보드에 복사됨	已复制到剪贴板	Скопировано в буфер обмена	تم النسخ إلى الحافظة
+sm.clean_cache	Limpiar caché	Clean cache	Limpar cache	Nettoyer le cache	Cache bereinigen	Pulisci cache	キャッシュをクリーンアップ	캐시 정리	清理缓存	Очистить кэш	تنظيف ذاكرة التخزين المؤقت
+cc.confirm	¿Limpiar caché y basura acumulada (%s)?	Clean accumulated cache and junk (%s)?	Limpar cache e lixo acumulado (%s)?	Nettoyer le cache et les déchets accumulés (%s) ?	Cache und angesammelten Müll bereinigen (%s)?	Pulire cache e spazzatura accumulata (%s)?	蓄積したキャッシュとゴミを削除しますか (%s)?	누적 캐시와 정크를 정리할까요 (%s)?	清理累积的缓存和垃圾 (%s)？	Очистить накопленный кэш и мусор (%s)?	تنظيف ذاكرة التخزين المؤقت المتراكمة والقمامة (%s)؟
+cc.done_title	Caché limpia	Cache cleaned	Cache limpo	Cache nettoyé	Cache bereinigt	Cache pulito	キャッシュ完了	캐시 정리 완료	缓存已清理	Кэш очищен	تم تنظيف ذاكرة التخزين المؤقت
+cc.freed	%s liberados	%s freed	%s liberados	%s libérés	%s freigegeben	%s liberati	%s 解放	%s 확보됨	释放 %s	Освобождено %s	تم تحرير %s
