@@ -169,7 +169,7 @@ dash.music	Música	Music	Música	Musique	Musik	Musica	音楽	음악	音乐	Му�
 dash.disk	Disco	Disk	Disco	Disque	Festplatte	Disco	ディスク	디스크	磁盘	Диск	القرص
 dash.disk_title	Disco %s	Disk %s	Disco %s	Disque %s	Festplatte %s	Disco %s	ディスク %s	디스크 %s	磁盘 %s	Диск %s	القرص %s
 dash.loading	Cargando...	Loading...	Carregando...	Chargement...	Laden...	Caricamento...	読み込み中...	불러오는 중...	正在加载...	Загрузка...	جارٍ التحميل...
-dash.date_fmt	%s de %s	%s %s	%s de %s	%s %s	%s. %s	%s %s	%s月%s日	%s월 %s일	%s月%s日	%s %s	%s %s
+dash.date_fmt	%s %s	%s %s	%s de %s	%s %s	%s. %s	%s %s	%s月%s日	%s월 %s일	%s月%s日	%s %s	%s %s
 dw.increase	Aumentar	Increase	Aumentar	Augmenter	Vergrößern	Aumenta	拡大	크게	增大	Увеличить	تكبير
 dw.decrease	Disminuir	Decrease	Diminuir	Diminuer	Verkleinern	Riduci	縮小	작게	减小	Уменьшить	تصغير
 dw.hide	Ocultar	Hide	Ocultar	Masquer	Ausblenden	Nascondi	非表示	숨기기	隐藏	Скрыть	إخفاء
