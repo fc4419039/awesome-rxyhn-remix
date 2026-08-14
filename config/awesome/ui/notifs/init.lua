@@ -31,7 +31,7 @@ naughty.config.defaults.position = "top_right"
 
 -- Timeouts
 naughty.config.presets.low.timeout = 3
-naughty.config.presets.critical.timeout = 0
+naughty.config.presets.critical.timeout = 5
 
 naughty.config.presets.normal = {
     font = beautiful.font_name .. "medium 10",
@@ -49,7 +49,7 @@ naughty.config.presets.critical = {
     font = beautiful.font_name .. "medium 10",
     fg = beautiful.xcolor1,
     bg = beautiful.bg_normal,
-    timeout = 0
+    timeout = 5
 }
 
 naughty.config.presets.ok = naughty.config.presets.normal
@@ -60,7 +60,15 @@ ruled.notification.connect_signal("request::rules", function()
     -- All notifications will match this rule.
     ruled.notification.append_rule {
         rule = {},
-        properties = {screen = awful.screen.preferred, implicit_timeout = 6}
+        properties = {screen = awful.screen.preferred, implicit_timeout = 5}
+    }
+
+    -- Notificaciones "persistentes" (timeout = 0) de navegadores y otras apps:
+    -- forzar cierre a los 5s para que no queden pegadas en pantalla y pasen
+    -- al centro de notificaciones al expirar. Incluye las críticas.
+    ruled.notification.append_rule {
+        rule = {timeout = 0},
+        properties = {timeout = 5}
     }
 
     -- Firefox: ignorar notificaciones de baja urgencia (hover en videos, etc.)

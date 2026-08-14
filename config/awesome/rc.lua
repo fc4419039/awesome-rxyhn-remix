@@ -1,3 +1,11 @@
+--[[
+ _____ __ _ __ _____ _____ _____ _______ _____
+|     |  | |  |  ___|  ___|     |       |  ___|
+|  -  |  | |  |  ___|___  |  |  |  | |  |  ___|
+|__|__|_______|_____|_____|_____|__|_|__|_____|
+         ~ AestheticArch ~
+                rxyhn
+--]]
 -- Fail-safe: si la pantalla estaba bloqueada al crashear Awesome, lanzar
 -- i3lock ANTES de cargar cualquier código. Evita que un error en rc.lua
 -- o en los módulos de Awesome deje la pantalla desbloqueada.
@@ -13,14 +21,6 @@ do
     end
 end
 
---[[
- _____ __ _ __ _____ _____ _____ _______ _____
-|     |  | |  |  ___|  ___|     |       |  ___|
-|  -  |  | |  |  ___|___  |  |  |  | |  |  ___|
-|__|__|_______|_____|_____|_____|__|_|__|_____|
-         ~ AestheticArch ~
-                rxyhn
---]]
 pcall(require, "luarocks.loader")
 
 -- Log de tiempo de arranque (diagnóstico profesional)
@@ -96,6 +96,8 @@ end
 
 -- Autostart de servicios base
 awful.spawn(gfs.get_configuration_dir() .. "configuration/autostart")
+-- Desbloquear el keyring al arrancar (evita que Spotify/Opera pidan contraseña)
+awful.spawn.with_shell('eval "$(gnome-keyring-daemon --start --components=secrets,pkcs11,ssh 2>/dev/null)"')
 awful.spawn(os.getenv("HOME") .. "/.config/awesome/scripts/notif-sink-setup.sh")
 -- Estado de picom persistente en ~/.cache/awesome (sobrevive al reinicio).
 -- Fallback: /tmp (estado antiguo) y .codebak (reinicio con efecto activo).
