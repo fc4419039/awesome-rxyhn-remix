@@ -79,6 +79,8 @@
 
 <br>
 
+<a id="screenshots--capturas"></a>
+
 ## 🖼️ Screenshots / Capturas
 
 <div align="center">
@@ -274,6 +276,8 @@ Código de salida `0` = todo OK, `1` = errores de sintaxis (muestra archivo:lín
 
 <br>
 
+<a id="installation--instalación"></a>
+
 ## ⚡ Installation / Instalación
 
 <details>
@@ -355,6 +359,8 @@ cp misc/.p10k.zsh ~/.p10k.zsh   # solo si no tienes una config propia
 
 <br>
 
+<a id="sddm-keep-the-sugar-candy-login-after-a-theme-update--mantener-el-login-sugar-candy-tras-una-actualización"></a>
+
 ## 🎨 SDDM: keep the sugar-candy login after a theme update / Mantener el login sugar-candy tras una actualización
 
 The login screen uses the **bundled** `sddm-astronaut-theme` (Qt6) customized to look like **sugar-candy**. If you update the `sddm-astronaut-theme` AUR package, the update **overwrites** the theme with the stock look and you lose the sugar-candy style. To re-apply it, use the dedicated script:
@@ -383,6 +389,8 @@ It will ask for your `sudo` password and then / Te pedirá tu contraseña `sudo`
 > Es seguro ejecutarlo cuantas veces quieras (idempotente). Cierra sesión después para ver el resultado.
 
 <br>
+
+<a id="repository-structure--estructura-del-repositorio"></a>
 
 ## 📁 Repository Structure / Estructura del Repositorio
 
@@ -423,6 +431,8 @@ awesome-rxyhn-remix/
 ---
 
 <br>
+
+<a id="dependencies--dependencias-completas"></a>
 
 ## 📦 Dependencies / Dependencias Completas
 
@@ -469,6 +479,8 @@ yay -S --needed \
 
 <br>
 
+<a id="systemd-services--servicios-systemd"></a>
+
 ## 🔧 Systemd Services / Servicios systemd
 
 | Service | Type | Description |
@@ -484,6 +496,8 @@ yay -S --needed \
 ---
 
 <br>
+
+<a id="troubleshooting--solución-de-problemas"></a>
 
 ## 🩹 Troubleshooting / Solución de problemas
 
@@ -664,6 +678,8 @@ El hook hace exactamente lo mismo que `sudo grub-mkconfig -o /boot/grub/grub.cfg
 ---
 
 <br>
+
+<a id="credits--créditos"></a>
 
 ## 🙏 Credits / Créditos
 
