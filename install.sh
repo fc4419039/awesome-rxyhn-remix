@@ -27,32 +27,61 @@ elif command -v yay &> /dev/null; then
 else
     echo -e "${YELLOW}⚠️  No se encontró AUR helper. Instalando yay...${NC}"
 
+    # makepkg NO puede ejecutarse como root
+    if [ "$(id -u)" -eq 0 ]; then
+        echo -e "${RED}✗ Ejecutaste el script como root. makepkg no funciona como root.${NC}"
+        echo -e "${RED}  Corre el script como usuario normal; sudo te pedirá la contraseña cuando haga falta.${NC}"
+        exit 1
+    fi
+
     # Instalar dependencias necesarias
-    sudo pacman -S --needed --noconfirm base-devel git
+    echo -e "${YELLOW}📦 Instalando base-devel y git...${NC}"
+    sudo pacman -S --needed --noconfirm base-devel git 2>/dev/null \
+        || echo -e "${YELLOW}⚠️  No se pudieron instalar base-devel/git. Continuando...${NC}"
 
     # Crear directorio temporal
     TEMPDIR=$(mktemp -d)
     echo -e "${YELLOW}📁 Directorio temporal: $TEMPDIR${NC}"
 
-    # Clonar yay-bin
-    git clone https://aur.archlinux.org/yay-bin.git "$TEMPDIR/yay-bin"
-    cd "$TEMPDIR/yay-bin"
+    # Clonar yay-bin (con reintentos por si hay red inestable o AUR caído)
+    CLONADO=false
+    for intento in 1 2 3; do
+        if git clone --depth 1 https://aur.archlinux.org/yay-bin.git "$TEMPDIR/yay-bin" 2>/dev/null; then
+            CLONADO=true
+            break
+        fi
+        echo -e "${YELLOW}⚠️  Intento $intento/3 falló (¿sin red o AUR caído?). Reintentando en 5s...${NC}"
+        sleep 5
+    done
 
-    # Compilar e instalar
-    makepkg -si --noconfirm
+    if [ "$CLONADO" = true ]; then
+        cd "$TEMPDIR/yay-bin" || exit 1
 
-    # Volver al directorio original
-    cd - > /dev/null
+        # Compilar e instalar (puede tardar unos minutos)
+        echo -e "${YELLOW}🔨 Compilando e instalando yay (puede tardar)...${NC}"
+        if makepkg -si --noconfirm; then
+            echo -e "${GREEN}✓ yay compilado e instalado${NC}"
+        else
+            echo -e "${YELLOW}⚠️  La compilación de yay falló. Puedes instalarlo después manualmente:
+   git clone https://aur.archlinux.org/yay-bin.git && cd yay-bin && makepkg -si${NC}"
+        fi
 
-    # Limpiar
-    rm -rf "$TEMPDIR"
+        # Volver al directorio original
+        cd - > /dev/null
+
+        # Limpiar
+        rm -rf "$TEMPDIR"
+    else
+        echo -e "${RED}✗ No se pudo clonar yay desde el AUR (revisa tu conexión).${NC}"
+        echo -e "${RED}  Puedes instalarlo manualmente y volver a ejecutar el script.${NC}"
+    fi
 
     # Verificar instalación
     if command -v yay &> /dev/null; then
         echo -e "${GREEN}✓ yay instalado correctamente${NC}"
         AUR_HELPER="yay"
     else
-        echo -e "${RED}✗ Error instalando yay${NC}"
+        echo -e "${RED}✗ yay no está disponible. Sin AUR helper no se instalarán los paquetes AUR.${NC}"
         exit 1
     fi
 fi
@@ -90,7 +119,8 @@ done
 
 if [ ${#to_install[@]} -gt 0 ]; then
     echo -e "${YELLOW}📦 Instalando paquetes faltantes: ${to_install[*]}${NC}"
-    if ! $AUR_HELPER -Syu --needed "${to_install[@]}"; then
+
+    if ! $AUR_HELPER -Syu --needed --noconfirm "${to_install[@]}"; then
         echo -e "${YELLOW}⚠️  Algunos paquetes fallaron. Intentando de nuevo en modo individual...${NC}"
         for pkg in "${to_install[@]}"; do
             if ! pacman -Qs "^$pkg$" > /dev/null; then
@@ -128,8 +158,9 @@ echo ""
 # =====================================================================
 echo -e "${YELLOW}🔄 Habilitando servicios...${NC}"
 
-sudo systemctl enable acpid.service
-sudo systemctl start acpid.service
+sudo systemctl enable acpid.service 2>/dev/null && sudo systemctl start acpid.service 2>/dev/null \
+    && echo -e "${GREEN}✓ acpid habilitado${NC}" \
+    || echo -e "${YELLOW}⚠️  No se pudo habilitar acpid (¿paquete no instalado o sin sudo?). Continuando...${NC}"
 
 echo -e "${GREEN}✓ Servicios habilitados${NC}"
 
@@ -235,7 +266,8 @@ echo ""
 echo -e "${YELLOW}🔐 Instalando librerías PAM para Lua (lockscreen)...${NC}"
 
 # Instalar headers PAM necesarios
-sudo pacman -S --needed --noconfirm pam
+sudo pacman -S --needed --noconfirm pam 2>/dev/null \
+    || echo -e "${YELLOW}⚠️  No se pudo instalar 'pam' (¿pacman bloqueado o sin sudo?). Continuando...${NC}"
 
 # Instalar módulo PAM para Lua via luarocks
 if command -v luarocks &> /dev/null; then
