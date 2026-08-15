@@ -280,11 +280,6 @@ Código de salida `0` = todo OK, `1` = errores de sintaxis (muestra archivo:lín
 
 ## ⚡ Installation / Instalación
 
-<details>
-<summary><strong>📦 Automatic / Automática (recommended / recomendada)</strong></summary>
-
-<br>
-
 ```bash
 git clone --recurse-submodules https://github.com/fc4419039/awesome-rxyhn-remix.git
 cd awesome-rxyhn-remix
@@ -299,61 +294,7 @@ chmod +x install.sh
 > ⚠️ `sudo` is only required for the SDDM theme installation.
 > ⚠️ El script requiere `sudo` solo para instalar el tema SDDM.
 
-</details>
-
 <br>
-
-<details>
-<summary><strong>🔧 Manual</strong></summary>
-
-<br>
-
-**Dependencies / Dependencias** (Arch Linux):
-
-```bash
-yay -S --needed \
-  awesome-git picom-git kitty rofi todo-bin acpi acpid \
-  wireless_tools jq inotify-tools polkit-gnome xdotool xclip maim cliphist \
-  brightnessctl alsa-utils alsa-tools pipewire pipewire-pulse wireplumber libpulse \
-  qt5-imageformats qt6-imageformats \
-  playerctl spotify onlyoffice-bin mpd mpc ncmpcpp mpd-mpris blueman pasystray \
-  touchegg redshift networkmanager bluez bluez-utils libnotify curl ffmpeg gpick \
-  imagemagick thunar firefox xorg-server xorg-xrdb xorg-xauth \
-  xorg-xrandr xorg-setxkbmap xorg-xset xorg-xprop xdg-utils xdg-user-dirs \
-  ttf-jetbrains-mono-nerd ttf-iosevka-nerd ttf-hack-nerd ttf-font-awesome \
-  ttf-material-design-icons ttf-weather-icons \
-  zsh-syntax-highlighting zsh-autosuggestions zsh-sudo zoxide fzf feh zsh neovim \
-  btop lsd bat python-gobject python-dbus pipewire-alsa lua luarocks \
-  zsh-theme-powerlevel10k sound-theme-freedesktop \
-  i3lock slock xsecurelock sddm qt6-declarative \
-  bc pacman-contrib upower autorandr udiskie udisks2 \
-  git rsync
-```
-
-**Fonts / Fuentes:** Iosevka Nerd Font, JetBrains Mono Nerd Font, Hack Nerd Font, Material Design Icons, Weather Icons + icomoon fonts in `fonts/`
-
-**Copy config / Copiar configuración:**
-
-```bash
-cp -r config/* ~/.config/
-cp -r bin/* ~/.local/bin/
-cp misc/.p10k.zsh ~/.p10k.zsh   # solo si no tienes una config propia
-```
-
-**No API keys needed / Sin API keys:** the weather widget uses **Open-Meteo** and auto-detects your location by IP.
-**Sin API keys:** el widget de clima usa **Open-Meteo** y detecta tu ubicación por IP.
-
-**Wallpapers:** place images in `~/fondos/`
-
-**Root zsh (same config as your user / misma config que tu usuario):**
-
-```bash
-./zsh-root.sh   # symlinks /root/.zshrc y /root/.p10k.zsh → tu config
-```
-
-**Logout & select AwesomeWM / Cerrar sesión e iniciar AwesomeWM**
-
-</details>
 
 ---
 
@@ -683,14 +624,13 @@ El hook hace exactamente lo mismo que `sudo grub-mkconfig -o /boot/grub/grub.cfg
 
 ## 🙏 Credits / Créditos
 
-**rxyhn** — Original design • **Alpharivs** — Base fork • **s4vitar** — Zsh config • **ner0z** — Colorscheme night • **ChocolateBread799**, **JavaCafe01** — Original contributions
+**rxyhn** — Original design • **Alpharivs** — Base fork • **s4vitar** — Zsh config • **ChocolateBread799**, **JavaCafe01** — Original contributions
 
 | Source | Description |
 |---|---|
 | [rxyhn](https://github.com/rxyhn) (original, deleted) | Original AwesomeWM dotfiles |
 | [Alpharivs](https://github.com/Alpharivs/dotfiles) | Base fork used for this remix |
 | [s4vitar](https://github.com/s4vitar) | Zsh configuration |
-| [ner0z](https://github.com/ner0z) | Colorscheme night |
 
 ---
 
