@@ -225,7 +225,6 @@ gears.timer({
 })
 
 -- Volcar el log de tiempos una vez que signal ya se midió
--- Volcar el log de tiempos una vez que signal ya se midió
 gears.timer.delayed_call(function()
     boot_flush()
 end)

@@ -3,7 +3,6 @@ local gears = require("gears")
 local beautiful = require("beautiful")
 local xresources = require("beautiful.xresources")
 local dpi = xresources.apply_dpi
-local naughty = require("naughty")
 
 local client_helpers = {}
 
@@ -105,46 +104,18 @@ function client_helpers.move_client_dwim(c, direction)
 end
 
 function client_helpers.float_and_edge_snap(c, direction)
-    naughty.notify({text = "double tap"})
     c.floating = true
-    local workarea = awful.screen.focused().workarea
-    if direction == "up" then
-        local axis = 'horizontally'
-        local f = awful.placement.scale + awful.placement.top +
-                      (axis and awful.placement['maximize_' .. axis] or nil)
-        local geo = f(client.focus, {
-            honor_padding = true,
-            honor_workarea = true,
-            to_percent = 0.5
-        })
-    elseif direction == "down" then
-        local axis = 'horizontally'
-        local f = awful.placement.scale + awful.placement.bottom +
-                      (axis and awful.placement['maximize_' .. axis] or nil)
-        local geo = f(client.focus, {
-            honor_padding = true,
-            honor_workarea = true,
-            to_percent = 0.5
-        })
-    elseif direction == "left" then
-        local axis = 'vertically'
-        local f = awful.placement.scale + awful.placement.left +
-                      (axis and awful.placement['maximize_' .. axis] or nil)
-        local geo = f(client.focus, {
-            honor_padding = true,
-            honor_workarea = true,
-            to_percent = 0.5
-        })
-    elseif direction == "right" then
-        local axis = 'vertically'
-        local f = awful.placement.scale + awful.placement.right +
-                      (axis and awful.placement['maximize_' .. axis] or nil)
-        local geo = f(client.focus, {
-            honor_padding = true,
-            honor_workarea = true,
-            to_percent = 0.5
-        })
-    end
+    local axis = (direction == "left" or direction == "right") and "vertically" or "horizontally"
+    local side = direction == "up" and awful.placement.top
+        or direction == "down" and awful.placement.bottom
+        or direction == "left" and awful.placement.left
+        or awful.placement.right
+    local f = awful.placement.scale + side + awful.placement["maximize_" .. axis]
+    f(client.focus, {
+        honor_padding = true,
+        honor_workarea = true,
+        to_percent = 0.5
+    })
 end
 
 function client_helpers.float_and_resize(c, width, height)

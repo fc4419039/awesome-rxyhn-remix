@@ -12,4 +12,6 @@ if ! command -v busted &> /dev/null; then
 fi
 
 echo "Ejecutando tests..."
+# .busted usa rutas relativas (helper, paths) → ejecutar desde la raíz de la config
+cd "$CONFIG_DIR"
 busted -f "$CONFIG_DIR/.busted" -o utfTerminal "$CONFIG_DIR/tests/spec/"
