@@ -37,3 +37,4 @@ config/awesome/.codebak/
 # Si no quieres que otros descarguen tus imágenes (descomentar)
 # fondos/
 *.bak
+*.bak*
