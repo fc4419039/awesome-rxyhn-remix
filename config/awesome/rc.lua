@@ -148,7 +148,7 @@ require("ui")
   require("ui.reload")
 
   -- Restaurar tag activo + foco exacto tras reinicio
-  -- Formato archivo: window_id|0,tag_idx
+  -- Formato archivo: window_id|tag_idx (ej: 12582926|3 o 0|5)
   local focus_restore_pending = false
   local target_window = nil
   local target_tag_idx = nil
@@ -181,7 +181,7 @@ require("ui")
 
   local function restore_tag()
       if target_tag_idx then
-          local s = mouse.screen
+          local s = awful.screen.focused() or mouse.screen or screen[1]
           local tag = nil
           for _, t in ipairs(s.tags) do
               if t.name == tostring(target_tag_idx) then
@@ -216,6 +216,9 @@ require("ui")
               end
               return false
           end)
+      else
+          -- Archivo corrupto: limpiar
+          os.remove(reload.focus_file)
       end
       os.remove(reload.focus_file)
   end
