@@ -10,7 +10,10 @@
 [![GitHub license](https://img.shields.io/github/license/fc4419039/awesome-rxyhn-remix?style=for-the-badge&color=67AFC1&labelColor=0f0f0f)](https://github.com/fc4419039/awesome-rxyhn-remix/blob/main/LICENSE)
 [![Install](https://img.shields.io/badge/⚡-INSTALL-7c3aed?style=for-the-badge&labelColor=0f0f0f)](#installation--instalación)
 [![AwesomeWM](https://img.shields.io/badge/WM-Awesome-F4C2C2?style=for-the-badge&labelColor=0f0f0f&logo=awesomewm)](https://awesomewm.org/)
-[![Arch Linux](https://img.shields.io/badge/OS-Arch_Linux-1793D1?style=for-the-badge&labelColor=0f0f0f&logo=arch-linux)](https://archlinux.org/)
+[![Linux](https://img.shields.io/badge/OS-Any_Linux-1793D1?style=for-the-badge&labelColor=0f0f0f&logo=linux)](https://www.kernel.org/)
+[![Arch Linux](https://img.shields.io/badge/Arch-1793D1?style=for-the-badge&labelColor=0f0f0f&logo=arch-linux)](https://archlinux.org/)
+[![Debian](https://img.shields.io/badge/Debian/Ubuntu-A81D33?style=for-the-badge&labelColor=0f0f0f&logo=debian)](https://www.debian.org/)
+[![Fedora](https://img.shields.io/badge/Fedora-51A2DA?style=for-the-badge&labelColor=0f0f0f&logo=fedora)](https://getfedora.org/)
 [![Lua](https://img.shields.io/badge/Lua-2C2D72?style=for-the-badge&labelColor=0f0f0f&logo=lua)](https://www.lua.org/)
 
 </div>
@@ -28,7 +31,7 @@
 </h1>
 
 <p align="center">
-  <i>rxyhn's legendary dotfiles — recovered, rebuilt on modern AwesomeWM APIs, bugs fixed, and extended with useful extras.</i>
+  <i>rxyhn's legendary dotfiles — recovered, rebuilt on modern AwesomeWM APIs, bugs fixed, and extended with useful extras. <b>Works on any Linux distro</b>: Arch, Debian/Ubuntu, Fedora, openSUSE and NixOS — with both <b>AwesomeWM stable (4.3)</b> and <b>AwesomeWM-git</b>.</i>
 </p>
 
 <br>
@@ -37,7 +40,9 @@
   <h3>Stack</h3>
   <p>
     <img src="https://img.shields.io/badge/AwesomeWM-F4C2C2?style=flat-square&logo=awesomewm&labelColor=0f0f0f">
+    <img src="https://img.shields.io/badge/Any_Linux_Distro-1793D1?style=flat-square&logo=linux&labelColor=0f0f0f">
     <img src="https://img.shields.io/badge/Arch_Linux-1793D1?style=flat-square&logo=arch-linux&labelColor=0f0f0f">
+    <img src="https://img.shields.io/badge/Debian/Ubuntu-A81D33?style=flat-square&logo=debian&labelColor=0f0f0f">
     <img src="https://img.shields.io/badge/Kitty-000000?style=flat-square&logo=kitty&labelColor=0f0f0f">
     <img src="https://img.shields.io/badge/Zsh-F15A24?style=flat-square&logo=zsh&labelColor=0f0f0f">
     <img src="https://img.shields.io/badge/Neovim-57A143?style=flat-square&logo=neovim&labelColor=0f0f0f">
@@ -119,6 +124,10 @@
 <p align="center">
   A complete <b>AwesomeWM</b> configuration: repaired, optimized, and extended with modern features.
   Based on <b>rxyhn</b>'s original work (repo deleted) and the <b>Alpharivs</b> fork.
+  <br><br>
+  🚀 <b>Runs on any distro</b> — the installer auto-detects your package manager
+  (<code>pacman</code> / <code>apt</code> / <code>dnf</code> / <code>zypper</code> / <code>nix</code>),
+  and the config works on <b>AwesomeWM 4.3 (stable)</b> and <b>AwesomeWM-git</b>.
 </p>
 
 ### Features
@@ -209,6 +218,10 @@ bash ~/.config/awesome/tests/run_tests.sh             # 36 tests pass
 <p align="center">
   Configuración completa de <b>AwesomeWM</b>, reparada, optimizada y extendida con funcionalidades modernas.
   Basada en el trabajo original de <b>rxyhn</b> (repo eliminado) y el fork de <b>Alpharivs</b>.
+  <br><br>
+  🚀 <b>Funciona en cualquier distro</b> — el instalador detecta tu gestor de paquetes
+  (<code>pacman</code> / <code>apt</code> / <code>dnf</code> / <code>zypper</code> / <code>nix</code>),
+  y la config es compatible con <b>AwesomeWM 4.3 (estable)</b> y <b>AwesomeWM-git</b>.
 </p>
 
 ### Características
@@ -307,6 +320,10 @@ chmod +x install.sh
 >
 > El instalador es **inteligente**: detecta paquetes ya instalados y los omite, no reconfigura lo ya configurado y no vuelve a clonar ni instalar mscdown si ya está presente.
 >
+> 🖥️ **Works on any distro** — it auto-detects your OS and uses the right package manager (`pacman` / `apt` / `dnf` / `zypper` / NixOS). Compatible with both **AwesomeWM stable (4.3)** and **AwesomeWM-git**. Verified on Arch, Debian/Ubuntu, Fedora, openSUSE and NixOS.
+>
+> 🖥️ **Funciona en cualquier distro** — detecta tu sistema y usa el gestor correcto (`pacman` / `apt` / `dnf` / `zypper` / NixOS). Compatible con **AwesomeWM estable (4.3)** y **AwesomeWM-git**. Probado en Arch, Debian/Ubuntu, Fedora, openSUSE y NixOS.
+>
 > ⚠️ `sudo` is only required for the SDDM theme installation.
 > ⚠️ El script requiere `sudo` solo para instalar el tema SDDM.
 
@@ -393,7 +410,21 @@ awesome-rxyhn-remix/
 
 ## 📦 Dependencies / Dependencias Completas
 
-The installer (`install.sh`) handles everything automatically. Full list for Arch/Manjaro:
+The installer (`install.sh`) detects your distribution and installs **everything** automatically. Per-distro package lists are in `docs/`:
+
+| Distro | Package manager | List |
+|---|---|---|
+| Arch / Manjaro | `pacman` (+ AUR helper) | [`docs/deps-arch.txt`](docs/deps-arch.txt) |
+| Debian / Ubuntu / Mint | `apt` | [`docs/deps-debian.txt`](docs/deps-debian.txt) |
+| Fedora | `dnf` | [`docs/deps-fedora.txt`](docs/deps-fedora.txt) |
+| openSUSE | `zypper` | [`docs/deps-opensuse.txt`](docs/deps-opensuse.txt) |
+| NixOS | `nix` | [`docs/deps-nixos.txt`](docs/deps-nixos.txt) |
+
+> If your distro isn't listed, `install.sh` still configures everything and only skips the package installation step — install the equivalents yourself following the Arch list (the names map almost 1:1 across distros).
+
+> Si tu distro no está en la lista, `install.sh` igual configura todo y solo omite el paso de instalación de paquetes — instala los equivalentes siguiendo la lista de Arch (los nombres casi siempre se mapean 1:1 entre distros).
+
+**Arch/Manjaro reference** (the most complete list; used by `install.sh`):
 
 ```bash
 yay -S --needed \
