@@ -1,9 +1,12 @@
 # Fedora 39+ / RHEL 9+ / CentOS Stream 9+
-# Instalar con: sudo dnf install -y $(grep -v '^#' docs/deps-fedora.txt | sed 's/#.*//')
-# RPM Fusion requerido para algunos: sudo dnf install https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
+# Instalar con: sudo dnf install -y $(grep -v '^#' docs/deps-fedora.txt | sed 's/#.*//' | grep -v '^FLATPAK:' | grep -v '^COPR:' | grep -v '^MANUAL:')
+# RPM Fusion REQUERIDO para codecs, nerd-fonts, awesome-git:
+#   sudo dnf install -y https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm \
+#                        https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
 
 # ==================== CORE WM ====================
-awesome                        # AwesomeWM
+awesome                        # AwesomeWM (versión estable)
+# awesome-git: COPR: sudo dnf copr enable varlad/awesome-git && sudo dnf install awesome-git
 picom                          # Compositor
 kitty                          # Terminal
 rofi                           # Launcher/menu
@@ -21,7 +24,9 @@ polkit-gnome                   # Polkit agent GUI
 xdotool                        # X11 automation
 xclip                          # Clipboard
 maim                           # Screenshots
-# cliphist: no está en repos. Instalar con: go install github.com/sentriz/cliphist@latest
+# cliphist: no está en repos. Opciones:
+#   FLATPAK: flatpak install flathub com.sentriz.cliphist
+#   MANUAL:  go install github.com/sentriz/cliphist@latest (requiere golang)
 brightnessctl                  # Brightness control
 alsa-utils                     # amixer, aplay
 pipewire                       # Audio server
@@ -51,15 +56,21 @@ rsync                          # Sync tool
 pam-devel                      # PAM headers (para lua-pam)
 
 # ==================== APPS ====================
-# spotify-client: no está en repos (RPM Fusion lo retiró). Instalar con: flatpak install flathub com.spotify.Client
+# spotify-client: no está en repos (RPM Fusion lo retiró). Opciones:
+#   FLATPAK: flatpak install flathub com.spotify.Client
+#   MANUAL:  descargar .rpm de https://www.spotify.com/download/linux/
 # onlyoffice REMOVIDO (no necesario)
 mpd                            # Music daemon
 mpc                            # MPD client
 ncmpcpp                        # MPD TUI client
-# mpd-mpris: pip install mpdris2
+# mpd-mpris: no está en repos. Opciones:
+#   FLATPAK: flatpak install flathub com.github.joseexposito.mpdris2
+#   MANUAL:  pip install mpdris2
 blueman                        # Bluetooth GUI
 pasystray                      # PulseAudio tray
-# touchegg: no está en repos. Instalar con: flatpak install flathub com.github.joseexposito.touchegg
+# touchegg: no está en repos. Opciones:
+#   FLATPAK: flatpak install flathub com.github.joseexposito.touchegg
+#   MANUAL:  compilar desde fuente
 redshift                       # Color temperature
 NetworkManager                 # Network management
 bluez                          # Bluetooth stack
@@ -96,9 +107,12 @@ sddm                           # Display manager
 qt6-qtdeclarative-devel        # Qt6 QML (SDDM theme)
 
 # ==================== EXTRA: Compilar / Flatpak / COPR ====================
-# awesome-git: dnf copr enable varlad/awesome-git && dnf install awesome-git
+# awesome-git: sudo dnf copr enable varlad/awesome-git && sudo dnf install awesome-git
 # picom-git: compilar desde fuente
 # touchegg: flatpak install flathub com.github.joseexposito.touchegg
 # zsh-theme-powerlevel10k: git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k
 # todo-bin: cargo install todo-bin
 # nerd-fonts: jetbrains-mono-nerd-fonts en RPM Fusion, otras manual
+# cliphist: flatpak install flathub com.sentriz.cliphist
+# mpd-mpris: pip install mpdris2
+# spotify: flatpak install flathub com.spotify.Client

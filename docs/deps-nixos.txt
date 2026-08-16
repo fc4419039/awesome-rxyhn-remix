@@ -2,6 +2,11 @@
 # NO es una lista de paquetes para instalar con nix-env.
 # En NixOS, se configura en configuration.nix / home.nix / flake.nix
 # Ejemplo de módulo Home Manager incluido al final.
+#
+# NOTA: sddm-astronaut-theme NO está en nixpkgs. Opciones:
+#   1. Usar tema incluido en el repo (sddm/sddm-astronaut-theme) y referenciarlo con path local
+#   2. Usar tema alternativo de nixpkgs: sddm-sugar-candy, sddm-chili, sddm-astronaut (si existe)
+#   3. Fetch desde GitHub con builtins.fetchGit
 
 # ==================== CORE WM ====================
 awesome                        # awesome
@@ -106,6 +111,11 @@ qt6.qtdeclarative              # qt6-declarative
 # ==================== HOME MANAGER MODULE (configuración declarativa) ====================
 # Guardar como: ~/.config/nix/awesome-module.nix
 # Importar en home.nix: imports = [ ./awesome-module.nix ];
+#
+# IMPORTANTE: sddm-astronaut-theme NO está en nixpkgs.
+# Usa el tema incluido en este repo (sddm/sddm-astronaut-theme) con path local:
+#   theme = /ruta/absoluta/a/awesome-rxyhn-remix/sddm/sddm-astronaut-theme;
+# O usa un tema de nixpkgs: pkgs.sddm-sugar-candy, pkgs.sddm-chili, etc.
 
 { config, pkgs, ... }:
 
@@ -117,6 +127,8 @@ let
     nerdfonts.font-awesome
     nerdfonts.material-design-icons
   ];
+  # Tema SDDM incluido en el repo (ajusta la ruta si clonas en otro lado)
+  sddmThemePath = "/home/${config.users.users.${config.home-manager.users.${config.home-manager.username}.name}.home}/awesome-rxyhn-remix/sddm/sddm-astronaut-theme";
 in
 {
   home.packages = with pkgs; [
@@ -210,10 +222,10 @@ in
   };
   services.wireplumber.enable = true;
 
-  # SDDM
+  # SDDM - usa tema del repo (ajusta sddmThemePath si es necesario)
   services.xserver.displayManager.sddm = {
     enable = true;
-    theme = pkgs.sddm-astronaut-theme;
+    theme = sddmThemePath;
   };
 
   # Lua PAM

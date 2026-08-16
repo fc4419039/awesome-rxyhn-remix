@@ -130,6 +130,7 @@ help:
 	@echo "  make deploy           # Solo despliega config (rsync + permisos)"
 	@echo "  make update-modules   # Actualiza bling, rubato, layout-machi desde upstream"
 	@echo "  make check            # Valida sintaxis (luac, bash -n, python3 -m py_compile)"
+	@echo "  make pre-check        # Validación pre-instalación (detecta problemas)"
 	@echo "  make test             # Test runtime: awesome -c rc.lua"
 	@echo "  make clean            # Limpia cache, state files, backups"
 	@echo "  make fonts            # Instala fuentes (usuario + sistema)"
@@ -166,11 +167,52 @@ deps:
 		echo "Ver $(DEPS_FILE) para configuración declarativa"; \
 		exit 0; \
 	fi
+	@# Habilitar repos específicos por distro
+	@if [ "$(DISTRO_ID)" = "debian" ]; then \
+		if ! grep -q "backports" /etc/apt/sources.list /etc/apt/sources.list.d/* 2>/dev/null; then \
+			echo "📦 Habilitando backports en Debian..."; \
+			echo "deb http://deb.debian.org/debian bookworm-backports main" | sudo tee /etc/apt/sources.list.d/backports.list >/dev/null; \
+			sudo apt-get update; \
+		fi; \
+	fi
+	@if [ "$(DISTRO_ID)" = "fedora" ] || [ "$(DISTRO_ID)" = "rhel" ] || [ "$(DISTRO_ID)" = "centos" ] || [ "$(DISTRO_ID)" = "rocky" ] || [ "$(DISTRO_ID)" = "almalinux" ] || [ "$(DISTRO_ID)" = "nobara" ]; then \
+		if ! rpm -q rpmfusion-free-release >/dev/null 2>&1; then \
+			echo "📦 Habilitando RPM Fusion..."; \
+			sudo dnf install -y https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm 2>/dev/null || echo "⚠ No se pudo habilitar RPM Fusion"; \
+		fi; \
+		if ! dnf repolist | grep -q "varlad/awesome-git"; then \
+			echo "📦 Habilitando COPR varlad/awesome-git..."; \
+			sudo dnf copr enable -y varlad/awesome-git 2>/dev/null || true; \
+		fi; \
+	fi
+	@if [ "$(DISTRO_ID)" = "opensuse-tumbleweed" ] || [ "$(DISTRO_ID)" = "opensuse-leap" ]; then \
+		if ! zypper lr | grep -q "packman"; then \
+			echo "📦 Añadiendo repo Packman..."; \
+			sudo zypper ar -f https://ftp.gwdg.de/pub/linux/misc/packman/suse/openSUSE_Tumbleweed/ packman 2>/dev/null || true; \
+			sudo zypper --gpg-auto-import-keys refresh packman 2>/dev/null || true; \
+		fi; \
+		if ! zypper lr | grep -q "nerdfonts"; then \
+			echo "📦 Añadiendo repo nerd-fonts..."; \
+			sudo zypper ar -f https://download.opensuse.org/repositories/home:/deadmoo:/nerdfonts/openSUSE_Tumbleweed/ nerdfonts 2>/dev/null || true; \
+			sudo zypper --gpg-auto-import-keys refresh nerdfonts 2>/dev/null || true; \
+		fi; \
+	fi
 	@if [ -n "$(AUR_HELPER)" ]; then \
 		echo "AUR Helper: $(AUR_HELPER)"; \
-		$(AUR_HELPER) -S --needed --noconfirm $$(grep -v '^#' $(DEPS_FILE) | grep -v '^$$' | sed 's/#.*//' | tr '\n' ' '); \
+		$(AUR_HELPER) -S --needed --noconfirm $$(grep -v '^#' $(DEPS_FILE) | grep -v '^$$' | grep -v '^FLATPAK:' | grep -v '^MANUAL:' | grep -v '^COPR:' | grep -v '^OBS:' | grep -v '^BACKPORTS:' | sed 's/#.*//' | tr '\n' ' '); \
 	else \
-		$(SUDO) sh -c "$(PKG_INSTALL) $$(grep -v '^#' $(DEPS_FILE) | grep -v '^$$' | sed 's/#.*//' | tr '\n' ' ')"; \
+		$(SUDO) sh -c "$(PKG_INSTALL) $$(grep -v '^#' $(DEPS_FILE) | grep -v '^$$' | grep -v '^FLATPAK:' | grep -v '^MANUAL:' | grep -v '^COPR:' | grep -v '^OBS:' | grep -v '^BACKPORTS:' | sed 's/#.*//' | tr '\n' ' ')"; \
+	fi
+	@# Instalar Flatpaks comunes
+	@if command -v flatpak >/dev/null 2>&1; then \
+		echo "📦 Instalando Flatpaks..."; \
+		for fpkg in com.spotify.Client com.github.joseexposito.touchegg com.github.joseexposito.mpdris2 com.sentriz.cliphist org.mozilla.firefox; do \
+			if ! flatpak list --app | grep -q "$$fpkg"; then \
+				flatpak install -y flathub "$$fpkg" 2>/dev/null || echo "⚠ No se pudo instalar $$fpkg"; \
+			fi; \
+		done; \
+	else \
+		echo "⚠ flatpak no instalado. Saltando Flatpaks."; \
 	fi
 	@echo "✓ Dependencias instaladas"
 
@@ -283,6 +325,11 @@ update-modules:
 check:
 	@echo "=== Validando sintaxis ==="
 	@bash $(CONFIG_DST)/scripts/check.sh --syntax
+
+# ==================== PRE-INSTALL CHECK ====================
+pre-check:
+	@echo "=== Pre-install validation ==="
+	@bash scripts/pre-install-check.sh
 
 # ==================== TEST RUNTIME ====================
 test:

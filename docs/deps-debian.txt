@@ -1,18 +1,21 @@
 # Debian 12+ / Ubuntu 22.04+ / Linux Mint 21+ / Pop!_OS 22.04+
-# Instalar con: sudo apt update && sudo apt install -y $(grep -v '^#' docs/deps-debian.txt | sed 's/#.*//')
-# NOTA: Algunos paquetes requieren repos adicionales o flatpak/snap
+# Instalar con: sudo apt update && sudo apt install -y $(grep -v '^#' docs/deps-debian.txt | sed 's/#.*//' | grep -v '^FLATPAK:' | grep -v '^MANUAL:' | grep -v '^BACKPORTS:')
+# NOTA: Paquetes marcados FLATPAK: instalar con flatpak install flathub <paquete>
+#       Paquetes marcados MANUAL: requieren instalación manual (ver comentarios)
+#       Paquetes marcados BACKPORTS: requieren repos backports habilitados
 
 # ==================== CORE WM ====================
-awesome                        # AwesomeWM (versión estable, no git)
-picom                          # Compositor (versión estable)
+awesome                        # AwesomeWM (versión estable, no git) - BACKPORTS para versión nueva
+picom                          # Compositor (versión estable) - BACKPORTS para blur fixes
 kitty                          # Terminal
 rofi                           # Launcher/menu
 fonts-jetbrains-mono           # Fuente principal (sin nerd fonts por defecto)
 fonts-firacode                 # Fallback con ligaduras
-# Nerd Fonts: instalar manualmente desde https://github.com/ryanoasis/nerd-fonts
-# o: mkdir -p ~/.local/share/fonts && cd ~/.local/share/fonts && \
-#    wget https://github.com/ryanoasis/nerd-fonts/releases/latest/download/JetBrainsMono.zip && \
-#    unzip JetBrainsMono.zip && fc-cache -fv
+# Nerd Fonts: NO están en repos. Opciones:
+#   FLATPAK: flatpak install flathub org.gustavoperedo.FontDownloader (GUI)
+#   MANUAL:  mkdir -p ~/.local/share/fonts && cd ~/.local/share/fonts && \
+#            wget https://github.com/ryanoasis/nerd-fonts/releases/latest/download/JetBrainsMono.zip && \
+#            unzip JetBrainsMono.zip && fc-cache -fv
 
 # ==================== SYSTEM / UTILS ====================
 acpi                           # Battery info
@@ -24,9 +27,12 @@ policykit-1-gnome              # Polkit agent GUI
 xdotool                        # X11 automation
 xclip                          # Clipboard
 maim                           # Screenshots
-# cliphist: no está en repos. Instalar con: go install github.com/sentriz/cliphist@latest
+# cliphist: no está en repos. Opciones:
+#   FLATPAK: flatpak install flathub com.sentriz.cliphist
+#   MANUAL:  go install github.com/sentriz/cliphist@latest (requiere golang)
 brightnessctl                  # Brightness control
 alsa-utils                     # amixer, aplay
+alsa-tools                     # hdajackretask, etc.
 pipewire                       # Audio server
 pipewire-pulse                 # PulseAudio compat
 wireplumber                    # Session manager
@@ -39,7 +45,7 @@ ffmpeg                         # Video/audio processing
 gpick                          # Color picker
 imagemagick                    # Image processing (convert)
 thunar                         # File manager
-firefox                        # Web browser (o flatpak)
+firefox                        # Web browser (o flatpak: flatpak install flathub org.mozilla.firefox)
 xserver-xorg                   # X11 server
 x11-xserver-utils              # xrdb, xrandr, xset, xprop, setxkbmap
 xdg-utils                      # xdg-open, etc.
@@ -59,10 +65,14 @@ spotify-client                 # Spotify (repo oficial: curl -sS https://downloa
 mpd                            # Music daemon
 mpc                            # MPD client
 ncmpcpp                        # MPD TUI client
-# mpd-mpris: compilar desde fuente o usar mpdris2 (pip install mpdris2)
+# mpd-mpris: no está en repos. Opciones:
+#   FLATPAK: flatpak install flathub com.github.joseexposito.mpdris2
+#   MANUAL:  pip install mpdris2
 blueman                        # Bluetooth GUI
 pasystray                      # PulseAudio tray (en universe)
-# touchegg: no está en repos. Instalar con: flatpak install flathub com.github.joseexposito.touchegg
+# touchegg: no está en repos. Opciones:
+#   FLATPAK: flatpak install flathub com.github.joseexposito.touchegg
+#   MANUAL:  compilar desde fuente
 redshift                       # Color temperature
 network-manager                # Network management
 bluez                          # Bluetooth stack
@@ -75,13 +85,21 @@ zsh                            # Shell
 zsh-syntax-highlighting        # Fish-like highlighting (paquete: zsh-syntax-highlighting)
 zsh-autosuggestions            # Autosuggestions (paquete: zsh-autosuggestions)
 # zsh-sudo: no hay paquete, usar alias o plugin manual
-zoxide                         # Smart cd (paquete: zoxide o descargar binario)
+# zoxide: no está en repos estables. Opciones:
+#   BACKPORTS: (Debian 12) sudo apt install -t bookworm-backports zoxide
+#   MANUAL:  curl -sSfL https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | sh
 fzf                            # Fuzzy finder
 feh                            # Wallpaper setter
-neovim                         # Editor
-btop                           # System monitor (paquete: btop o descargar binario)
-lsd                            # ls replacement (paquete: lsd o descargar binario)
-bat                            # cat replacement (paquete: bat)
+neovim                         # Editor (BACKPORTS para versión nueva)
+# btop: no está en repos estables. Opciones:
+#   BACKPORTS: (Debian 12) sudo apt install -t bookworm-backports btop
+#   MANUAL:  descargar binario de https://github.com/aristocratos/btop/releases
+# lsd: no está en repos estables. Opciones:
+#   BACKPORTS: (Debian 12) sudo apt install -t bookworm-backports lsd
+#   MANUAL:  descargar .deb de https://github.com/lsd-rs/lsd/releases
+# bat: no está en repos estables (batcat en Ubuntu). Opciones:
+#   BACKPORTS: (Debian 12) sudo apt install -t bookworm-backports bat
+#   MANUAL:  descargar .deb de https://github.com/sharkdp/bat/releases
 
 # ==================== LUA / DEPS ====================
 python3-gi                     # GObject introspection
@@ -98,7 +116,7 @@ slock                          # Simple locker (suckless-tools)
 sddm                           # Display manager
 qt6-declarative-dev            # Qt6 QML (SDDM theme)
 
-# ==================== EXTRA: Compilar desde fuente / Flatpak ====================
+# ==================== EXTRA: Compilar desde fuente / Flatpak / Backports ====================
 # awesome-git: git clone https://github.com/awesomeWM/awesome && cmake && make install
 # picom-git: git clone https://github.com/yshui/picom && meson build && ninja -C build install
 # cliphist: go install github.com/sentriz/cliphist@latest
@@ -106,4 +124,11 @@ qt6-declarative-dev            # Qt6 QML (SDDM theme)
 # touchegg: flatpak install flathub com.github.joseexposito.touchegg
 # zsh-theme-powerlevel10k: git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k
 # todo-bin: cargo install todo-bin (requiere rust)
-# nerd-fonts: ver nota arriba
+# nerd-fonts: ver nota arriba (CORE WM)
+# zoxide: curl -sSfL https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | sh
+# btop: descargar binario de https://github.com/aristocratos/btop/releases
+# lsd: descargar .deb de https://github.com/lsd-rs/lsd/releases
+# bat: descargar .deb de https://github.com/sharkdp/bat/releases
+# Habilitar backports (Debian 12):
+#   echo "deb http://deb.debian.org/debian bookworm-backports main" | sudo tee /etc/apt/sources.list.d/backports.list
+#   sudo apt update

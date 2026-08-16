@@ -20,6 +20,36 @@ SCRIPT_DIR="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]:-$0}")")" && pwd)"
 cd "$SCRIPT_DIR" || echo -e "${RED}⚠ No se pudo entrar a $SCRIPT_DIR; las rutas relativas podrían fallar${NC}"
 
 # =====================================================================
+# 0️⃣ PRE-FLIGHT CHECKS
+# =====================================================================
+echo -e "${CYAN}🔍 Ejecutando pre-flight checks...${NC}"
+
+# Verificar conectividad a internet
+if ! ping -c 1 -W 2 8.8.8.8 >/dev/null 2>&1; then
+    echo -e "${YELLOW}⚠️  Sin conexión a internet detectada. Algunas instalaciones fallarán.${NC}"
+fi
+
+# Verificar sudo
+if ! sudo -n true 2>/dev/null; then
+    echo -e "${YELLOW}⚠️  sudo requiere contraseña. Se pedirá durante la instalación.${NC}"
+fi
+
+# Verificar espacio en disco (mínimo 2GB libres en /home)
+HOME_AVAIL=$(df -BG "$HOME" | awk 'NR==2 {print $4}' | sed 's/G//')
+if [ "$HOME_AVAIL" -lt 2 ]; then
+    echo -e "${YELLOW}⚠️  Poco espacio en $HOME (${HOME_AVAIL}GB libres). Mínimo recomendado: 2GB.${NC}"
+fi
+
+# Verificar si estamos en VM (para advertir sobre GPU/Compositor)
+if systemd-detect-virt -q 2>/dev/null; then
+    VIRT=$(systemd-detect-virt)
+    echo -e "${YELLOW}⚠️  Entorno virtualizado detectado ($VIRT). Picom/blur pueden no funcionar.${NC}"
+fi
+
+echo -e "${GREEN}✓ Pre-flight checks completados${NC}"
+echo ""
+
+# =====================================================================
 # 0️⃣ DETECTAR DISTRO
 # =====================================================================
 if [ -f /etc/os-release ]; then
@@ -89,7 +119,7 @@ if [ "$IS_ARCH" = "1" ]; then
                     ( cd "$TEMPDIR/yay-bin" && makepkg -si --noconfirm ) \
                         && echo -e "${GREEN}✓ yay compilado e instalado${NC}" \
                         || echo -e "${YELLOW}⚠️  La compilación de yay falló. Puedes instalarlo después manualmente:
-   git clone https://aur.archlinux.org/yay-bin.git && cd yay-bin && makepkg -si${NC}"
+    git clone https://aur.archlinux.org/yay-bin.git && cd yay-bin && makepkg -si${NC}"
                 else
                     echo -e "${YELLOW}⚠️  No se pudo clonar o compilar yay desde el AUR (¿sin red?). Continuando con repos oficiales...${NC}"
                 fi
@@ -107,6 +137,7 @@ if [ "$IS_ARCH" = "1" ]; then
             AUR_HELPER="yay"
         else
             echo -e "${YELLOW}⚠️  yay no disponible. Se usarán solo los repos oficiales; los paquetes AUR los puedes instalar después.${NC}"
+            echo -e "${YELLOW}  Paquetes AUR necesarios: awesome-git, picom-git, ttf-jetbrains-mono-nerd, ttf-iosevka-nerd, ttf-hack-nerd, ttf-weather-icons, mpd-mpris, touchegg, xsecurelock${NC}"
         fi
     fi
 fi
@@ -129,16 +160,50 @@ case "$DISTRO_ID" in
         DEPS_FILE="docs/deps-debian.txt"
         PKG_CHECK="dpkg -s"
         PKG_INSTALL="sudo apt-get update && sudo apt-get install -y"
+        # Habilitar backports en Debian para paquetes nuevos
+        if [ "$DISTRO_ID" = "debian" ] && [ -f /etc/debian_version ]; then
+            DEBIAN_VER=$(cat /etc/debian_version | cut -d. -f1)
+            if [ "$DEBIAN_VER" -ge 12 ] && ! grep -q "backports" /etc/apt/sources.list /etc/apt/sources.list.d/* 2>/dev/null; then
+                echo -e "${YELLOW}📦 Habilitando backports en Debian...${NC}"
+                echo "deb http://deb.debian.org/debian bookworm-backports main" | sudo tee /etc/apt/sources.list.d/backports.list >/dev/null
+                sudo apt-get update
+            fi
+        fi
         ;;
     fedora|rhel|centos|rocky|almalinux|nobara)
         DEPS_FILE="docs/deps-fedora.txt"
         PKG_CHECK="rpm -q"
         PKG_INSTALL="sudo dnf install -y"
+        # Habilitar RPM Fusion si no está
+        if ! rpm -q rpmfusion-free-release >/dev/null 2>&1; then
+            echo -e "${YELLOW}📦 Habilitando RPM Fusion...${NC}"
+            sudo dnf install -y \
+                https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm \
+                https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm 2>/dev/null \
+                || echo -e "${YELLOW}⚠️  No se pudo habilitar RPM Fusion. Algunas dependencias (ffmpeg, nerd-fonts) no se instalarán.${NC}"
+        fi
+        # Habilitar COPR para awesome-git
+        if ! dnf repolist | grep -q "varlad/awesome-git"; then
+            echo -e "${YELLOW}📦 Habilitando COPR varlad/awesome-git para awesome-git...${NC}"
+            sudo dnf copr enable -y varlad/awesome-git 2>/dev/null || true
+        fi
         ;;
     opensuse-tumbleweed|opensuse-leap|suse|sled)
         DEPS_FILE="docs/deps-opensuse.txt"
         PKG_CHECK="rpm -q"
         PKG_INSTALL="sudo zypper install -y"
+        # Añadir repo Packman para codecs
+        if ! zypper lr | grep -q "packman"; then
+            echo -e "${YELLOW}📦 Añadiendo repo Packman (codecs)...${NC}"
+            sudo zypper ar -f https://ftp.gwdg.de/pub/linux/misc/packman/suse/openSUSE_Tumbleweed/ packman 2>/dev/null || true
+            sudo zypper --gpg-auto-import-keys refresh packman 2>/dev/null || true
+        fi
+        # Añadir repo nerd-fonts (OBS)
+        if ! zypper lr | grep -q "nerdfonts"; then
+            echo -e "${YELLOW}📦 Añadiendo repo nerd-fonts (OBS)...${NC}"
+            sudo zypper ar -f https://download.opensuse.org/repositories/home:/deadmoo:/nerdfonts/openSUSE_Tumbleweed/ nerdfonts 2>/dev/null || true
+            sudo zypper --gpg-auto-import-keys refresh nerdfonts 2>/dev/null || true
+        fi
         ;;
     nixos)
         DEPS_FILE="docs/deps-nixos.txt"
@@ -178,12 +243,12 @@ if [ "$DISTRO_ID" = "nixos" ]; then
     echo -e "${YELLOW}    Ver $DEPS_FILE para configuración declarativa${NC}"
     echo -e "${GREEN}✓ Saltando instalación de paquetes (gestión declarativa)${NC}"
 else
-    # Leer paquetes del archivo (ignorar comentarios y líneas vacías)
+    # Leer paquetes del archivo (ignorar comentarios, líneas vacías, y marcadores FLATPAK/MANUAL/COPR/OBS/BACKPORTS)
     if [ ! -f "$DEPS_FILE" ]; then
         echo -e "${YELLOW}⚠️  No se encontró $DEPS_FILE. Saltando instalación de dependencias.${NC}"
         packages=()
     else
-        mapfile -t packages < <(grep -v '^#' "$DEPS_FILE" | grep -v '^$' | sed 's/#.*//' | xargs -n1)
+        mapfile -t packages < <(grep -v '^#' "$DEPS_FILE" | grep -v '^$' | grep -v '^FLATPAK:' | grep -v '^MANUAL:' | grep -v '^COPR:' | grep -v '^OBS:' | grep -v '^BACKPORTS:' | sed 's/#.*//' | xargs -n1)
     fi
 
     to_install=()
@@ -207,6 +272,26 @@ else
         fi
     else
         echo -e "${GREEN}✓ Todos los paquetes ya están instalados. Saltando.${NC}"
+    fi
+
+    # Instalar paquetes FLATPAK marcados en deps files
+    if command -v flatpak >/dev/null 2>&1; then
+        echo -e "${YELLOW}📦 Instalando paquetes Flatpak...${NC}"
+        FLATPAK_PKGS=(
+            "com.spotify.Client"
+            "com.github.joseexposito.touchegg"
+            "com.github.joseexposito.mpdris2"
+            "com.sentriz.cliphist"
+            "org.mozilla.firefox"
+        )
+        for fpkg in "${FLATPAK_PKGS[@]}"; do
+            if ! flatpak list --app | grep -q "$fpkg"; then
+                echo -e "${YELLOW}  Instalando $fpkg...${NC}"
+                flatpak install -y flathub "$fpkg" 2>/dev/null || echo -e "${YELLOW}⚠️  No se pudo instalar $fpkg${NC}"
+            fi
+        done
+    else
+        echo -e "${YELLOW}⚠️  flatpak no instalado. Saltando paquetes Flatpak (spotify, touchegg, mpd-mpris, cliphist).${NC}"
     fi
 
     echo -e "${GREEN}✓ Dependencias instaladas${NC}"
@@ -385,6 +470,33 @@ if [ -d "fonts" ] && [ "$(ls -A fonts)" ]; then
     echo -e "${GREEN}✓ Cache de fuentes actualizado${NC}"
 else
     echo -e "${YELLOW}⚠️  Carpeta fonts vacía o no encontrada${NC}"
+fi
+
+# Instalar Nerd Fonts si faltan (para distros que no las tienen en repos)
+echo -e "${YELLOW}🔤 Verificando Nerd Fonts...${NC}"
+NERD_FONTS_DIR="$HOME/.local/share/fonts"
+NEED_NERD_FONTS=false
+
+# Verificar si tenemos al menos una Nerd Font instalada
+if ! fc-list | grep -qi "nerd font\|jetbrainsmononerd\|iosevkanerd\|hacknerd"; then
+    NEED_NERD_FONTS=true
+fi
+
+if [ "$NEED_NERD_FONTS" = true ]; then
+    echo -e "${YELLOW}  Nerd Fonts no detectadas. Instalando JetBrains Mono Nerd Font...${NC}"
+    mkdir -p "$NERD_FONTS_DIR"
+    cd "$NERD_FONTS_DIR"
+    if wget -q "https://github.com/ryanoasis/nerd-fonts/releases/latest/download/JetBrainsMono.zip" 2>/dev/null; then
+        unzip -o JetBrainsMono.zip >/dev/null 2>&1
+        rm -f JetBrainsMono.zip
+        fc-cache -fv "$NERD_FONTS_DIR" >/dev/null 2>&1
+        echo -e "${GREEN}  ✓ JetBrains Mono Nerd Font instalada${NC}"
+    else
+        echo -e "${YELLOW}  ⚠️  No se pudo descargar Nerd Font (¿sin red?). Instálala manualmente desde https://github.com/ryanoasis/nerd-fonts${NC}"
+    fi
+    cd "$SCRIPT_DIR"
+else
+    echo -e "${GREEN}  ✓ Nerd Fonts ya instaladas${NC}"
 fi
 
 echo ""
