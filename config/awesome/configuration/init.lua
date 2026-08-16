@@ -80,30 +80,57 @@ local dpi = beautiful.xresources.apply_dpi
 -- Helpers
 local helpers = require("helpers")
 
--- Bling Module
-local bling = require("module.bling")
+-- Safe require helper for optional modules
+local function safe_require(module_name, fallback)
+    local ok, result = pcall(require, module_name)
+    if ok then
+        return result
+    else
+        naughty.notify({
+            preset = naughty.config.presets.critical,
+            title = "AwesomeWM: Módulo opcional no disponible",
+            text = module_name .. ": " .. tostring(result) .. "\nFuncionalidad relacionada deshabilitada."
+        })
+        return fallback or {}
+    end
+end
 
--- Layout Machi
-local machi = require("module.layout-machi")
+-- Bling Module (optional - puede fallar si update_modules.sh no se ejecutó)
+local bling = safe_require("module.bling", {
+    layout = { mstab = {}, centered = {}, horizontal = {}, equalarea = {}, deck = {} },
+    module = { tabbed = {}, flash_focus = {}, scratchpad = function() return {toggle=function()end} end, wallpaper = {set=function()end}, window_swallowing = function() return {} end },
+    widget = { window_switcher = {turn_on=function()end}, tag_preview = function() return {} end, task_preview = function() return {} end, app_launcher = function() return {} end },
+    helpers = { client = {}, color = {}, filesystem = {}, icon_theme = {}, time = {} },
+    signal = { playerctl = { playerctl_lib = function() return { enable = function() end, disable = function() end } end } },
+})
+
+-- Layout Machi (optional)
+local machi = safe_require("module.layout-machi", {
+    default_layout = {},
+    editor = { nested_layouts = {}, start_interactive = function() end },
+    switcher = { start = function() end },
+    get_icon = function() return "⌘" end,
+})
 beautiful.layout_machi = machi.get_icon()
 
--- This is to slave windows' positions in floating layout
-require("module.savefloats")
+-- Save floats (optional)
+safe_require("module.savefloats")
 
--- Better mouse resizing on tiled
-require("module.better-resize")
+-- Better mouse resizing on tiled (optional)
+safe_require("module.better-resize")
 
 
 -- Desktop
 -------------
 
--- Custom Layouts
-local mstab = bling.layout.mstab
-local centered = bling.layout.centered
-local horizontal = bling.layout.horizontal
-local equal = bling.layout.equalarea
-local deck = bling.layout.deck
+-- Custom Layouts (con fallback a tablas vacías si módulos no cargaron)
+local mstab = bling.layout.mstab or {}
+local centered = bling.layout.centered or {}
+local horizontal = bling.layout.horizontal or {}
+local equal = bling.layout.equalarea or {}
+local deck = bling.layout.deck or {}
 
+machi.editor = machi.editor or {}
 machi.editor.nested_layouts = {
     ["0"] = deck,
     ["1"] = awful.layout.suit.spiral,
@@ -113,10 +140,14 @@ machi.editor.nested_layouts = {
 
 -- Set the layouts
 tag.connect_signal("request::default_layouts", function()
-    awful.layout.append_default_layouts({
-        awful.layout.suit.tile, awful.layout.suit.floating, centered, mstab,
-        horizontal, machi.default_layout, equal, deck
-    })
+    local layouts = {awful.layout.suit.tile, awful.layout.suit.floating}
+    if centered and centered.arrange then table.insert(layouts, centered) end
+    if mstab and mstab.arrange then table.insert(layouts, mstab) end
+    if horizontal and horizontal.arrange then table.insert(layouts, horizontal) end
+    if machi.default_layout and machi.default_layout.arrange then table.insert(layouts, machi.default_layout) end
+    if equal and equal.arrange then table.insert(layouts, equal) end
+    if deck and deck.arrange then table.insert(layouts, deck) end
+    awful.layout.append_default_layouts(layouts)
 end)
 
 -- Screen Padding and Tags

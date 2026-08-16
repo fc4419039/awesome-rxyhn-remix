@@ -1,13 +1,17 @@
 #!/bin/sh
+# Autostart script - graceful degradation for missing dependencies
 
-start() {
-  if ! pgrep -f "$1" > /dev/null 2>&1 ;
-  then
-    "$@" &
-  fi
+# Helper: start command only if binary exists and not already running
+safe_start() {
+    local cmd="$1"; shift
+    local bin="${cmd%% *}"
+    command -v "$bin" >/dev/null 2>&1 || { echo "[autostart] $bin no encontrado, saltando" >&2; return 0; }
+    if ! pgrep -f "$cmd" >/dev/null 2>&1; then
+        "$cmd" "$@" &
+    fi
 }
 
-# compositor (mpd/mpd-mpris los gestiona systemd --user)
+# 1. Compositor (picom) - con fallback si falla
 PICOM_CONF="$HOME/.config/awesome/theme/picom.conf"
 if [ -f "$HOME/.cache/awesome/blur-mode" ]; then
     PICOM_CONF="$HOME/.config/awesome/theme/picom-blur.conf"
@@ -18,18 +22,37 @@ elif [ -f /tmp/awesome-blur-mode ]; then
 elif [ -f /tmp/awesome-transparency-mode ]; then
     PICOM_CONF="$HOME/.config/awesome/theme/picom-transparency.conf"
 fi
-start picom -b --dbus --config "$PICOM_CONF"
 
-# auth
-start /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
+if command -v picom >/dev/null 2>&1; then
+    if ! pgrep -f "picom.*--config" >/dev/null 2>&1; then
+        picom -b --dbus --config "$PICOM_CONF" 2>/dev/null || \
+            echo "[autostart] picom falló (¿VM sin GPU?); probando sin --dbus..." >&2 && \
+            picom -b --config "$PICOM_CONF" 2>/dev/null || \
+            echo "[autostart] picom no disponible, continuando sin compositor" >&2
+    fi
+else
+    echo "[autostart] picom no instalado, saltando compositor" >&2
+fi
 
-# pulse audio systray
-start pasystray
+# 2. Polkit agent
+safe_start /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
+# Fallback para distros con path diferente
+safe_start /usr/lib/polkit-kde-authentication-agent-1
 
-# load X colors
-start xrdb $HOME/.Xresources
+# 3. PulseAudio systray (pasystray) - opcional
+safe_start pasystray
 
-# clipboard history (se activa al presionar Super+Shift+V)
+# 4. Cargar X resources
+command -v xrdb >/dev/null 2>&1 && [ -f "$HOME/.Xresources" ] && xrdb "$HOME/.Xresources" &
 
-# touchegg client (gestos del touchpad)
-pgrep -u "$USER" -f "touchegg.*--client" > /dev/null 2>&1 || nohup touchegg --client > /dev/null 2>&1 &
+# 5. Touchegg client (gestos touchpad) - solo si touchegg daemon está corriendo
+if command -v touchegg >/dev/null 2>&1; then
+    if pgrep -u "$USER" -f "touchegg.*--daemon" >/dev/null 2>&1; then
+        safe_start touchegg --client
+    else
+        echo "[autostart] touchegg daemon no corriendo, saltando client" >&2
+    fi
+fi
+
+# 6. Notification sink setup (audio routing)
+safe_start "$HOME/.config/awesome/scripts/notif-sink-setup.sh"

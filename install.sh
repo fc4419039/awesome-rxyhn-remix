@@ -295,6 +295,25 @@ else
     fi
 
     echo -e "${GREEN}✓ Dependencias instaladas${NC}"
+
+    # =====================================================================
+    # 2c️⃣ VERIFICAR DEPENDENCIAS CRÍTICAS POST-INSTALACIÓN
+    # =====================================================================
+    echo -e "${YELLOW}🔍 Verificando dependencias críticas...${NC}"
+    CRITICAL_DEPS=("awesome" "picom" "kitty" "rofi" "zsh" "git" "curl" "wget" "rsync" "pactl" "wpctl" "bluetoothctl" "notify-send" "autorandr")
+    MISSING_CRITICAL=()
+    for dep in "${CRITICAL_DEPS[@]}"; do
+        if ! command -v "$dep" >/dev/null 2>&1; then
+            MISSING_CRITICAL+=("$dep")
+        fi
+    done
+    if [ ${#MISSING_CRITICAL[@]} -gt 0 ]; then
+        echo -e "${RED}⚠️  Dependencias CRÍTICAS faltantes: ${MISSING_CRITICAL[*]}${NC}"
+        echo -e "${YELLOW}   AwesomeWM puede no funcionar correctamente.${NC}"
+        echo -e "${YELLOW}   Instálalas manualmente y re-ejecuta el script.${NC}"
+    else
+        echo -e "${GREEN}✓ Todas las dependencias críticas disponibles${NC}"
+    fi
 fi
 
 echo ""

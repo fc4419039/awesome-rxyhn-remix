@@ -4,6 +4,30 @@
 #  - Lista de dispositivos con icono de tipo, estado de conexión y batería
 #  - Acciones según el tipo: enviar archivos (teléfono/OBEX), salida de
 #    audio y micrófono (audio), conectar/desconectar, olvidar dispositivo.
+# Graceful degradation: si faltan dependencias, muestra warnings pero no crashea.
+
+# Verificar dependencias críticas al inicio
+check_deps() {
+    local missing=()
+    command -v bluetoothctl >/dev/null 2>&1 || missing+=("bluez/bluez-utils")
+    command -v rofi >/dev/null 2>&1 || missing+=("rofi")
+    command -v pactl >/dev/null 2>&1 || missing+=("libpulse/pipewire-pulse")
+    command -v notify-send >/dev/null 2>&1 || missing+=("libnotify")
+    
+    # Opcionales
+    BLUEMAN_AVAILABLE=false
+    OBEXD_AVAILABLE=false
+    UPOWER_AVAILABLE=false
+    command -v blueman-sendto >/dev/null 2>&1 && BLUEMAN_AVAILABLE=true
+    command -v obexd >/dev/null 2>&1 || [ -x /usr/lib/bluetooth/obexd ] || [ -x /usr/libexec/bluetooth/obexd ] && OBEXD_AVAILABLE=true
+    command -v upower >/dev/null 2>&1 && UPOWER_AVAILABLE=true
+    
+    if [ ${#missing[@]} -gt 0 ]; then
+        notify-send -u critical "Bluetooth" "Faltan deps críticas: ${missing[*]}. Instálalas para usar el menú." 2>/dev/null || true
+        # No exit - leave menu to show error state
+    fi
+}
+check_deps
 
 source "$HOME/.config/awesome/scripts/i18n.sh"
 
@@ -140,6 +164,7 @@ supports_audio() {
 
 # Batería de un dispositivo Bluetooth a través de upower
 battery_level() {
+    [ "$UPOWER_AVAILABLE" = true ] || return 1
     local mac="$1" dev addr pct
     while IFS= read -r dev; do
         case "$dev" in
@@ -406,11 +431,11 @@ forget_device() {
 
 send_file() {
     local mac="$1" name="$2"
-    if [ -x /usr/lib/bluetooth/obexd ] || [ -x /usr/libexec/bluetooth/obexd ] || command -v obexd >/dev/null 2>&1; then
-        notify-send -i bluetooth "$(t bl.title)" "$(tsub bl.sending "$name")"
-        blueman-sendto -d "$mac" >/dev/null 2>&1
+    if [ "$OBEXD_AVAILABLE" = true ] || [ "$BLUEMAN_AVAILABLE" = true ]; then
+        notify-send -i bluetooth "$(t bl.title)" "$(tsub bl.sending "$name")" 2>/dev/null || true
+        blueman-sendto -d "$mac" >/dev/null 2>&1 || true
     else
-        notify-send -i bluetooth "$(t bl.title)" "$(t bl.need_obex)"
+        notify-send -i bluetooth "$(t bl.title)" "$(t bl.need_obex)" 2>/dev/null || true
     fi
 }
 
