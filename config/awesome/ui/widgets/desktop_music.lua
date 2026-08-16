@@ -251,6 +251,11 @@ local function create_widget(s)
 
     local pos_file = os.getenv("HOME") .. "/.config/awesome/.desktop-music-pos-" .. s.index
 
+    local visible_file = os.getenv("HOME") .. "/.cache/awesome/.desktop-widgets-hidden"
+    local initially_hidden = false
+    local f_v = io.open(visible_file, "r")
+    if f_v then f_v:close(); initially_hidden = true end
+
     local w = wibox{
         type = "desktop",
         screen = s,
@@ -375,6 +380,10 @@ local function create_widget(s)
     end
 
     helpers.clamp_wibox_on_screen(w, s)
+
+    if initially_hidden then
+        w.visible = false
+    end
 
     s.desktop_music = w
 end

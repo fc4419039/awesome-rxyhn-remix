@@ -66,6 +66,11 @@ local function create_widget(s)
     local show_date = true
     local show_time = true
 
+    local visible_file = os.getenv("HOME") .. "/.cache/awesome/.desktop-widgets-hidden"
+    local initially_hidden = false
+    local f_v = io.open(visible_file, "r")
+    if f_v then f_v:close(); initially_hidden = true end
+
     local f_c = io.open(color_file, "r")
     if f_c then
         text_color = f_c:read("*a"):match("^%s*(.-)%s*$")
@@ -410,6 +415,10 @@ local function create_widget(s)
     end
 
     helpers.clamp_wibox_on_screen(w, s)
+
+    if initially_hidden then
+        w.visible = false
+    end
 
     s.datetime_widget = w
 end

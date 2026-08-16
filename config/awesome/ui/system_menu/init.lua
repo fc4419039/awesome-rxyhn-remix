@@ -41,7 +41,7 @@ local actions = {
     ["Resources"]    = function() require("ui.widgets.resources").toggle() end,
     ["Calculator"]   = function() require("ui.widgets.calculator").toggle() end,
     ["Color Temp"]   = function() require("ui.system_menu.color_temp").create(awful.screen.focused()):_toggle() end,
-    ["Widgets"]      = function() for s in screen do if s.datetime_widget then s.datetime_widget.visible = not s.datetime_widget.visible end end end,
+    ["Widgets"]      = function() for s in screen do if s.datetime_widget then s.datetime_widget.visible = not s.datetime_widget.visible end if s.desktop_sysmon then s.desktop_sysmon.visible = not s.desktop_sysmon.visible end if s.desktop_music then s.desktop_music.visible = not s.desktop_music.visible end end local state_file = os.getenv("HOME") .. "/.cache/awesome/.desktop-widgets-hidden" local hidden = false for s in screen do if s.datetime_widget and not s.datetime_widget.visible then hidden = true break end end if hidden then local f = io.open(state_file, "w") if f then f:close() end else os.remove(state_file) end end,
     ["Titlebar"]     = function() toggle_window_titlebars() end,
     ["Borders"]      = function() toggle_window_borders() end,
     ["SDDM"]         = function() require("ui.system_menu.sddm_picker").toggle() end,
