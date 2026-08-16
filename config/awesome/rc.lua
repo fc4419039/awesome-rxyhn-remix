@@ -143,9 +143,71 @@ boot_mark("config")
      pcall(require, "signal")
      boot_marks[#boot_marks + 1] = string.format("%-10s %6.0f ms", "signal", (os.clock() - t0) * 1000)
  end)
- require("ui")
- boot_mark("ui")
- require("ui.reload")
+require("ui")
+  boot_mark("ui")
+  require("ui.reload")
+
+  -- Restaurar foco del cliente guardado tras reinicio (usa window ID + etiqueta, estable tras restart)
+  -- Usamos la señal 'manage' para actuar cuando el cliente correcto es gestionado,
+  -- y cambiamos a su etiqueta antes de enfocar.
+  local focus_restore_pending = false
+  local target_window = nil
+  local target_tag_idx = nil
+
+  local function try_restore_focus()
+      if not focus_restore_pending or not target_window then return end
+      for _, c in ipairs(client.get()) do
+          if c.window == target_window and not c.minimized then
+              -- Cambiar a la etiqueta del cliente si es necesario
+              if target_tag_idx then
+                  local tag = awful.tag.find_by_name(c.screen, tostring(target_tag_idx))
+                  if tag then
+                      tag:view_only()
+                  end
+              end
+              client.focus = c
+              c:raise()
+              focus_restore_pending = false
+              target_window = nil
+              target_tag_idx = nil
+              break
+          end
+      end
+  end
+
+  -- Leer window ID y etiqueta guardados al arrancar
+  local reload = require("ui.reload")
+  local f = io.open(reload.focus_file, "r")
+  if f then
+      local data = f:read("*a")
+      f:close()
+      local win_str, tag_str = data:match("^(%d+),(%d+)$")
+      if win_str then
+          target_window = tonumber(win_str)
+          target_tag_idx = tonumber(tag_str)
+          focus_restore_pending = true
+          -- Intentar inmediatamente por si el cliente ya existe
+          try_restore_focus()
+      end
+      os.remove(reload.focus_file)
+  end
+
+  -- Hook: cuando se gestione un cliente, comprobar si es el nuestro
+  client.connect_signal("manage", function(c)
+      if focus_restore_pending and c.window == target_window and not c.minimized then
+          if target_tag_idx then
+              local tag = awful.tag.find_by_name(c.screen, tostring(target_tag_idx))
+              if tag then
+                  tag:view_only()
+              end
+          end
+          client.focus = c
+          c:raise()
+          focus_restore_pending = false
+          target_window = nil
+          target_tag_idx = nil
+      end
+  end)
 
  -- Global UI Watchdog (inicia después de que UI esté lista)
  gears.timer.delayed_call(function()
