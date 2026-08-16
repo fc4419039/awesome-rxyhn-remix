@@ -142,95 +142,38 @@ boot_mark("config")
      local t0 = os.clock()
      pcall(require, "signal")
      boot_marks[#boot_marks + 1] = string.format("%-10s %6.0f ms", "signal", (os.clock() - t0) * 1000)
- end)
+end)
 require("ui")
   boot_mark("ui")
   require("ui.reload")
 
-  -- Restaurar tag activo + foco exacto tras reinicio
-  -- Formato archivo: window_id|tag_idx (ej: 12582926|3 o 0|5)
+  -- Hook: cuando se gestione un cliente tras restart, restaurar foco si coincide
+  -- (el tag ya se restauró en configuration/init.lua antes del primer render)
   local focus_restore_pending = false
   local target_window = nil
-  local target_tag_idx = nil
 
-  local function try_restore_focus()
-      if not focus_restore_pending or not target_window then return end
-      for _, c in ipairs(client.get()) do
-          if c.window == target_window and not c.minimized then
-              if target_tag_idx then
-                  local tag = nil
-                  for _, t in ipairs(c.screen.tags) do
-                      if t.name == tostring(target_tag_idx) then
-                          tag = t
-                          break
-                      end
-                  end
-                  if tag then
-                      tag:view_only()
-                  end
-              end
-              client.focus = c
-              c:raise()
-              focus_restore_pending = false
-              target_window = nil
-              target_tag_idx = nil
-              break
-          end
-      end
-  end
-
-  local function restore_tag()
-      if target_tag_idx then
-          local s = awful.screen.focused() or mouse.screen or screen[1]
-          local tag = nil
-          for _, t in ipairs(s.tags) do
-              if t.name == tostring(target_tag_idx) then
-                  tag = t
-                  break
-              end
-          end
-          if tag then
-              tag:view_only()
-          end
-      end
-  end
-
--- Leer window_id y tag guardados al arrancar
   local reload = require("ui.reload")
   local f = io.open(reload.focus_file, "r")
   if f then
       local data = f:read("*a")
       f:close()
       local win_str, tag_str = data:match("^([^|]+)|(%d+)$")
-      if win_str and tag_str then
+      if win_str then
           local win_id = tonumber(win_str:match("^(%d+)|"))
           target_window = (win_id and win_id > 0) and win_id or nil
-          target_tag_idx = tonumber(tag_str)
-          focus_restore_pending = target_window ~= nil
-
-          -- SIEMPRE ir al tag guardado (esté vacío o no) - con delay para que los tags existan
-          gears.timer.start_new(2.0, function()
-              restore_tag()
-              if focus_restore_pending then
-                  try_restore_focus()
-              end
-              return false
-          end)
-      else
-          -- Archivo corrupto: limpiar
-          os.remove(reload.focus_file)
+          if target_window then
+              focus_restore_pending = true
+          end
       end
       os.remove(reload.focus_file)
   end
 
-  -- Hook: cuando se gestione un cliente, comprobar si es el nuestro
   client.connect_signal("manage", function(c)
       if focus_restore_pending and c.window == target_window and not c.minimized then
           client.focus = c
           c:raise()
           focus_restore_pending = false
           target_window = nil
-          target_tag_idx = nil
       end
   end)
 

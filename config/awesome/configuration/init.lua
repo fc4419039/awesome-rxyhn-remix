@@ -130,6 +130,33 @@ screen.connect_signal("request::desktop_decoration", function(s)
     if #s.tags == 0 then
         awful.tag({"1", "2", "3", "4", "5"}, s, awful.layout.layouts[1])
     end
+
+    -- Restaurar tag guardado inmediatamente tras crearlos (antes del primer render)
+    -- Solo en la pantalla principal para evitar conflictos multi-monitor
+    if s == screen.primary then
+        local reload = require("ui.reload")
+        local f = io.open(reload.focus_file, "r")
+        if f then
+            local data = f:read("*a")
+            f:close()
+            local win_str, tag_str = data:match("^([^|]+)|(%d+)$")
+            if win_str and tag_str then
+                local tag_idx = tonumber(tag_str)
+                if tag_idx then
+                    local tag = nil
+                    for _, t in ipairs(s.tags) do
+                        if t.name == tostring(tag_idx) then
+                            tag = t
+                            break
+                        end
+                    end
+                    if tag then
+                        tag:view_only()
+                    end
+                end
+            end
+        end
+    end
 end)
 
 -- Wallpapers (lo establece ~/.config/cambiar_fondo.sh)
