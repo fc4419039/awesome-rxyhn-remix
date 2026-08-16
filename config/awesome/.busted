@@ -1,0 +1,12 @@
+return {
+    verbose = true,
+    coverage = false,
+    output = "utfTerminal",
+    helper = "tests/mock_awesome.lua",
+    paths = {
+        "?.lua",
+        "?/init.lua",
+        "tests/spec/?.lua",
+        "tests/spec/?/?.lua"
+    }
+}

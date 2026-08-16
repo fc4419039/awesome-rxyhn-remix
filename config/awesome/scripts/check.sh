@@ -1,28 +1,40 @@
 #!/bin/bash
-# check.sh - Valida la sintaxis de toda la config (Lua, Shell y Python).
-# Es tu "CI" de dotfiles: ejecutalo antes de reiniciar awesome o de hacer push.
+# check.sh - Valida sintaxis Y runtime de la config (Lua, Shell, Python).
+# Uso desde CUALQUIER directorio:
+#   check.sh                    # revisa ~/.config/awesome
+#   check.sh <DIR>              # revisa otro directorio
+#   check.sh --watch            # modo vigilancia (cada 2s)
+#   check.sh --runtime          # solo validación runtime
+#   check.sh --syntax           # solo sintaxis
+#   check.sh --full             # sintaxis + runtime (default)
 #
-# Uso:
-#   scripts/check.sh                  # revisa ~/.config/awesome (config activa)
-#   scripts/check.sh <DIR>            # revisa otro directorio (ej. el repo)
-#   scripts/check.sh --watch          # modo vigilancia (revisa cada 2s)
-#
-# Salida con codigo de error:
-#   0 = todo OK, 1 = errores de sintaxis
+# Salida: 0 = OK, 1 = errores
 
 set -u
 
+# Detectar directorio del script (funciona desde cualquier lugar)
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Default SIEMPRE a ~/.config/awesome, independientemente de dónde esté el script
 CFG="${1:-$HOME/.config/awesome}"
+AWESOME_CFG="$HOME/.config/awesome"
+RUNTIME_SCRIPT="$AWESOME_CFG/scripts/check_runtime.lua"
 WATCH=false
-if [ "${1:-}" = "--watch" ]; then
-    WATCH=true
-    CFG="$HOME/.config/awesome"
-fi
+MODE="full"  # full | syntax | runtime
+
+case "${1:-}" in
+    --watch) WATCH=true; CFG="$AWESOME_CFG"; shift ;;
+    --runtime) MODE="runtime"; shift ;;
+    --syntax) MODE="syntax"; shift ;;
+    --full) MODE="full"; shift ;;
+esac
+
+CFG="${1:-$AWESOME_CFG}"
 
 # ─── Colores ───
-BOLD=$'\e[1m'; RED=$'\e[31m'; GREEN=$'\e[32m'; CYAN=$'\e[36m'; DIM=$'\e[2m'; RESET=$'\e[0m'
+BOLD=$'\e[1m'; RED=$'\e[31m'; GREEN=$'\e[32m'; CYAN=$'\e[36m'; YELLOW=$'\e[33m'; DIM=$'\e[2m'; RESET=$'\e[0m'
 
-check_lua() {
+check_lua_syntax() {
     local errors=0 total=0 f out
     while IFS= read -r -d '' f; do
         total=$((total + 1))
@@ -32,12 +44,12 @@ check_lua() {
             echo "$out" | sed "s/^/    /"
             errors=$((errors + 1))
         fi
-    done < <(find "$CFG" -name '*.lua' -not -path '*/__pycache__/*' -not -path '*/.codebak/*' -print0)
-    echo -e "${CYAN}Lua${RESET} ${DIM}($total)${RESET}"
+    done < <(find "$CFG" -name '*.lua' -not -path '*/__pycache__/*' -not -path '*/.codebak/*' -not -path '*/tests/*' -print0)
+    echo -e "${CYAN}Lua (syntax)${RESET} ${DIM}($total)${RESET}"
     return "$errors"
 }
 
-check_sh() {
+check_sh_syntax() {
     local errors=0 total=0 f out
     while IFS= read -r -d '' f; do
         total=$((total + 1))
@@ -48,11 +60,11 @@ check_sh() {
             errors=$((errors + 1))
         fi
     done < <(find "$CFG" -name '*.sh' -print0)
-    echo -e "${CYAN}Shell${RESET} ${DIM}($total)${RESET}"
+    echo -e "${CYAN}Shell (syntax)${RESET} ${DIM}($total)${RESET}"
     return "$errors"
 }
 
-check_py() {
+check_py_syntax() {
     local errors=0 total=0 f out
     while IFS= read -r -d '' f; do
         total=$((total + 1))
@@ -65,22 +77,45 @@ for f in sys.argv[1:]:
             errors=$((errors + 1))
         fi
     done < <(find "$CFG" -name '*.py' -print0)
-    echo -e "${CYAN}Python${RESET} ${DIM}($total)${RESET}"
+    echo -e "${CYAN}Python (syntax)${RESET} ${DIM}($total)${RESET}"
     return "$errors"
 }
 
+check_runtime() {
+    echo -e "${CYAN}Lua (runtime)${RESET}"
+    lua "$RUNTIME_SCRIPT"
+    return $?
+}
+
 run() {
-    local lua_err sh_err py_err
-    echo -e "${BOLD}── check.sh${RESET} ${DIM}→ $CFG${RESET}"
-    check_lua;   lua_err=$?
-    check_sh;    sh_err=$?
-    check_py;    py_err=$?
+    local total_err=0 lua_err=0 sh_err=0 py_err=0 rt_err=0
+
+    echo -e "${BOLD}── check.sh${RESET} ${DIM}→ $CFG${RESET} ${DIM}[$MODE]${RESET}"
+
+    case "$MODE" in
+        syntax)
+            check_lua_syntax;   lua_err=$?
+            check_sh_syntax;    sh_err=$?
+            check_py_syntax;    py_err=$?
+            ;;
+        runtime)
+            check_runtime;      rt_err=$?
+            ;;
+        full|*)
+            check_lua_syntax;   lua_err=$?
+            check_sh_syntax;    sh_err=$?
+            check_py_syntax;    py_err=$?
+            check_runtime;      rt_err=$?
+            ;;
+    esac
+
+    total_err=$((lua_err + sh_err + py_err + rt_err))
     echo "────────────────────────────────"
-    if [ $((lua_err + sh_err + py_err)) -eq 0 ]; then
+    if [ $total_err -eq 0 ]; then
         echo -e "  ${GREEN}✔${RESET} Todo OK"
         return 0
     fi
-    echo -e "  ${RED}✖ $((lua_err + sh_err + py_err)) archivos con errores${RESET}"
+    echo -e "  ${RED}✖ $total_err errores totales${RESET}"
     return 1
 }
 

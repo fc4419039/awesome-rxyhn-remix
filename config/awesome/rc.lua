@@ -77,9 +77,8 @@ else
     weather_location_override = nil
 end
 
--- Garbage Collector Settings (Valores estables para AwesomeWM)
-collectgarbage("setpause", 110)
-collectgarbage("setstepmul", 200)
+-- Garbage Collector Settings (Valores estables para AwesomeWM / Lua 5.5+)
+collectgarbage("incremental", 110, 200)
 
 -- Traducción de la UI (sigue el LANG de /etc/locale.conf)
 i18n = require("i18n")

@@ -1,0 +1,54 @@
+local helpers = {}
+
+helpers.shape = require("helpers.shape")
+helpers.wibox = require("helpers.wibox")
+helpers.client = require("helpers.client")
+helpers.string = require("helpers.string")
+helpers.markup = require("helpers.markup")
+helpers.system = require("helpers.system")
+helpers.misc = require("helpers.misc")
+
+helpers.colorize_text = helpers.markup.colorize_text
+helpers.contains = helpers.string.contains
+helpers.case_insensitive_pattern = helpers.string.case_insensitive_pattern
+helpers.pango_escape = helpers.string.pango_escape
+helpers.upper_no_accents = helpers.string.upper_no_accents
+helpers.rrect = helpers.shape.rrect
+helpers.pie = helpers.shape.pie
+helpers.prgram = helpers.shape.prgram
+helpers.prrect = helpers.shape.prrect
+helpers.rbar = helpers.shape.rbar
+helpers.custom_shape = helpers.shape.custom
+helpers.fit_wibox = helpers.wibox.fit
+helpers.clamp_wibox_on_screen = helpers.wibox.clamp_on_screen
+helpers.vertical_pad = helpers.wibox.vertical_pad
+helpers.horizontal_pad = helpers.wibox.horizontal_pad
+helpers.brand_watermark = helpers.wibox.brand_watermark
+helpers.pad = helpers.wibox.pad
+helpers.screen_mask = helpers.wibox.screen_mask
+helpers.single_double_tap = helpers.client.single_double_tap
+helpers.maximize = helpers.client.maximize
+helpers.resize_dwim = helpers.client.resize_dwim
+helpers.move_to_edge = helpers.client.move_to_edge
+helpers.move_client_dwim = helpers.client.move_client_dwim
+helpers.float_and_edge_snap = helpers.client.float_and_edge_snap
+helpers.float_and_resize = helpers.client.float_and_resize
+helpers.centered_client_placement = helpers.client.centered_client_placement
+helpers.run_or_raise = helpers.client.run_or_raise
+helpers.send_key = helpers.client.send_key
+helpers.send_key_sequence = helpers.client.send_key_sequence
+helpers.tag_back_and_forth = helpers.client.tag_back_and_forth
+helpers.client_menu_toggle = helpers.client.client_menu_toggle
+helpers.rofi_move_client_here = helpers.client.rofi_move_client_here
+helpers.add_hover_cursor = helpers.client.add_hover_cursor
+helpers.volume_control = helpers.system.volume_control
+helpers.notifications_volume = helpers.system.notifications_volume
+helpers.music_control = helpers.system.music_control
+helpers.fake_escape = helpers.system.fake_escape
+helpers.remote_watch = helpers.system.remote_watch
+helpers.resize_gaps = helpers.misc.resize_gaps
+helpers.resize_padding = helpers.misc.resize_padding
+helpers.find = helpers.misc.find
+helpers.round = helpers.misc.round
+
+return helpers

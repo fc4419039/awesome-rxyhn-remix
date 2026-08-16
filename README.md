@@ -179,16 +179,24 @@ Sloppy & flash focus · window swallowing · scratchpad · save floats · better
 
 ### Developer Tools
 
-`config/awesome/scripts/check.sh` validates the syntax of every Lua, Shell and Python file in the config — your dotfiles' CI. Run it **before restarting awesome or committing** to catch errors that would crash the WM into fallback mode.
+`config/awesome/scripts/check.sh` validates **syntax + runtime** (module loading, broken requires, load errors) — your dotfiles' CI. Run it **before restarting awesome or committing** to catch errors that would crash the WM.
 
 ```bash
-config/awesome/scripts/check.sh                       # from the repo (before install)
+config/awesome/scripts/check.sh                       # from repo (before install)
 ~/.config/awesome/scripts/check.sh                    # from your installed config
-~/.config/awesome/scripts/check.sh <another/dir>      # check any directory (e.g. the repo)
-~/.config/awesome/scripts/check.sh --watch            # continuous watch mode (every 2s)
+config/awesome/scripts/check.sh <other/dir>           # check any directory
+~/.config/awesome/scripts/check.sh --syntax           # syntax only (fast)
+~/.config/awesome/scripts/check.sh --runtime          # runtime only
+~/.config/awesome/scripts/check.sh --full             # full (default)
+~/.config/awesome/scripts/check.sh --watch            # continuous watch mode
 ```
 
-Exit code `0` = all OK, `1` = syntax errors found (file:line shown).
+Exit code `0` = OK, `1` = errors (file:line shown). Works from **any directory**.
+
+**Unit tests** (36 tests — helpers, shapes, strings, markup, client, wibox, system):
+```bash
+bash ~/.config/awesome/tests/run_tests.sh             # 36 tests pass
+```
 
 ---
 
@@ -261,16 +269,24 @@ Foco sloppy y flash · window swallowing · scratchpad · save floats · mejor r
 
 ### Herramientas de desarrollo
 
-`config/awesome/scripts/check.sh` valida la sintaxis de todos los archivos Lua, Shell y Python de la config — el "CI" de tus dotfiles. Ejecútalo **antes de reiniciar awesome o de hacer commit** para detectar errores que romperían el WM y lo mandarían a modo fallback.
+`config/awesome/scripts/check.sh` valida sintaxis **y runtime** (carga de módulos, requires rotos, errores de carga) — el "CI" de tus dotfiles. Ejecútalo **antes de reiniciar awesome o de hacer commit** para detectar errores que romperían el WM.
 
 ```bash
 config/awesome/scripts/check.sh                       # desde el repo (antes de instalar)
 ~/.config/awesome/scripts/check.sh                    # desde tu config instalada
-~/.config/awesome/scripts/check.sh <otro/dir>         # revisa cualquier directorio (ej. el repo)
-~/.config/awesome/scripts/check.sh --watch            # modo vigilancia continua (cada 2s)
+config/awesome/scripts/check.sh <otro/dir>            # revisa cualquier directorio
+~/.config/awesome/scripts/check.sh --syntax           # solo sintaxis (rápido)
+~/.config/awesome/scripts/check.sh --runtime          # solo runtime
+~/.config/awesome/scripts/check.sh --full             # completo (default)
+~/.config/awesome/scripts/check.sh --watch            # modo vigilancia continua
 ```
 
-Código de salida `0` = todo OK, `1` = errores de sintaxis (muestra archivo:línea).
+Código de salida `0` = OK, `1` = errores (archivo:línea). Funciona desde **cualquier directorio**.
+
+**Tests unitarios** (36 tests — helpers, shapes, strings, markup, client, wibox, system):
+```bash
+bash ~/.config/awesome/tests/run_tests.sh             # 36 tests pasan
+```
 
 ---
 
