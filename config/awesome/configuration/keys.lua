@@ -82,21 +82,43 @@ awful.keyboard.append_global_keybindings({
             if found then
                 awful.spawn(found)
             else
-                local helper = "yay"
-                local h = io.popen("command -v paru 2>/dev/null")
-                if h and h:read() then helper = "paru" end
-                if h then h:close() end
-                local install = naughty.action { name = "Sí, instalar" }
-                install:connect_signal("invoked", function()
-                    awful.spawn.with_shell(terminal .. " --hold -e " .. helper .. " -S opera-gx")
-                end)
-                local cancel = naughty.action { name = "Cancelar" }
-                naughty.notify({
-                    title = "Opera GX no está instalado",
-                    text = "¿Quieres instalarlo ahora? (" .. helper .. " -S opera-gx)",
-                    timeout = 10,
-                    actions = { install, cancel }
-                })
+                local function detect_pkg_manager()
+                    for _, name in ipairs({ "paru", "yay", "pacman", "apt", "dnf", "zypper" }) do
+                        local h = io.popen("command -v " .. name .. " 2>/dev/null")
+                        if h then
+                            local r = h:read()
+                            h:close()
+                            if r then return name end
+                        end
+                    end
+                    return nil
+                end
+                local helper = detect_pkg_manager()
+                if helper and helper ~= "apt" and helper ~= "dnf" and helper ~= "zypper" then
+                    local install = naughty.action { name = "Sí, instalar" }
+                    install:connect_signal("invoked", function()
+                        awful.spawn.with_shell(terminal .. " --hold -e " .. helper .. " -S opera-gx")
+                    end)
+                    local cancel = naughty.action { name = "Cancelar" }
+                    naughty.notify({
+                        title = "Opera GX no está instalado",
+                        text = "¿Quieres instalarlo ahora? (" .. helper .. " -S opera-gx)",
+                        timeout = 10,
+                        actions = { install, cancel }
+                    })
+                else
+                    local download = naughty.action { name = "Abrir web de descarga" }
+                    download:connect_signal("invoked", function()
+                        awful.spawn.with_shell("xdg-open https://www.opera.com/gx 2>/dev/null")
+                    end)
+                    local cancel = naughty.action { name = "Cancelar" }
+                    naughty.notify({
+                        title = "Opera GX no está instalado",
+                        text = "Opera GX no está en los repositorios de esta distro.\nDescárgalo desde la web oficial.",
+                        timeout = 10,
+                        actions = { download, cancel }
+                    })
+                end
             end
         end,
         {description = "open opera gx", group = "launcher"}),

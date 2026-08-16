@@ -2,6 +2,11 @@
 # Instala un hook de pacman que regenera /boot/grub/grub.cfg automáticamente
 # tras cada actualización de kernel.
 #
+# Este script usa hooks de pacman (/etc/pacman.d/hooks), por lo que
+# SOLO funciona en distros basadas en Arch. En Debian/Ubuntu el
+# equivalente es automático (update-initramfs + update-grub), y en
+# Fedora dkms/grub2-mkconfig hacen lo mismo.
+#
 # Previene el boot roto tras una actualización:
 #   mount: /boot/efi: unknown filesystem type 'vfat'
 #   (GRUB apuntando a un kernel viejo sin módulos en /lib/modules)
@@ -13,6 +18,12 @@ set -e
 
 if [ "$(id -u)" -ne 0 ]; then
     echo "⚠️  Ejecuta como root: sudo $0" >&2
+    exit 1
+fi
+
+if ! command -v pacman >/dev/null 2>&1; then
+    echo "⚠️  Este script es específico de distros Arch (usa hooks de pacman)." >&2
+    echo "    En tu distro, la regeneración de grub.cfg tras actualizaciones de kernel es automática." >&2
     exit 1
 fi
 

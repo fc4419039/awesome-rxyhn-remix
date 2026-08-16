@@ -1,9 +1,10 @@
 #!/bin/bash
-set -e
+# IMPORTANTE: no usar `set -e`. Cada módulo se actualiza de forma independiente
+# y un fallo de red NO debe abortar el script.
 
-DIR="$(cd "$(dirname "$0")" && pwd)"
+DIR="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]:-$0}")")" && pwd)"
 MODULE_DIR="$DIR/config/awesome/module"
-TMPDIR=$(mktemp -d)
+TMPDIR=$(mktemp -d 2>/dev/null || true)
 trap 'rm -rf "$TMPDIR"' EXIT
 
 update_module() {
@@ -30,9 +31,15 @@ update_module() {
     echo ""
 }
 
-update_module "bling"     "https://github.com/BlingCorp/bling.git"             ""
 update_module "rubato"    "https://github.com/andOrlando/rubato.git"          ""
 update_module "layout-machi" "https://github.com/xinhaoyuan/layout-machi.git" ""
+
+# bling: NO se actualiza automáticamente.
+# El upstream rompió layout/init.lua (bucle que asigna a variable 'const' en Lua 5.4:
+# "attempt to assign to const variable 'p'"). Se mantiene la versión que funciona.
+echo "=== bling ==="
+echo "  ⚠ bling se mantiene en la versión del repo (upstream roto en Lua 5.4)"
+echo "  Para actualizarlo manualmente, arregla config/awesome/module/bling/layout/init.lua"
 
 echo "=== Todos los módulos actualizados ==="
 echo "Revisa los cambios con: git diff"

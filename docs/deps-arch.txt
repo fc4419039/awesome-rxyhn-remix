@@ -1,0 +1,115 @@
+# Arch Linux / Manjaro / EndeavourOS
+# Instalar con: paru -S --needed $(grep -v '^#' docs/deps-arch.txt | sed 's/#.*//')
+
+# ==================== CORE WM ====================
+awesome-git                    # AwesomeWM git version (recomendado)
+picom-git                      # Compositor con blur/transparencia
+kitty                          # Terminal GPU-accelerated
+rofi                           # Launcher/menu
+ttf-jetbrains-mono-nerd        # Fuente principal (iconos + texto)
+ttf-iosevka-nerd               # Fuente alternativa
+ttf-hack-nerd                  # Fuente fallback
+ttf-font-awesome               # Iconos FontAwesome
+ttf-material-design-icons      # Material Icons
+ttf-weather-icons              # Weather icons
+
+# ==================== SYSTEM / UTILS ====================
+acpi                           # Battery info
+acpid                          # ACPI daemon
+wireless_tools                 # iwconfig, etc.
+jq                             # JSON processor
+inotify-tools                  # inotifywait
+polkit-gnome                   # Polkit agent GUI
+xdotool                        # X11 automation
+xclip                          # Clipboard
+maim                           # Screenshots
+cliphist                       # Clipboard history (Wayland/X11)
+brightnessctl                  # Brightness control
+alsa-utils                     # amixer, aplay
+alsa-tools                     # hdajackretask, etc.
+pipewire                       # Audio server
+pipewire-pulse                 # PulseAudio compat
+wireplumber                    # Session manager
+libpulse                       # PulseAudio libs
+qt5-imageformats               # Qt5 image plugins
+qt6-imageformats               # Qt6 image plugins
+playerctl                      # MPRIS control
+curl                           # HTTP client
+ffmpeg                         # Video/audio processing
+gpick                          # Color picker
+imagemagick                    # Image processing (convert)
+thunar                         # File manager
+firefox                        # Web browser
+xorg-server                    # X11 server
+xorg-xrdb                      # X resources
+xorg-xauth                     # X auth
+xorg-xrandr                    # RandR
+xorg-setxkbmap                 # Keymap
+xorg-xset                      # X settings
+xorg-xprop                     # X properties
+xdg-utils                      # xdg-open, etc.
+xdg-user-dirs                  # User dirs
+bc                             # Calculator
+pacman-contrib                 # paccache, pactree
+upower                         # Power management
+autorandr                      # Monitor profiles
+udiskie                        # Auto-mount
+udisks2                        # Disk management
+git                            # Git
+rsync                          # Sync tool
+
+# ==================== APPS ====================
+spotify                        # Spotify client
+# onlyoffice-bin REMOVIDO (no necesario)
+mpd                            # Music daemon
+mpc                            # MPD client
+ncmpcpp                        # MPD TUI client
+mpd-mpris                      # MPD -> MPRIS bridge
+blueman                        # Bluetooth GUI
+pasystray                      # PulseAudio tray
+touchegg                       # Touchpad gestures
+redshift                       # Color temperature
+networkmanager                 # Network management
+bluez                          # Bluetooth stack
+bluez-utils                    # bluetoothctl
+libnotify                      # notify-send
+sound-theme-freedesktop        # System sounds
+
+# ==================== SHELL / EDITOR ====================
+zsh                            # Shell
+zsh-syntax-highlighting        # Fish-like highlighting
+zsh-autosuggestions            # Autosuggestions
+zsh-sudo                       # sudo prefix
+zoxide                         # Smart cd
+fzf                            # Fuzzy finder
+feh                            # Wallpaper setter
+neovim                         # Editor
+btop                           # System monitor
+lsd                            # ls replacement
+bat                            # cat replacement
+
+# ==================== LUA / DEPS ====================
+python-gobject                 # GObject introspection
+python-dbus                    # DBus bindings
+pipewire-alsa                  # ALSA plugin
+lua                            # Lua 5.4
+luarocks                       # Lua package manager
+pam                            # PAM headers (para lua-pam)
+
+# ==================== LOGIN / LOCK ====================
+i3lock                         # Screen locker
+slock                          # Simple locker
+xsecurelock                    # Secure locker
+sddm                           # Display manager
+qt6-declarative                # Qt6 QML (SDDM theme)
+
+# ==================== AUR ONLY (paru/yay) ====================
+# awesome-git                    # Git version (recomendado) - paru -S awesome-git
+# picom-git                      # Git version con fixes blur - paru -S picom-git
+# ttf-jetbrains-mono-nerd        # Nerd Font completa - paru -S ttf-jetbrains-mono-nerd
+# ttf-iosevka-nerd               # Nerd Font alternativa - paru -S ttf-iosevka-nerd
+# ttf-hack-nerd                  # Nerd Font fallback - paru -S ttf-hack-nerd
+# mpd-mpris                      # MPD -> MPRIS bridge - paru -S mpd-mpris
+# touchegg                       # Gestos touchpad - paru -S touchegg
+# zsh-theme-powerlevel10k        # Tema zsh - git clone https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k
+# todo-bin                       # CLI todo - cargo install todo-bin (requiere rust)

@@ -6,8 +6,8 @@ local awful = require("awful")
 local beautiful = require("beautiful")
 local dpi = beautiful.xresources.apply_dpi
 
--- Ruled
-local ruled = require("ruled")
+-- Ruled (compat: ruled real en git / emulación awful.rules en 4.3)
+local ruled = require("helpers.ruled")
 
 -- Widget library
 local wibox = require("wibox")
@@ -319,9 +319,11 @@ vol_slider:buttons(gears.table.join(
 ))
 
 -- Playerctl (instancia propia solo para MPD)
-local playerctl = require("module.bling").signal.playerctl.lib({
+-- Si el paquete playerctl (typelib lgi) no está instalado, degrada sin crashear.
+local ok_pc, playerctl = pcall(require("module.bling").signal.playerctl.lib, {
     player = {"mpd"}
 })
+playerctl = ok_pc and playerctl or { connect_signal = function() end }
 local music_length = 0
 
 local function load_album_art(album_path)

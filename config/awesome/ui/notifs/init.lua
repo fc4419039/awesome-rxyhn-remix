@@ -5,7 +5,7 @@ local wibox = require("wibox")
 local awful = require("awful")
 local dpi = beautiful.xresources.apply_dpi
 local helpers = require("helpers")
-local ruled = require("ruled")
+local ruled = require("helpers.ruled")
 
 local menubar = require("menubar")
 local button_container = require('ui.widgets.button')

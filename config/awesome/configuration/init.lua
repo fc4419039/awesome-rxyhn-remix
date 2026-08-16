@@ -3,6 +3,76 @@ local awful = require("awful")
 local gears = require("gears")
 local gfs = gears.filesystem
 
+-- Compatibilidad con awesome estable 4.3: append_*_keybindings y append_*_mousebindings
+-- solo existen en awesome-git. En 4.3 el getter de root.keys()/root.buttons() devuelve
+-- una vista con metatable que el setter rechaza, así que se acumula en buffers locales
+-- y se registra con gears.table.join() (la única convención que acepta el setter 4.3).
+if not awful.keyboard then
+    awful.keyboard = {}
+end
+if not awful.mouse then
+    awful.mouse = {}
+end
+if not awful.keyboard.append_global_keybindings then
+    local global_keys = {}
+    local client_keys = {}
+    local global_buttons = {}
+    local client_buttons = {}
+    local tjoin = gears.table.join
+
+    function awful.keyboard.append_global_keybindings(bindings)
+        for _, k in ipairs(bindings) do
+            table.insert(global_keys, k)
+        end
+        root.keys(tjoin(table.unpack(global_keys)))
+    end
+
+    function awful.keyboard.append_client_keybindings(bindings)
+        for _, k in ipairs(bindings) do
+            table.insert(client_keys, k)
+        end
+        client.connect_signal("manage", function(c)
+            c.keys = tjoin(table.unpack(client_keys))
+        end)
+    end
+
+    function awful.mouse.append_global_mousebindings(bindings)
+        for _, b in ipairs(bindings) do
+            table.insert(global_buttons, b)
+        end
+        root.buttons(tjoin(table.unpack(global_buttons)))
+    end
+
+    function awful.mouse.append_client_mousebindings(bindings)
+        for _, b in ipairs(bindings) do
+            table.insert(client_buttons, b)
+        end
+        client.connect_signal("manage", function(c)
+            c.buttons = tjoin(table.unpack(client_buttons))
+        end)
+    end
+
+    -- En 4.3 las señales request::default_keybindings / request::default_mousebindings
+    -- no existen: se ejecuta el handler al registrarse para poblar los buffers.
+    local orig_connect = client.connect_signal
+    function client.connect_signal(sig, fn)
+        if sig == "request::default_keybindings" or sig == "request::default_mousebindings" then
+            fn()
+        else
+            return orig_connect(sig, fn)
+        end
+    end
+end
+
+-- naughty.connect_signal (request::display / request::icon / request::display_error)
+-- solo existe en awesome-git; en 4.3 naughty no es un objeto con señales.
+-- No-op seguro: las notificaciones se muestran igual, solo se pierden los extras
+-- (sonido al recibir, icono por app_icon, poblar dashboard/notif-center).
+local naughty = require("naughty")
+if not naughty.connect_signal then
+    function naughty.connect_signal() end
+end
+
 -- Theme handling library
 local beautiful = require("beautiful")
 local dpi = beautiful.xresources.apply_dpi

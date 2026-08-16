@@ -1,0 +1,103 @@
+# openSUSE Tumbleweed / Leap 15.5+
+# Instalar con: sudo zypper install -y $(grep -v '^#' docs/deps-opensuse.txt | sed 's/#.*//')
+# Repos recomendados: packman (codecs), nerd-fonts (copr/obs)
+
+# ==================== CORE WM ====================
+awesome                        # AwesomeWM
+picom                          # Compositor
+kitty                          # Terminal
+rofi                           # Launcher/menu
+# Nerd Fonts: instalar desde https://github.com/ryanoasis/nerd-fonts/releases
+# o: sudo zypper ar -f https://download.opensuse.org/repositories/home:/deadmoo:/nerdfonts/openSUSE_Tumbleweed/ nerdfonts && sudo zypper in jetbrains-mono-nerd-fonts iosevka-nerd-fonts hack-nerd-fonts
+
+# ==================== SYSTEM / UTILS ====================
+acpi                           # Battery info
+acpid                          # ACPI daemon
+wireless-tools                 # iwconfig
+jq                             # JSON processor
+inotify-tools                  # inotifywait
+polkit-gnome                   # Polkit agent GUI
+xdotool                        # X11 automation
+xclip                          # Clipboard
+maim                           # Screenshots
+# cliphist: no está en repos. Instalar con: go install github.com/sentriz/cliphist@latest
+brightnessctl                  # Brightness control
+alsa-utils                     # amixer, aplay
+alsa-tools                     # hdajackretask
+pipewire                       # Audio server
+pipewire-pulseaudio            # PulseAudio compat
+wireplumber                    # Session manager
+pipewire-alsa                  # ALSA plugin
+qt5-qtimageformats             # Qt5 image plugins
+qt6-qtimageformats             # Qt6 image plugins
+playerctl                      # MPRIS control
+curl                           # HTTP client
+ffmpeg                         # Video/audio processing (packman)
+gpick                          # Color picker
+ImageMagick                    # Image processing (convert)
+thunar                         # File manager
+firefox                        # Web browser
+xorg-x11-server                # X11 server
+xorg-x11-server-utils          # xrdb, xrandr, xset, xprop, setxkbmap
+xdg-utils                      # xdg-open, etc.
+xdg-user-dirs                  # User dirs
+bc                             # Calculator
+upower                         # Power management
+autorandr                      # Monitor profiles
+udiskie                        # Auto-mount
+udisks2                        # Disk management
+git                            # Git
+rsync                          # Sync tool
+pam-devel                      # PAM headers (para lua-pam)
+
+# ==================== APPS ====================
+# spotify-client: no está en repos. Instalar con: flatpak install flathub com.spotify.Client
+# onlyoffice REMOVIDO (no necesario)
+mpd                            # Music daemon
+mpc                            # MPD client
+ncmpcpp                        # MPD TUI client
+# mpd-mpris: pip install mpdris2
+blueman                        # Bluetooth GUI
+pasystray                      # PulseAudio tray
+# touchegg: no está en repos. Instalar con: flatpak install flathub com.github.joseexposito.touchegg
+redshift                       # Color temperature
+NetworkManager                 # Network management
+bluez                          # Bluetooth stack
+bluez-tools                    # bluetoothctl (o bluez-utils)
+libnotify-tools                # notify-send
+sound-theme-freedesktop        # System sounds
+
+# ==================== SHELL / EDITOR ====================
+zsh                            # Shell
+zsh-syntax-highlighting        # Fish-like highlighting
+zsh-autosuggestions            # Autosuggestions
+# zsh-sudo: alias manual
+zoxide                         # Smart cd
+fzf                            # Fuzzy finder
+feh                            # Wallpaper setter
+neovim                         # Editor
+btop                           # System monitor
+lsd                            # ls replacement
+bat                            # cat replacement
+
+# ==================== LUA / DEPS ====================
+python3-gobject                # GObject introspection
+python3-dbus                   # DBus bindings
+lua54                          # Lua 5.4
+lua54-devel                    # Lua headers
+luarocks                       # Lua package manager
+
+# ==================== LOGIN / LOCK ====================
+i3lock                         # Screen locker
+slock                          # Simple locker
+# xsecurelock: no está en repos. Compilar: git clone https://github.com/google/xsecurelock && cd xsecurelock && ./autogen.sh && ./configure && make && sudo make install
+sddm                           # Display manager
+qt6-declarative-devel          # Qt6 QML (SDDM theme)
+
+# ==================== EXTRA: Compilar / Flatpak / OBS ====================
+# awesome-git: compilar desde fuente
+# picom-git: compilar desde fuente
+# touchegg: flatpak install flathub com.github.joseexposito.touchegg
+# zsh-theme-powerlevel10k: git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k
+# todo-bin: cargo install todo-bin
+# nerd-fonts: ver nota arriba (repo OBS home:deadmoo:nerdfonts)

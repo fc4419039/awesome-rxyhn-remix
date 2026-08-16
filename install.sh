@@ -1,139 +1,216 @@
 #!/bin/bash
 
 # AwesomeWM Remix - Script de instalación completo
-# Arch Linux / Manjaro compatible
+# Portable: Arch/Manjaro/EndeavourOS, Debian/Ubuntu/Mint/Pop, Fedora/RHEL,
+#           openSUSE, NixOS (declarativo)
 
-set -e  # Salir si hay algún error
+# IMPORTANTE: este script NUNCA se detiene por errores.
+# Cada sección intenta su trabajo, reporta (✓/⚠) y continúa.
+# Nunca usar `set -e` ni `exit 1` aquí.
 
 # Colores para output
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 RED='\033[0;31m'
+CYAN='\033[0;36m'
 NC='\033[0m'
 
-# =====================================================================
-# 1️⃣ VERIFICAR Y INSTALAR AUR HELPER
-# =====================================================================
-echo -e "${YELLOW}🔍 Buscando AUR helper...${NC}"
+# Directorio del script: funciona aunque se ejecute desde otra ruta o vía symlink
+SCRIPT_DIR="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]:-$0}")")" && pwd)"
+cd "$SCRIPT_DIR" || echo -e "${RED}⚠ No se pudo entrar a $SCRIPT_DIR; las rutas relativas podrían fallar${NC}"
 
+# =====================================================================
+# 0️⃣ DETECTAR DISTRO
+# =====================================================================
+if [ -f /etc/os-release ]; then
+    . /etc/os-release
+    DISTRO_ID="$ID"
+    DISTRO_LIKE="$ID_LIKE"
+else
+    DISTRO_ID="unknown"
+    DISTRO_LIKE=""
+fi
+
+IS_ARCH=0
+case "$DISTRO_ID $DISTRO_LIKE" in
+    *arch*|*manjaro*|*endeavouros*|*garuda*|*artix*)
+        IS_ARCH=1
+        ;;
+esac
+
+echo -e "${CYAN}Distro detectada: ${DISTRO_NAME:-$DISTRO_ID}${NC}"
+
+# =====================================================================
+# 1️⃣ VERIFICAR E INSTALAR AUR HELPER (solo distros basadas en Arch)
+# =====================================================================
 AUR_HELPER=""
 
-if command -v paru &> /dev/null; then
-    echo -e "${GREEN}✓ Paru está instalado${NC}"
-    AUR_HELPER="paru"
-elif command -v yay &> /dev/null; then
-    echo -e "${GREEN}✓ yay está instalado${NC}"
-    AUR_HELPER="yay"
-else
-    echo -e "${YELLOW}⚠️  No se encontró AUR helper. Instalando yay...${NC}"
+if [ "$IS_ARCH" = "1" ]; then
+    echo -e "${YELLOW}🔍 Buscando AUR helper...${NC}"
 
-    # makepkg NO puede ejecutarse como root
-    if [ "$(id -u)" -eq 0 ]; then
-        echo -e "${RED}✗ Ejecutaste el script como root. makepkg no funciona como root.${NC}"
-        echo -e "${RED}  Corre el script como usuario normal; sudo te pedirá la contraseña cuando haga falta.${NC}"
-        exit 1
-    fi
-
-    # Instalar dependencias necesarias
-    echo -e "${YELLOW}📦 Instalando base-devel y git...${NC}"
-    sudo pacman -S --needed --noconfirm base-devel git 2>/dev/null \
-        || echo -e "${YELLOW}⚠️  No se pudieron instalar base-devel/git. Continuando...${NC}"
-
-    # Crear directorio temporal
-    TEMPDIR=$(mktemp -d)
-    echo -e "${YELLOW}📁 Directorio temporal: $TEMPDIR${NC}"
-
-    # Clonar yay-bin (con reintentos por si hay red inestable o AUR caído)
-    CLONADO=false
-    for intento in 1 2 3; do
-        if git clone --depth 1 https://aur.archlinux.org/yay-bin.git "$TEMPDIR/yay-bin" 2>/dev/null; then
-            CLONADO=true
-            break
-        fi
-        echo -e "${YELLOW}⚠️  Intento $intento/3 falló (¿sin red o AUR caído?). Reintentando en 5s...${NC}"
-        sleep 5
-    done
-
-    if [ "$CLONADO" = true ]; then
-        cd "$TEMPDIR/yay-bin" || exit 1
-
-        # Compilar e instalar (puede tardar unos minutos)
-        echo -e "${YELLOW}🔨 Compilando e instalando yay (puede tardar)...${NC}"
-        if makepkg -si --noconfirm; then
-            echo -e "${GREEN}✓ yay compilado e instalado${NC}"
-        else
-            echo -e "${YELLOW}⚠️  La compilación de yay falló. Puedes instalarlo después manualmente:
-   git clone https://aur.archlinux.org/yay-bin.git && cd yay-bin && makepkg -si${NC}"
-        fi
-
-        # Volver al directorio original
-        cd - > /dev/null
-
-        # Limpiar
-        rm -rf "$TEMPDIR"
-    else
-        echo -e "${RED}✗ No se pudo clonar yay desde el AUR (revisa tu conexión).${NC}"
-        echo -e "${RED}  Puedes instalarlo manualmente y volver a ejecutar el script.${NC}"
-    fi
-
-    # Verificar instalación
-    if command -v yay &> /dev/null; then
-        echo -e "${GREEN}✓ yay instalado correctamente${NC}"
+    if command -v paru &> /dev/null; then
+        echo -e "${GREEN}✓ Paru está instalado${NC}"
+        AUR_HELPER="paru"
+    elif command -v yay &> /dev/null; then
+        echo -e "${GREEN}✓ yay está instalado${NC}"
         AUR_HELPER="yay"
     else
-        echo -e "${RED}✗ yay no está disponible. Sin AUR helper no se instalarán los paquetes AUR.${NC}"
-        exit 1
+        echo -e "${YELLOW}⚠️  No se encontró AUR helper. Instalando yay...${NC}"
+
+        # makepkg NO puede ejecutarse como root
+        if [ "$(id -u)" -eq 0 ]; then
+            echo -e "${YELLOW}⚠️  Eres root: makepkg no funciona como root.${NC}"
+            echo -e "${YELLOW}  Las dependencias se instalarán desde los repos oficiales; instala yay después como usuario normal.${NC}"
+        else
+            # Instalar dependencias necesarias
+            echo -e "${YELLOW}📦 Instalando base-devel y git...${NC}"
+            sudo pacman -S --needed --noconfirm base-devel git 2>/dev/null \
+                || echo -e "${YELLOW}⚠️  No se pudieron instalar base-devel/git. Continuando...${NC}"
+
+            # Crear directorio temporal
+            TEMPDIR=$(mktemp -d 2>/dev/null)
+            if [ -n "$TEMPDIR" ] && [ -d "$TEMPDIR" ]; then
+                echo -e "${YELLOW}📁 Directorio temporal: $TEMPDIR${NC}"
+
+                # Clonar yay-bin (con reintentos por si hay red inestable o AUR caído)
+                CLONADO=false
+                for intento in 1 2 3; do
+                    if git clone --depth 1 https://aur.archlinux.org/yay-bin.git "$TEMPDIR/yay-bin" 2>/dev/null; then
+                        CLONADO=true
+                        break
+                    fi
+                    echo -e "${YELLOW}⚠️  Intento $intento/3 falló (¿sin red o AUR caído?). Reintentando en 5s...${NC}"
+                    sleep 5
+                done
+
+                # Compilar e instalar (puede tardar unos minutos)
+                if [ "$CLONADO" = true ] && ( cd "$TEMPDIR/yay-bin" 2>/dev/null ); then
+                    echo -e "${YELLOW}🔨 Compilando e instalando yay (puede tardar)...${NC}"
+                    ( cd "$TEMPDIR/yay-bin" && makepkg -si --noconfirm ) \
+                        && echo -e "${GREEN}✓ yay compilado e instalado${NC}" \
+                        || echo -e "${YELLOW}⚠️  La compilación de yay falló. Puedes instalarlo después manualmente:
+   git clone https://aur.archlinux.org/yay-bin.git && cd yay-bin && makepkg -si${NC}"
+                else
+                    echo -e "${YELLOW}⚠️  No se pudo clonar o compilar yay desde el AUR (¿sin red?). Continuando con repos oficiales...${NC}"
+                fi
+
+                # Limpiar
+                rm -rf "$TEMPDIR" 2>/dev/null || true
+            else
+                echo -e "${YELLOW}⚠️  No se pudo crear el directorio temporal. Saltando instalación de yay.${NC}"
+            fi
+        fi
+
+        # Verificar instalación
+        if command -v yay &> /dev/null; then
+            echo -e "${GREEN}✓ yay instalado correctamente${NC}"
+            AUR_HELPER="yay"
+        else
+            echo -e "${YELLOW}⚠️  yay no disponible. Se usarán solo los repos oficiales; los paquetes AUR los puedes instalar después.${NC}"
+        fi
     fi
 fi
 
 echo ""
 
 # =====================================================================
-# 2️⃣ INSTALAR DEPENDENCIAS
+# 2️⃣ INSTALAR DEPENDENCIAS (multi-distro)
 # =====================================================================
 echo -e "${YELLOW}📦 Instalando dependencias...${NC}"
 
-# Filtramos solo los paquetes que no están instalados
-packages=(awesome-git picom-git kitty rofi todo-bin acpi acpid \
-    wireless_tools jq inotify-tools polkit-gnome xdotool xclip maim cliphist \
-    brightnessctl alsa-utils alsa-tools pipewire pipewire-pulse wireplumber libpulse \
-    qt5-imageformats qt6-imageformats \
-    playerctl spotify onlyoffice-bin mpd mpc ncmpcpp mpd-mpris blueman pasystray \
-    touchegg redshift networkmanager bluez bluez-utils libnotify curl ffmpeg gpick \
-    imagemagick thunar firefox xorg-server xorg-xrdb xorg-xauth \
-    xorg-xrandr xorg-setxkbmap xorg-xset xorg-xprop xdg-utils xdg-user-dirs \
-    ttf-jetbrains-mono-nerd ttf-iosevka-nerd ttf-hack-nerd ttf-font-awesome ttf-material-design-icons ttf-weather-icons \
-    zsh-syntax-highlighting zsh-autosuggestions zsh-sudo zoxide fzf feh zsh neovim \
-    btop lsd bat python-gobject python-dbus pipewire-alsa lua luarocks \
-    zsh-theme-powerlevel10k sound-theme-freedesktop \
-    i3lock slock xsecurelock sddm qt6-declarative \
-    bc pacman-contrib upower autorandr udiskie udisks2 \
-    git rsync)
+# Mapear distro a archivo de deps
+case "$DISTRO_ID" in
+    arch|manjaro|endeavouros|garuda|artix)
+        DEPS_FILE="docs/deps-arch.txt"
+        PKG_CHECK="pacman -Q"
+        PKG_INSTALL="${AUR_HELPER:-pacman} -S --needed --noconfirm"
+        ;;
+    ubuntu|debian|linuxmint|pop|elementary|zorin)
+        DEPS_FILE="docs/deps-debian.txt"
+        PKG_CHECK="dpkg -s"
+        PKG_INSTALL="sudo apt-get update && sudo apt-get install -y"
+        ;;
+    fedora|rhel|centos|rocky|almalinux|nobara)
+        DEPS_FILE="docs/deps-fedora.txt"
+        PKG_CHECK="rpm -q"
+        PKG_INSTALL="sudo dnf install -y"
+        ;;
+    opensuse-tumbleweed|opensuse-leap|suse|sled)
+        DEPS_FILE="docs/deps-opensuse.txt"
+        PKG_CHECK="rpm -q"
+        PKG_INSTALL="sudo zypper install -y"
+        ;;
+    nixos)
+        DEPS_FILE="docs/deps-nixos.txt"
+        PKG_CHECK="echo 'NixOS: usa home-manager'"
+        PKG_INSTALL="echo 'NixOS: config declarativa en docs/deps-nixos.txt'"
+        ;;
+    *)
+        # Fallback por ID_LIKE
+        if [[ "$DISTRO_LIKE" == *arch* ]]; then
+            DEPS_FILE="docs/deps-arch.txt"
+            PKG_CHECK="pacman -Q"
+            PKG_INSTALL="${AUR_HELPER:-pacman} -S --needed --noconfirm"
+        elif [[ "$DISTRO_LIKE" == *debian* ]]; then
+            DEPS_FILE="docs/deps-debian.txt"
+            PKG_CHECK="dpkg -s"
+            PKG_INSTALL="sudo apt-get update && sudo apt-get install -y"
+        elif [[ "$DISTRO_LIKE" == *fedora* ]] || [[ "$DISTRO_LIKE" == *rhel* ]]; then
+            DEPS_FILE="docs/deps-fedora.txt"
+            PKG_CHECK="rpm -q"
+            PKG_INSTALL="sudo dnf install -y"
+        elif [[ "$DISTRO_LIKE" == *opensuse* ]] || [[ "$DISTRO_LIKE" == *suse* ]]; then
+            DEPS_FILE="docs/deps-opensuse.txt"
+            PKG_CHECK="rpm -q"
+            PKG_INSTALL="sudo zypper install -y"
+        else
+            DEPS_FILE="docs/deps-arch.txt"
+            PKG_CHECK="echo 'Distro no detectada'"
+            PKG_INSTALL="echo 'Instala manualmente desde docs/deps-arch.txt'"
+        fi
+        ;;
+esac
 
-to_install=()
-for pkg in "${packages[@]}"; do
-    if ! pacman -Qs "^$pkg$" > /dev/null; then
-        to_install+=("$pkg")
-    fi
-done
+echo -e "${CYAN}Archivo de deps:  $DEPS_FILE${NC}"
 
-if [ ${#to_install[@]} -gt 0 ]; then
-    echo -e "${YELLOW}📦 Instalando paquetes faltantes: ${to_install[*]}${NC}"
-
-    if ! $AUR_HELPER -Syu --needed --noconfirm "${to_install[@]}"; then
-        echo -e "${YELLOW}⚠️  Algunos paquetes fallaron. Intentando de nuevo en modo individual...${NC}"
-        for pkg in "${to_install[@]}"; do
-            if ! pacman -Qs "^$pkg$" > /dev/null; then
-                $AUR_HELPER -S --needed --noconfirm "$pkg" \
-                    || echo -e "${YELLOW}⚠️  No se pudo instalar $pkg, continuando...${NC}"
-            fi
-        done
-    fi
+if [ "$DISTRO_ID" = "nixos" ]; then
+    echo -e "${YELLOW}⚠️  NixOS detectado: usa Home Manager / flake.nix${NC}"
+    echo -e "${YELLOW}    Ver $DEPS_FILE para configuración declarativa${NC}"
+    echo -e "${GREEN}✓ Saltando instalación de paquetes (gestión declarativa)${NC}"
 else
-    echo -e "${GREEN}✓ Todos los paquetes ya están instalados. Saltando.${NC}"
-fi
+    # Leer paquetes del archivo (ignorar comentarios y líneas vacías)
+    if [ ! -f "$DEPS_FILE" ]; then
+        echo -e "${YELLOW}⚠️  No se encontró $DEPS_FILE. Saltando instalación de dependencias.${NC}"
+        packages=()
+    else
+        mapfile -t packages < <(grep -v '^#' "$DEPS_FILE" | grep -v '^$' | sed 's/#.*//' | xargs -n1)
+    fi
 
-echo -e "${GREEN}✓ Dependencias instaladas${NC}"
+    to_install=()
+    for pkg in "${packages[@]}"; do
+        if ! eval "$PKG_CHECK $pkg" > /dev/null 2>&1; then
+            to_install+=("$pkg")
+        fi
+    done
+
+    if [ ${#to_install[@]} -gt 0 ]; then
+        echo -e "${YELLOW}📦 Instalando paquetes faltantes: ${to_install[*]}${NC}"
+
+        if ! eval "$PKG_INSTALL ${to_install[*]}"; then
+            echo -e "${YELLOW}⚠️  Algunos paquetes fallaron. Intentando de nuevo en modo individual...${NC}"
+            for pkg in "${to_install[@]}"; do
+                if ! eval "$PKG_CHECK $pkg" > /dev/null 2>&1; then
+                    eval "$PKG_INSTALL $pkg" \
+                        || echo -e "${YELLOW}⚠️  No se pudo instalar $pkg, continuando...${NC}"
+                fi
+            done
+        fi
+    else
+        echo -e "${GREEN}✓ Todos los paquetes ya están instalados. Saltando.${NC}"
+    fi
+
+    echo -e "${GREEN}✓ Dependencias instaladas${NC}"
+fi
 
 echo ""
 
@@ -147,8 +224,11 @@ if command -v opencode &> /dev/null || [ -f "$HOME/.opencode/bin/opencode" ]; th
     echo -e "${GREEN}✓ OpenCode ya está instalado.${NC}"
 else
     echo -e "${YELLOW}📦 Instalando OpenCode...${NC}"
-    curl -fsSL https://opencode.ai/install | bash || echo -e "${YELLOW}⚠️  Falló la instalación de OpenCode. Puedes instalarlo manualmente después.${NC}"
-    echo -e "${GREEN}✓ OpenCode instalado.${NC}"
+    if curl -fsSL https://opencode.ai/install | bash; then
+        echo -e "${GREEN}✓ OpenCode instalado.${NC}"
+    else
+        echo -e "${YELLOW}⚠️  Falló la instalación de OpenCode. Puedes instalarlo manualmente después.${NC}"
+    fi
 fi
 
 echo ""
@@ -165,7 +245,6 @@ sudo systemctl enable acpid.service 2>/dev/null && sudo systemctl start acpid.se
 echo -e "${GREEN}✓ Servicios habilitados${NC}"
 
 # Configurar hooks de git (validación sintaxis Lua al commitear)
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 if [ -d "$SCRIPT_DIR/.git" ]; then
     git config core.hooksPath "$SCRIPT_DIR/.githooks" 2>/dev/null \
         && echo -e "${GREEN}✓ Git hooks configurados${NC}" \
@@ -198,21 +277,26 @@ echo ""
 # =====================================================================
 echo -e "${YELLOW}📦 Copiando archivos de configuración...${NC}"
 
-# Verificar que los directorios existan
+# Verificar que los directorios existan (avisar y continuar, nunca detener)
 if [ ! -d "config" ]; then
-    echo -e "${RED}✗ Error: Carpeta 'config' no encontrada${NC}"
-    exit 1
+    echo -e "${YELLOW}⚠️  Carpeta 'config' no encontrada. Saltando copia de configuración.${NC}"
+else
+    # Copiar archivos de configuración excluyendo directorios .git
+    if command -v rsync &> /dev/null; then
+        rsync -av --exclude='.git' --exclude='.codebak' config/ ~/.config/ \
+            || echo -e "${YELLOW}⚠️  Falló la copia de config/ a ~/.config/. Continuando...${NC}"
+    else
+        echo -e "${YELLOW}  rsync no encontrado, usando cp...${NC}"
+        mkdir -p ~/.config 2>/dev/null || true
+        cp -r config/. ~/.config/ 2>/dev/null \
+            || echo -e "${YELLOW}⚠️  Falló la copia de config/ a ~/.config/. Continuando...${NC}"
+    fi
+    rm -rf ~/.config/awesome/.codebak 2>/dev/null || true
 fi
 
-if [ ! -d "bin" ]; then
-    echo -e "${RED}✗ Error: Carpeta 'bin' no encontrada${NC}"
-    exit 1
-fi
-
-# Copiar archivos de configuración excluyendo directorios .git
-rsync -av --exclude='.git' config/ ~/.config/
 if [ -d "bin" ] && [ "$(ls -A bin 2>/dev/null)" ]; then
-    cp -r bin/* ~/.local/bin/
+    cp -r bin/* ~/.local/bin/ \
+        || echo -e "${YELLOW}⚠️  Falló la copia de bin/ a ~/.local/bin/. Continuando...${NC}"
 else
     echo -e "${YELLOW}⚠️  Carpeta bin vacía o no encontrada, saltando${NC}"
 fi
@@ -224,19 +308,19 @@ fi
 
 # Copiar .Xresources si existe
 if [ -f "misc/.Xresources" ]; then
-    cp misc/.Xresources ~/.Xresources
+    cp misc/.Xresources ~/.Xresources 2>/dev/null || true
     echo -e "${GREEN}✓ .Xresources instalado${NC}"
 fi
 
 # Copiar .zprofile si existe (SDDM con zsh lee ~/.zprofile, no ~/.profile)
 if [ -f "misc/.zprofile" ]; then
-    cp misc/.zprofile ~/.zprofile
+    cp misc/.zprofile ~/.zprofile 2>/dev/null || true
     echo -e "${GREEN}✓ .zprofile instalado${NC}"
 fi
 
 # Copiar .profile desde misc/ si no se copió antes
 if [ -f "misc/.profile" ] && [ ! -f "$HOME/.profile" ]; then
-    cp misc/.profile ~/
+    cp misc/.profile ~/ 2>/dev/null || true
     echo -e "${GREEN}✓ .profile instalado desde misc/${NC}"
 fi
 
@@ -250,28 +334,27 @@ fi
 
 # Actualizar módulos externos a sus últimas versiones
 echo -e "${YELLOW}📦 Actualizando módulos externos (bling, rubato, layout-machi)...${NC}"
-bash "$(dirname "$0")/update_modules.sh" 2>/dev/null || echo -e "${YELLOW}  ⚠ No se pudieron actualizar, se usan los versionados en el repo${NC}"
+bash "$SCRIPT_DIR/update_modules.sh" 2>/dev/null || echo -e "${YELLOW}  ⚠ No se pudieron actualizar, se usan los versionados en el repo${NC}"
 
 # Activar timer de limpieza automática (cada 3 días)
 systemctl --user daemon-reload 2>/dev/null || true
 systemctl --user enable --now limpiar-sistema.timer 2>/dev/null && echo -e "${GREEN}✓ Timer de limpieza automática activado${NC}" || true
 
 # Activar servicios de usuario (mpd, mpd-mpris, udiskie) si hay sesión
-# (no detienen la instalación si no hay sesión activa)
-systemctl --user enable --now mpd.service mpd-mpris.service udiskie.service 2>/dev/null \
-    && echo -e "${GREEN}✓ Servicios de usuario activados (mpd, mpd-mpris, udiskie)${NC}" \
-    || echo -e "${YELLOW}⚠️  No se pudieron activar los servicios de usuario (sin sesión). Se activarán al iniciar sesión.${NC}"
+# (cada uno se activa por separado: que uno no exista no bloquea a los demás)
+for svc in mpd.service mpd-mpris.service udiskie.service; do
+    systemctl --user enable --now "$svc" 2>/dev/null \
+        && echo -e "${GREEN}✓ Servicio de usuario activado: $svc${NC}" \
+        || echo -e "${YELLOW}⚠️  $svc no se pudo activar (¿no instalado o sin sesión activa?). Se activará al iniciar sesión.${NC}"
+done
 
 echo ""
 echo -e "${YELLOW}🔐 Instalando librerías PAM para Lua (lockscreen)...${NC}"
 
-# Instalar headers PAM necesarios
-sudo pacman -S --needed --noconfirm pam 2>/dev/null \
-    || echo -e "${YELLOW}⚠️  No se pudo instalar 'pam' (¿pacman bloqueado o sin sudo?). Continuando...${NC}"
-
-# Instalar módulo PAM para Lua via luarocks
+# Los headers de PAM se instalan con el paquete del distro (pam / libpam0g-dev / pam-devel)
+# ya incluido en docs/deps-*.txt (sección LUA / DEPS). Aquí solo falta lua-pam via luarocks.
 if command -v luarocks &> /dev/null; then
-    luarocks install lua-pam 2>/dev/null || echo -e "${YELLOW}⚠️  lua-pam ya instalado o falló (requiere pam-devel)${NC}"
+    luarocks install lua-pam 2>/dev/null || echo -e "${YELLOW}⚠️  lua-pam ya instalado o falló (requiere headers de PAM: libpam0g-dev / pam-devel)${NC}"
 else
     echo -e "${YELLOW}⚠️  luarocks no encontrado, saltando lua-pam${NC}"
 fi
@@ -285,7 +368,8 @@ echo -e "${YELLOW}🔤 Instalando fuentes...${NC}"
 
 if [ -d "fonts" ] && [ "$(ls -A fonts)" ]; then
     # Instalar en ~/.local/share/fonts/ (usuario actual)
-    cp -r fonts/* ~/.local/share/fonts/
+    cp -r fonts/* ~/.local/share/fonts/ 2>/dev/null \
+        || echo -e "${YELLOW}⚠️  Falló la copia de fuentes a ~/.local/share/fonts/. Continuando...${NC}"
     echo -e "${GREEN}✓ Fuentes instaladas en ~/.local/share/fonts/${NC}"
 
     # Instalar en /usr/share/fonts/ (sistema completo)
@@ -331,7 +415,8 @@ echo ""
 echo -e "${YELLOW}🖼️ Instalando fondos de pantalla...${NC}"
 mkdir -p ~/fondos/
 if [ -d "fondos" ] && [ "$(ls -A fondos)" ]; then
-    cp -rf fondos/* ~/fondos/
+    cp -rf fondos/* ~/fondos/ 2>/dev/null \
+        || echo -e "${YELLOW}⚠️  Falló la copia de fondos a ~/fondos/. Continuando...${NC}"
     echo -e "${GREEN}✓ Fondos instalados en ~/fondos${NC}"
 else
     echo -e "${YELLOW}⚠️  Carpeta fondos vacía o no encontrada${NC}"
@@ -348,9 +433,10 @@ echo -e "${YELLOW}🐚 Configurando shell...${NC}"
 if [ -f ".zshrc" ]; then
     if [ -f ~/.zshrc ]; then
         echo -e "${YELLOW}💾 Se encontró un .zshrc existente. Creando respaldo...${NC}"
-        cp ~/.zshrc ~/.zshrc.bak.$(date +%s)
+        cp ~/.zshrc ~/.zshrc.bak.$(date +%s) 2>/dev/null || echo -e "${YELLOW}⚠️  No se pudo crear el respaldo de .zshrc. Continuando...${NC}"
     fi
-    cp .zshrc ~/
+    cp .zshrc ~/ 2>/dev/null \
+        || echo -e "${YELLOW}⚠️  No se pudo copiar .zshrc. Continuando...${NC}"
     echo -e "${GREEN}✓ .zshrc instalado${NC}"
 else
     echo -e "${YELLOW}⚠️  .zshrc no encontrado en el repositorio${NC}"
@@ -379,7 +465,7 @@ echo ""
 echo -e "${YELLOW}🎵 Instalando MSCDown (Music Searcher & Downloader)...${NC}"
 
 # Inicializar submodulos (mscdown)
-ROOT_DIR="$(dirname "$0")"
+ROOT_DIR="$SCRIPT_DIR"
 MSCDOWN_INSTALLER="$ROOT_DIR/mscdown/install.sh"
 
 if [ ! -f "$MSCDOWN_INSTALLER" ] && [ -d "$ROOT_DIR/.git" ]; then
@@ -389,8 +475,23 @@ fi
 
 if [ -f "$MSCDOWN_INSTALLER" ]; then
     echo -e "${YELLOW}📦 Ejecutando instalador de mscdown...${NC}"
-    chmod +x "$MSCDOWN_INSTALLER"
-    ( cd "$ROOT_DIR/mscdown" && ./install.sh ) || echo -e "${YELLOW}⚠️  MSCDown no se instaló correctamente, continuando...${NC}"
+    chmod +x "$MSCDOWN_INSTALLER" 2>/dev/null || true
+    ( cd "$ROOT_DIR/mscdown" && ./install.sh ) || echo -e "${YELLOW}⚠️  El instalador de MSCDown falló, continuando...${NC}"
+
+    # Colocar mscdown en ~/mscdown (donde apunta el alias creado por su instalador)
+    if [ ! -d "$HOME/mscdown" ]; then
+        echo -e "${YELLOW}📂 Colocando mscdown en ~/mscdown...${NC}"
+        mkdir -p "$HOME/mscdown" 2>/dev/null || true
+        if ! rsync -a --exclude='.git' --exclude='__pycache__' "$ROOT_DIR/mscdown/" "$HOME/mscdown/" 2>/dev/null; then
+            cp -r "$ROOT_DIR/mscdown/." "$HOME/mscdown/" 2>/dev/null || true
+        fi
+        if [ -f "$HOME/mscdown/main.py" ]; then
+            echo -e "${GREEN}✓ mscdown colocado en ~/mscdown${NC}"
+        else
+            echo -e "${YELLOW}⚠️  No se pudo copiar mscdown a ~/mscdown. El alias 'musica' no funcionará hasta copiarlo manualmente.${NC}"
+        fi
+    fi
+
     echo -e "${GREEN}✓ MSCDown instalado${NC}"
 else
     echo -e "${YELLOW}⚠️  No se encontró mscdown (ni como submódulo). Puedes clonarlo después: git submodule update --init.${NC}"
@@ -404,7 +505,8 @@ echo ""
 echo -e "${YELLOW}🎨 Configurando tema de inicio de sesión SDDM...${NC}"
 
 if command -v sddm &> /dev/null; then
-    sudo mkdir -p /etc/sddm.conf.d
+    sudo mkdir -p /etc/sddm.conf.d 2>/dev/null \
+        || echo -e "${YELLOW}⚠️  No se pudo crear /etc/sddm.conf.d (¿sin sudo?). La config del tema fallará pero el script continúa.${NC}"
 
     THEME_DIR=""
     THEME_NAME=""
@@ -418,9 +520,13 @@ if command -v sddm &> /dev/null; then
         THEME_DIR="/usr/share/sddm/themes/sddm-astronaut-theme"
         THEME_NAME="sddm-astronaut-theme"
     else
-        # 2) Fallback: instalar desde AUR
-        echo -e "${YELLOW}📦 Instalando sddm-astronaut-theme desde AUR...${NC}"
-        $AUR_HELPER -S --needed --noconfirm sddm-astronaut-theme 2>/dev/null || true
+        # 2) Fallback: instalar desde AUR (solo distros Arch con AUR helper)
+        if [ -n "$AUR_HELPER" ]; then
+            echo -e "${YELLOW}📦 Instalando sddm-astronaut-theme desde AUR...${NC}"
+            $AUR_HELPER -S --needed --noconfirm sddm-astronaut-theme 2>/dev/null || true
+        else
+            echo -e "${YELLOW}⚠️  Tema no incluido en el repo y sin AUR helper para instalarlo.${NC}"
+        fi
         if [ -d "/usr/share/sddm/themes/sddm-astronaut-theme" ]; then
             THEME_DIR="/usr/share/sddm/themes/sddm-astronaut-theme"
             THEME_NAME="sddm-astronaut-theme"
@@ -582,11 +688,13 @@ Current=$THEME_NAME
 EOF"
         echo -e "${GREEN}✓ SDDM configurado con el tema $THEME_NAME e imagen de ~/fondos${NC}"
     else
-        echo -e "${YELLOW}⚠️  No se encontró el tema sddm-astronaut-theme. Instálalo manualmente con: $AUR_HELPER -S sddm-astronaut-theme${NC}"
+        echo -e "${YELLOW}⚠️  No se encontró el tema sddm-astronaut-theme. Instálalo manualmente (AUR: $AUR_HELPER -S sddm-astronaut-theme)${NC}"
     fi
 
     echo -e "${YELLOW}🔄 Habilitando servicio SDDM...${NC}"
-    sudo systemctl enable sddm.service
+    sudo systemctl enable sddm.service 2>/dev/null \
+        && echo -e "${GREEN}✓ Servicio sddm habilitado${NC}" \
+        || echo -e "${YELLOW}⚠️  No se pudo habilitar el servicio sddm (¿sin systemd o sin sudo?). Actívalo manualmente después.${NC}"
 else
     echo -e "${YELLOW}⚠️  SDDM no está instalado. Saltando configuración.${NC}"
 fi
@@ -597,7 +705,7 @@ echo ""
 # 1️⃣2️⃣ CONFIGURAR ZSH DE ROOT (symlinks a la config del usuario)
 # =====================================================================
 echo -e "${YELLOW}👑 Configurando zsh de root (symlinks)...${NC}"
-bash "$(dirname "$0")/zsh-root.sh" || echo -e "${YELLOW}⚠️  No se pudo configurar root (requiere sudo). Puedes ejecutar zsh-root.sh después.${NC}"
+bash "$SCRIPT_DIR/zsh-root.sh" || echo -e "${YELLOW}⚠️  No se pudo configurar root (requiere sudo). Puedes ejecutar zsh-root.sh después.${NC}"
 
 echo ""
 

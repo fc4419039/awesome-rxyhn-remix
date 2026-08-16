@@ -10,8 +10,8 @@ local naughty = require("naughty")
 -- Timer handling library
 local gears = require("gears")
 
--- Ruled
-local ruled = require("ruled")
+-- Ruled (compat: usa ruled real en awesome-git, o emula sobre awful.rules en 4.3)
+local ruled = require("helpers.ruled")
 
 -- Helpers
 local helpers = require("helpers")

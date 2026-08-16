@@ -1,11 +1,6 @@
 #!/bin/bash
-# clean-cache.sh — Limpia caché acumulada y basura regenerable del sistema.
-# Lanzado desde el system_menu (rofi). No requiere terminal.
-# - Backups .codebak de awesome (los regenera toggle-blur.sh)
-# - Backup viejo de zsh (~/.zsh-backup-*)  [todo duplicado]
-# - Caché de opencode y de yay
-# - Caché de pacman (paccache, mantiene 3 versiones)
-# - Basura en $HOME (wget-log, download_repair*, locks de LibreOffice)
+# clean-cache.sh — Limpia caché acumulada y basura regenerable (multi-distro)
+# Detecta: pacman, apt, dnf, zypper
 
 source "$HOME/.config/awesome/scripts/i18n.sh"
 
@@ -15,9 +10,51 @@ confirm_theme="$HOME/.config/awesome/theme/powermenu-confirm.rasi"
 NO="󰄰"
 YES="󰄱"
 
-# --- Targets de limpieza (solo caché/basura regenerable) ---
-pacman_cache=/var/cache/pacman/pkg
+# ─── Detección de package manager ───
+detect_pkg_mgr() {
+    if command -v pacman >/dev/null 2>&1; then echo "pacman"
+    elif command -v apt >/dev/null 2>&1; then echo "apt"
+    elif command -v dnf >/dev/null 2>&1; then echo "dnf"
+    elif command -v zypper >/dev/null 2>&1; then echo "zypper"
+    else echo "unknown"; fi
+}
 
+PKG_MGR=$(detect_pkg_mgr)
+
+# ─── Funciones de limpieza por PM ───
+clean_pacman() {
+    # paccache mantiene 3 versiones
+    if command -v paccache >/dev/null 2>&1; then
+        paccache -rk3 2>/dev/null || \
+        command -v pkexec >/dev/null 2>&1 && pkexec paccache -rk3 2>/dev/null
+    fi
+    # yay cache
+    command -v yay >/dev/null 2>&1 && yay -Sc --noconfirm 2>/dev/null || rm -rf ~/.cache/yay 2>/dev/null
+}
+
+clean_apt() {
+    sudo apt clean 2>/dev/null
+    sudo apt autoclean 2>/dev/null
+}
+
+clean_dnf() {
+    sudo dnf clean all 2>/dev/null
+}
+
+clean_zypper() {
+    sudo zypper clean -a 2>/dev/null
+}
+
+clean_pkg_cache() {
+    case "$PKG_MGR" in
+        pacman) clean_pacman ;;
+        apt)    clean_apt ;;
+        dnf)    clean_dnf ;;
+        zypper) clean_zypper ;;
+    esac
+}
+
+# ─── Helpers ───
 size_of() {
     du -sk "$@" 2>/dev/null | awk '{s+=$1} END {print s+0}'
 }
@@ -30,7 +67,14 @@ total_size() {
              ~/.cache/opencode ~/.cache/yay ~/wget-log ~/download_repair*.php ~/.~lock.* ; do
         [[ -e "$t" ]] && s=$((s + $(size_of "$t")))
     done
-    s=$((s + $(size_of "$pacman_cache")))
+
+    # Cache de package manager
+    case "$PKG_MGR" in
+        pacman) s=$((s + $(size_of /var/cache/pacman/pkg))) ;;
+        apt)    s=$((s + $(size_of /var/cache/apt/archives))) ;;
+        dnf)    s=$((s + $(size_of /var/cache/dnf))) ;;
+        zypper) s=$((s + $(size_of /var/cache/zypp/packages))) ;;
+    esac
     echo "$s"
 }
 
@@ -58,11 +102,8 @@ fi
 # 3) Caché de opencode
 rm -rf ~/.cache/opencode 2>/dev/null
 
-# 4) Caché de paquetes
-if ! command paccache -rk3 2>/dev/null; then
-    command -v pkexec >/dev/null 2>&1 && pkexec paccache -rk3 2>/dev/null
-fi
-command yay -Sc --noconfirm 2>/dev/null || rm -rf ~/.cache/yay 2>/dev/null
+# 4) Caché de package manager
+clean_pkg_cache
 
 # 5) Basura en $HOME
 ( shopt -s nullglob

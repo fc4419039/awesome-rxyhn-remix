@@ -1,0 +1,237 @@
+# NixOS / nix-darwin / Home Manager
+# NO es una lista de paquetes para instalar con nix-env.
+# En NixOS, se configura en configuration.nix / home.nix / flake.nix
+# Ejemplo de módulo Home Manager incluido al final.
+
+# ==================== CORE WM ====================
+awesome                        # awesome
+picom                          # picom
+kitty                          # kitty
+rofi                           # rofi
+nerdfonts.jetbrains-mono       # JetBrains Mono Nerd Font
+nerdfonts.iosevka              # Iosevka Nerd Font
+nerdfonts.hack                 # Hack Nerd Font
+nerdfonts.font-awesome         # Font Awesome
+nerdfonts.material-design-icons # Material Design Icons
+# weather-icons: no hay paquete directo, usar font-awesome o material
+
+# ==================== SYSTEM / UTILS ====================
+acpi                           # acpi
+acpid                          # acpid
+wireless-tools                 # wireless_tools
+jq                             # jq
+inotify-tools                  # inotify-tools
+polkit-gnome                   # polkit-gnome
+xdotool                        # xdotool
+xclip                          # xclip
+maim                           # maim
+cliphist                       # cliphist
+brightnessctl                  # brightnessctl
+alsa-utils                     # alsa-utils
+pipewire                       # pipewire
+pipewire-pulse                 # pipewire-pulse
+wireplumber                    # wireplumber
+pipewire-alsa                  # pipewire-alsa
+qt5.qtimageformats             # qt5-qtimageformats
+qt6.qtimageformats             # qt6-qtimageformats
+playerctl                      # playerctl
+curl                           # curl
+ffmpeg                         # ffmpeg
+gpick                          # gpick
+imagemagick                    # imagemagick
+thunar                         # thunar
+firefox                        # firefox
+xorg.server                    # xorg-server
+xorg.xrdb                      # xorg-xrdb
+xorg.xauth                     # xorg-xauth
+xorg.xrandr                    # xorg-xrandr
+xorg.setxkbmap                 # xorg-setxkbmap
+xorg.xset                      # xorg-xset
+xorg.xprop                     # xorg-xprop
+xdg-utils                      # xdg-utils
+xdg-user-dirs                  # xdg-user-dirs
+bc                             # bc
+upower                         # upower
+autorandr                      # autorandr
+udiskie                        # udiskie
+udisks2                        # udisks2
+git                            # git
+rsync                          # rsync
+pam                            # pam (headers automáticos)
+
+# ==================== APPS ====================
+spotify                        # spotify (unfree)
+# onlyoffice REMOVIDO (no necesario)
+mpd                            # mpd
+mpc                            # mpc
+ncmpcpp                        # ncmpcpp
+# mpd-mpris: python3Packages.mpdris2
+blueman                        # blueman
+pasystray                      # pasystray
+touchegg                       # toucheegg
+redshift                       # redshift
+networkmanager                 # networkmanager
+bluez                          # bluez
+bluez-tools                    # bluez-tools
+libnotify                      # libnotify
+sound-theme-freedesktop        # sound-theme-freedesktop
+
+# ==================== SHELL / EDITOR ====================
+zsh                            # zsh
+zsh-syntax-highlighting        # zsh-syntax-highlighting
+zsh-autosuggestions            # zsh-autosuggestions
+# zsh-sudo: no hay paquete, usar alias
+zoxide                         # zoxide
+fzf                            # fzf
+feh                            # feh
+neovim                         # neovim
+btop                           # btop
+lsd                            # lsd
+bat                            # bat
+
+# ==================== LUA / DEPS ====================
+python3Packages.gobject-introspection  # python-gobject
+python3Packages.dbus-python            # python-dbus
+lua54                          # lua54
+lua54Packages.luarocks         # luarocks
+# lua-pam: lua54Packages.luapam
+
+# ==================== LOGIN / LOCK ====================
+i3lock                         # i3lock
+slock                          # slock
+xsecurelock                    # xsecurelock
+sddm                           # sddm
+qt6.qtdeclarative              # qt6-declarative
+
+# ==================== HOME MANAGER MODULE (configuración declarativa) ====================
+# Guardar como: ~/.config/nix/awesome-module.nix
+# Importar en home.nix: imports = [ ./awesome-module.nix ];
+
+{ config, pkgs, ... }:
+
+let
+  myFonts = with pkgs; [
+    nerdfonts.jetbrains-mono
+    nerdfonts.iosevka
+    nerdfonts.hack
+    nerdfonts.font-awesome
+    nerdfonts.material-design-icons
+  ];
+in
+{
+  home.packages = with pkgs; [
+    awesome
+    picom
+    kitty
+    rofi
+    acpi
+    acpid
+    wireless-tools
+    jq
+    inotify-tools
+    polkit-gnome
+    xdotool
+    xclip
+    maim
+    cliphist
+    brightnessctl
+    alsa-utils
+    pipewire
+    pipewire-pulse
+    wireplumber
+    pipewire-alsa
+    qt5.qtimageformats
+    qt6.qtimageformats
+    playerctl
+    curl
+    ffmpeg
+    gpick
+    imagemagick
+    thunar
+    firefox
+    xorg.xrdb
+    xorg.xrandr
+    xorg.setxkbmap
+    xorg.xset
+    xorg.xprop
+    xdg-utils
+    xdg-user-dirs
+    bc
+    upower
+    autorandr
+    udiskie
+    udisks2
+    git
+    rsync
+    spotify
+    # libreoffice REMOVIDO (no necesario)
+    mpd
+    mpc
+    ncmpcpp
+    blueman
+    pasystray
+    touchegg
+    redshift
+    networkmanager
+    bluez
+    bluez-tools
+    libnotify
+    sound-theme-freedesktop
+    zsh
+    zsh-syntax-highlighting
+    zsh-autosuggestions
+    zoxide
+    fzf
+    feh
+    neovim
+    btop
+    lsd
+    bat
+    lua54
+    lua54Packages.luarocks
+    i3lock
+    slock
+    xsecurelock
+    # Fonts
+  ] ++ myFonts;
+
+  # Fonts
+  fonts.fonts = with pkgs; myFonts;
+
+  # Services
+  services.mpds.enable = true;
+  services.udiskie.enable = true;
+  services.touchegg.enable = true;
+  services.redshift.enable = true;
+  services.pipewire = {
+    enable = true;
+    pulse.enable = true;
+    alsa.enable = true;
+  };
+  services.wireplumber.enable = true;
+
+  # SDDM
+  services.xserver.displayManager.sddm = {
+    enable = true;
+    theme = pkgs.sddm-astronaut-theme;
+  };
+
+  # Lua PAM
+  programs.lua.enable = true;
+  programs.lua.package = pkgs.lua54Packages.luapam;
+}
+
+# ==================== FLAKE.NIX (opcional, para flakes) ====================
+# {
+#   inputs = {
+#     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+#     home-manager.url = "github:nix-community/home-manager";
+#     home-manager.inputs.nixpkgs.follows = "nixpkgs";
+#   };
+#   outputs = { self, nixpkgs, home-manager, ... }: {
+#     homeConfigurations."user@host" = home-manager.lib.homeManagerConfiguration {
+#       pkgs = nixpkgs.legacyPackages.x86_64-linux;
+#       modules = [ ./home.nix ];
+#     };
+#   };
+# }
