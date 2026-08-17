@@ -189,6 +189,7 @@ fi
 
 # AwesomeWM Remix
 alias opencode='~/.opencode/bin/opencode'
+alias david='$HOME/mscdown/./ejecutar.sh'
 
 
 # opencode
