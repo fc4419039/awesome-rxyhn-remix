@@ -930,11 +930,37 @@ bash "$SCRIPT_DIR/zsh-root.sh" || echo -e "${YELLOW}⚠️  No se pudo configura
 echo ""
 
 # =====================================================================
-# INSTALACIÓN COMPLETADA
+# INSTALACIÓN COMPLETADA - RESUMEN
 # =====================================================================
 echo "════════════════════════════════════════════════════"
-echo -e "${GREEN}✅ ¡Instalación completada con éxito!${NC}"
+echo -e "${GREEN}✅ ¡Instalación completada!${NC}"
 echo "════════════════════════════════════════════════════"
+echo ""
+
+# Verificar dependencias críticas finales
+echo -e "${CYAN}📊 Resumen de dependencias críticas:${NC}"
+CRITICAL_CHECK=("awesome" "picom" "kitty" "rofi" "zsh" "git" "curl" "rsync" "notify-send" "autorandr")
+INSTALLED=0
+MISSING=0
+for dep in "${CRITICAL_CHECK[@]}"; do
+    if command -v "$dep" >/dev/null 2>&1; then
+        echo -e "  ${GREEN}✓${NC} $dep"
+        INSTALLED=$((INSTALLED+1))
+    else
+        echo -e "  ${RED}✗${NC} $dep"
+        MISSING=$((MISSING+1))
+    fi
+done
+
+echo ""
+echo -e "${CYAN}📈 Estado: ${INSTALLED} instalados, ${MISSING} faltantes${NC}"
+
+if [ $MISSING -gt 0 ]; then
+    echo ""
+    echo -e "${YELLOW}⚠️  Paquetes faltantes - instálalos manualmente:${NC}"
+    echo -e "   ${CYAN}Ver: docs/deps-$(echo $DISTRO_ID | sed 's/-.*//' ).txt${NC}"
+fi
+
 echo ""
 echo -e "${YELLOW}📝 PRÓXIMOS PASOS:${NC}"
 echo "1. Recarga las variables de entorno:"
