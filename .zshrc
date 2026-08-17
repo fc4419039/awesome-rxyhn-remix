@@ -75,7 +75,6 @@ alias l='lsd --group-dirs=first'
 alias lla='lsd -lha --group-dirs=first'
 alias ls='lsd --group-dirs=first'
 alias cat='bat'
-alias check='bash ~/check.sh'
 
 # Aliases recuperados de respaldos (~/.zshrc.bak*)
 alias sr='source ~/.zshrc'
@@ -192,14 +191,6 @@ fi
 alias opencode='~/.opencode/bin/opencode'
 alias david='$HOME/mscdown/./ejecutar.sh'
 
-# opencode + tmux: persistencia
-alias oct='tmux new-session -A -s opencode "opencode"'   # crea tmux y lanza opencode; si ya existe, reconecta
-alias octa='tmux attach-session -t opencode'             # reconectar a la sesion tmux
-alias ocr='opencode -c'                                  # continuar la ultima conversacion
-alias ocs='opencode session list'                        # listar conversaciones guardadas
 
 # opencode
 export PATH="$HOME/.opencode/bin:$PATH"
-
-# KOF 2002 Magic Plus 2 (RetroArch + FBNeo) — lanza desacoplado de la terminal
-alias kof='setsid nohup retroarch -L ~/.config/retroarch/cores/fbneo_libretro.so ~/.config/retroarch/roms/kf2k2mp2.zip >/dev/null 2>&1 &!; exit'
