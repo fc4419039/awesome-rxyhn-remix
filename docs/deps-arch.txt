@@ -1,19 +1,22 @@
 # Arch Linux / Manjaro / EndeavourOS / Garuda / Artix
 # Instalar con: paru -S --needed $(grep -v '^#' docs/deps-arch.txt | sed 's/#.*//' | grep -v '^AUR:')
 # O manualmente: copiar paquetes AUR a un directorio y makepkg -si cada uno
+#
+# Paquetes marcados con [AUR] SOLO existen en AUR (requieren yay/paru)
+# Los demas estan en repos oficiales (pacman)
 
 # ==================== CORE WM ====================
-awesome-git                    # AwesomeWM git version (recomendado) - AUR
-picom-git                      # Compositor con blur/transparencia - AUR
+awesome-git                    # AwesomeWM git version (recomendado) [AUR]
+picom-git                      # Compositor con blur/transparencia [AUR]
 kitty                          # Terminal GPU-accelerated
 rofi                           # Launcher/menu
-# Nerd Fonts (requieren AUR helper o instalación manual):
-ttf-jetbrains-mono-nerd        # Fuente principal (iconos + texto) - AUR
-ttf-iosevka-nerd               # Fuente alternativa - AUR
-ttf-hack-nerd                  # Fuente fallback - AUR
+# Nerd Fonts:
+ttf-jetbrains-mono-nerd        # Fuente principal (iconos + texto)
+ttf-iosevka-nerd               # Fuente alternativa
+ttf-hack-nerd                  # Fuente fallback
 ttf-font-awesome               # Iconos FontAwesome
-ttf-material-design-icons      # Material Icons
-ttf-weather-icons              # Weather icons - AUR
+ttf-material-design-icons      # Material Icons [AUR]
+ttf-weather-icons              # Weather icons [AUR]
 
 # ==================== SYSTEM / UTILS ====================
 acpi                           # Battery info
@@ -61,15 +64,15 @@ git                            # Git
 rsync                          # Sync tool
 
 # ==================== APPS ====================
-spotify                        # Spotify client - AUR
+spotify                        # Spotify client [AUR]
 # onlyoffice-bin REMOVIDO (no necesario)
 mpd                            # Music daemon
 mpc                            # MPD client
 ncmpcpp                        # MPD TUI client
-mpd-mpris                      # MPD -> MPRIS bridge - AUR
+mpd-mpris                      # MPD -> MPRIS bridge
 blueman                        # Bluetooth GUI
 pasystray                      # PulseAudio tray
-touchegg                       # Touchpad gestures - AUR
+touchegg                       # Touchpad gestures
 redshift                       # Color temperature
 networkmanager                 # Network management
 bluez                          # Bluetooth stack
@@ -81,7 +84,7 @@ sound-theme-freedesktop        # System sounds
 zsh                            # Shell
 zsh-syntax-highlighting        # Fish-like highlighting
 zsh-autosuggestions            # Autosuggestions
-zsh-sudo                       # sudo prefix
+zsh-sudo                       # sudo prefix [AUR]
 zoxide                         # Smart cd
 fzf                            # Fuzzy finder
 feh                            # Wallpaper setter
@@ -101,22 +104,17 @@ pam                            # PAM headers (para lua-pam)
 # ==================== LOGIN / LOCK ====================
 i3lock                         # Screen locker
 slock                          # Simple locker
-xsecurelock                    # Secure locker - AUR
+xsecurelock                    # Secure locker
 sddm                           # Display manager
 qt6-declarative                # Qt6 QML (SDDM theme)
 
 # ==================== AUR ONLY (paru/yay) ====================
-# Los siguientes paquetes SOLO están en AUR.
+# Los siguientes paquetes SOLO estan en AUR.
 # Si no tienes AUR helper, instálalos manualmente:
 #   git clone https://aur.archlinux.org/<paquete>.git && cd <paquete> && makepkg -si
-# awesome-git                    # Git version (recomendado) - AUR
-# picom-git                      # Git version con fixes blur - AUR
-# ttf-jetbrains-mono-nerd        # Nerd Font completa - AUR
-# ttf-iosevka-nerd               # Nerd Font alternativa - AUR
-# ttf-hack-nerd                  # Nerd Font fallback - AUR
-# ttf-weather-icons              # Weather icons - AUR
-# mpd-mpris                      # MPD -> MPRIS bridge - AUR
-# touchegg                       # Gestos touchpad - AUR
-# xsecurelock                    # Secure locker - AUR
-# zsh-theme-powerlevel10k        # Tema zsh - git clone https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k
-# todo-bin                       # CLI todo - cargo install todo-bin (requiere rust)
+# awesome-git                    # Git version (recomendado) [AUR]
+# picom-git                      # Git version con fixes blur [AUR]
+# ttf-material-design-icons      # Material Icons [AUR]
+# ttf-weather-icons              # Weather icons [AUR]
+# spotify                        # Spotify client [AUR]
+# zsh-sudo                       # sudo prefix [AUR]

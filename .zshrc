@@ -93,11 +93,15 @@ alias mtar='tar -zcvf'   # mtar <archivo> <lista>
 alias utar='tar -zxvf'   # utar <archivo>
 alias z='zip -r'         # z <archivo> <lista>
 alias uz='unzip'         # uz <archivo> -d <dir>
-# Paquetes con fzf
-alias pacs="pacman -Slq | fzf -m --preview 'cat <(pacman -Si {1}) <(pacman -Fl {1} | awk \"{print \$2}\")' | xargs -ro sudo pacman -S"
-alias yays="yay -Slq | fzf -m --preview 'cat <(yay -Si {1}) <(yay -Fl {1} | awk \"{print \$2}\")' | xargs -ro yay -S"
-alias pacr="pacman -Qq | fzf --multi --preview 'pacman -Qi {1}' | xargs -ro sudo pacman -Rns"
-alias p='pacman -Q | fzf'
+# Paquetes con fzf (solo Arch)
+if command -v pacman &>/dev/null; then
+    alias pacs="pacman -Slq | fzf -m --preview 'cat <(pacman -Si {1}) <(pacman -Fl {1} | awk \"{print \$2}\")' | xargs -ro sudo pacman -S"
+    alias pacr="pacman -Qq | fzf --multi --preview 'pacman -Qi {1}' | xargs -ro sudo pacman -Rns"
+    alias p='pacman -Q | fzf'
+fi
+if command -v yay &>/dev/null; then
+    alias yays="yay -Slq | fzf -m --preview 'cat <(yay -Si {1}) <(yay -Fl {1} | awk \"{print \$2}\")' | xargs -ro yay -S"
+fi
 # Funciones
 mcd() { mkdir -p "$1" && cd "$1"; }
 rc() { g++ "$1" -o run && ./run; }
@@ -188,4 +192,4 @@ alias opencode='~/.opencode/bin/opencode'
 
 
 # opencode
-export PATH=/home/spectre/.opencode/bin:$PATH
+export PATH="$HOME/.opencode/bin:$PATH"

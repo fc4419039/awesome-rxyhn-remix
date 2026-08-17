@@ -154,7 +154,7 @@ case "$DISTRO_ID" in
     arch|manjaro|endeavouros|garuda|artix)
         DEPS_FILE="docs/deps-arch.txt"
         PKG_CHECK="pacman -Q"
-        PKG_INSTALL="${AUR_HELPER:-pacman} -S --needed --noconfirm"
+        PKG_INSTALL="pacman -S --needed --noconfirm"
         ;;
     ubuntu|debian|linuxmint|pop|elementary|zorin)
         DEPS_FILE="docs/deps-debian.txt"
@@ -215,7 +215,7 @@ case "$DISTRO_ID" in
         if [[ "$DISTRO_LIKE" == *arch* ]]; then
             DEPS_FILE="docs/deps-arch.txt"
             PKG_CHECK="pacman -Q"
-            PKG_INSTALL="${AUR_HELPER:-pacman} -S --needed --noconfirm"
+            PKG_INSTALL="pacman -S --needed --noconfirm"
         elif [[ "$DISTRO_LIKE" == *debian* ]]; then
             DEPS_FILE="docs/deps-debian.txt"
             PKG_CHECK="dpkg -s"
@@ -251,43 +251,132 @@ else
         mapfile -t packages < <(grep -v '^#' "$DEPS_FILE" | grep -v '^$' | grep -v '^FLATPAK:' | grep -v '^MANUAL:' | grep -v '^COPR:' | grep -v '^OBS:' | grep -v '^BACKPORTS:' | sed 's/#.*//' | xargs -n1)
     fi
 
-    to_install=()
-    for pkg in "${packages[@]}"; do
-        if ! eval "$PKG_CHECK $pkg" > /dev/null 2>&1; then
-            to_install+=("$pkg")
+    # Para Arch: separar paquetes oficiales y AUR, instalar desde la fuente correcta
+    if [ "$IS_ARCH" = "1" ]; then
+        official_pkgs=()
+        aur_pkgs=()
+
+        for pkg in "${packages[@]}"; do
+            # Verificar si ya esta instalado (desde cualquier fuente)
+            if pacman -Qi "$pkg" &>/dev/null; then
+                echo -e "${GREEN}  ✓ $pkg ya instalado${NC}"
+                continue
+            fi
+
+            # Verificar si esta en repos oficiales
+            if pacman -Ss "^${pkg}$" &>/dev/null; then
+                official_pkgs+=("$pkg")
+            else
+                aur_pkgs+=("$pkg")
+            fi
+        done
+
+        # Instalar paquetes oficiales con pacman
+        if [ ${#official_pkgs[@]} -gt 0 ]; then
+            echo -e "${YELLOW}📦 Instalando paquetes oficiales: ${official_pkgs[*]}${NC}"
+            sudo pacman -S --needed --noconfirm "${official_pkgs[@]}" 2>/dev/null \
+                || {
+                    echo -e "${YELLOW}⚠️  Algunos paquetes oficiales fallaron. Intentando individualmente...${NC}"
+                    for pkg in "${official_pkgs[@]}"; do
+                        if ! pacman -Qi "$pkg" &>/dev/null; then
+                            sudo pacman -S --needed --noconfirm "$pkg" 2>/dev/null \
+                                || echo -e "${YELLOW}⚠️  No se pudo instalar $pkg${NC}"
+                        fi
+                    done
+                }
         fi
-    done
 
-    if [ ${#to_install[@]} -gt 0 ]; then
-        echo -e "${YELLOW}📦 Instalando paquetes faltantes: ${to_install[*]}${NC}"
+        # Instalar paquetes AUR con yay/paru
+        if [ ${#aur_pkgs[@]} -gt 0 ]; then
+            if [ -n "$AUR_HELPER" ]; then
+                echo -e "${YELLOW}📦 Instalando paquetes AUR: ${aur_pkgs[*]}${NC}"
+                $AUR_HELPER -S --needed --noconfirm "${aur_pkgs[@]}" 2>/dev/null \
+                    || {
+                        echo -e "${YELLOW}⚠️  Algunos paquetes AUR fallaron. Intentando individualmente...${NC}"
+                        for pkg in "${aur_pkgs[@]}"; do
+                            if ! pacman -Qi "$pkg" &>/dev/null; then
+                                $AUR_HELPER -S --needed --noconfirm "$pkg" 2>/dev/null \
+                                    || echo -e "${YELLOW}⚠️  No se pudo instalar $pkg (AUR)${NC}"
+                            fi
+                        done
+                    }
+            else
+                echo -e "${YELLOW}⚠️  No hay AUR helper disponible. Paquetes AUR pendientes:${NC}"
+                for pkg in "${aur_pkgs[@]}"; do
+                    echo -e "${YELLOW}    - $pkg${NC}"
+                done
+                echo -e "${YELLOW}  Instálalos manualmente: git clone https://aur.archlinux.org/<pkg>.git && cd <pkg> && makepkg -si${NC}"
+            fi
+        fi
 
-        if ! eval "$PKG_INSTALL ${to_install[*]}"; then
-            echo -e "${YELLOW}⚠️  Algunos paquetes fallaron. Intentando de nuevo en modo individual...${NC}"
-            for pkg in "${to_install[@]}"; do
-                if ! eval "$PKG_CHECK $pkg" > /dev/null 2>&1; then
-                    eval "$PKG_INSTALL $pkg" \
-                        || echo -e "${YELLOW}⚠️  No se pudo instalar $pkg, continuando...${NC}"
-                fi
-            done
+        # Reporte final
+        total_missing=$(( ${#official_pkgs[@]} + ${#aur_pkgs[@]} ))
+        if [ "$total_missing" -eq 0 ]; then
+            echo -e "${GREEN}✓ Todos los paquetes ya están instalados${NC}"
         fi
     else
-        echo -e "${GREEN}✓ Todos los paquetes ya están instalados. Saltando.${NC}"
+        # Para otras distros: verificar cada paquete individualmente
+        to_install=()
+        for pkg in "${packages[@]}"; do
+            if eval "$PKG_CHECK $pkg" > /dev/null 2>&1; then
+                echo -e "${GREEN}  ✓ $pkg ya instalado${NC}"
+            else
+                to_install+=("$pkg")
+            fi
+        done
+
+        if [ ${#to_install[@]} -gt 0 ]; then
+            echo -e "${YELLOW}📦 Instalando paquetes faltantes: ${to_install[*]}${NC}"
+
+            if ! eval "$PKG_INSTALL ${to_install[*]}"; then
+                echo -e "${YELLOW}⚠️  Algunos paquetes fallaron. Intentando de nuevo en modo individual...${NC}"
+                for pkg in "${to_install[@]}"; do
+                    if ! eval "$PKG_CHECK $pkg" > /dev/null 2>&1; then
+                        eval "$PKG_INSTALL $pkg" \
+                            || echo -e "${YELLOW}⚠️  No se pudo instalar $pkg, continuando...${NC}"
+                    fi
+                done
+            fi
+        else
+            echo -e "${GREEN}✓ Todos los paquetes ya están instalados. Saltando.${NC}"
+        fi
     fi
 
-    # Instalar paquetes FLATPAK marcados en deps files
+    # Instalar paquetes FLATPAK solo si el paquete nativo NO esta instalado
     if command -v flatpak >/dev/null 2>&1; then
-        echo -e "${YELLOW}📦 Instalando paquetes Flatpak...${NC}"
-        FLATPAK_PKGS=(
-            "com.spotify.Client"
-            "com.github.joseexposito.touchegg"
-            "com.github.joseexposito.mpdris2"
-            "com.sentriz.cliphist"
-            "org.mozilla.firefox"
+        echo -e "${YELLOW}📦 Verificando paquetes Flatpak...${NC}"
+        # Formato: "flatpak_id:paquete_nativo_arch:paquete_nativo_debian:paquete_nativo_fedora:paquete_nativo_opensuse"
+        FLATPAK_MAP=(
+            "com.spotify.Client:spotify:spotify-client:spotify-client:spotify-client"
+            "com.github.joseexposito.touchegg:touchegg:touchegg:touchegg:touchegg"
+            "com.github.joseexposito.mpdris2:mpd-mpris:mpdris2:mpd-mpris:mpd-mpris"
+            "com.sentriz.cliphist:cliphist:cliphist:cliphist:cliphist"
+            "org.mozilla.firefox:firefox:firefox:firefox:firefox"
         )
-        for fpkg in "${FLATPAK_PKGS[@]}"; do
+        for entry in "${FLATPAK_MAP[@]}"; do
+            IFS=':' read -ra PARTS <<< "$entry"
+            fpkg="${PARTS[0]}"
+            native_arch="${PARTS[1]}"
+            native_debian="${PARTS[2]}"
+            native_fedora="${PARTS[3]}"
+            native_opensuse="${PARTS[4]}"
+            # Verificar si CUALQUIER variante nativa esta instalada
+            native_found=false
+            for nat in "$native_arch" "$native_debian" "$native_fedora" "$native_opensuse"; do
+                if pacman -Qi "$nat" &>/dev/null 2>&1 || dpkg -s "$nat" &>/dev/null 2>&1 || rpm -q "$nat" &>/dev/null 2>&1; then
+                    echo -e "${GREEN}  ✓ $nat ya instalado (nativo), saltando flatpak $fpkg${NC}"
+                    native_found=true
+                    break
+                fi
+            done
+            if [ "$native_found" = true ]; then
+                continue
+            fi
             if ! flatpak list --app | grep -q "$fpkg"; then
                 echo -e "${YELLOW}  Instalando $fpkg...${NC}"
                 flatpak install -y flathub "$fpkg" 2>/dev/null || echo -e "${YELLOW}⚠️  No se pudo instalar $fpkg${NC}"
+            else
+                echo -e "${GREEN}  ✓ $fpkg ya instalado${NC}"
             fi
         done
     else

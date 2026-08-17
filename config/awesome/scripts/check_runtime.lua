@@ -2,7 +2,7 @@
 -- check_runtime.lua - Validación de runtime real de TU config AwesomeWM
 -- Solo verifica archivos en ~/.config/awesome (excluye módulos externos)
 
-local home = os.getenv("HOME") or "/home/spectre"
+    local home = os.getenv("HOME") or os.getenv("USER") and "/home/" .. os.getenv("USER") or "/tmp"
 package.path = package.path .. ";" .. home .. "/.config/awesome/?.lua;" .. home .. "/.config/awesome/?/init.lua"
 
 local errors = {}
@@ -400,7 +400,7 @@ end
 
 local function resolve_path(path)
     if not path or path == "" then return nil end
-    local home = os.getenv("HOME") or "/home/spectre"
+local home = os.getenv("HOME") or os.getenv("USER") and "/home/" .. os.getenv("USER") or "/tmp"
     local config_dir = home .. "/.config/awesome"
     if path:match("^/") then return path end
     if path:match("^%./") then path = path:sub(3) end

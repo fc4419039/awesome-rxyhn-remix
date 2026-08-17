@@ -16,57 +16,70 @@ SUDO := $(if $(filter root,$(shell id -un 2>/dev/null)),,sudo)
 # Mapeo de distro -> archivo de deps
 ifeq ($(DISTRO_ID),arch)
     DEPS_FILE := docs/deps-arch.txt
+    PKG_CHECK := pacman -Qi
     PKG_INSTALL := pacman -S --needed --noconfirm
     AUR_HELPER := $(shell command -v paru 2>/dev/null || command -v yay 2>/dev/null || echo "")
 endif
 ifeq ($(DISTRO_ID),manjaro)
     DEPS_FILE := docs/deps-arch.txt
+    PKG_CHECK := pacman -Qi
     PKG_INSTALL := pacman -S --needed --noconfirm
     AUR_HELPER := $(shell command -v pamac 2>/dev/null || command -v paru 2>/dev/null || command -v yay 2>/dev/null || echo "")
 endif
 ifeq ($(DISTRO_ID),endeavouros)
     DEPS_FILE := docs/deps-arch.txt
+    PKG_CHECK := pacman -Qi
     PKG_INSTALL := pacman -S --needed --noconfirm
     AUR_HELPER := $(shell command -v paru 2>/dev/null || command -v yay 2>/dev/null || echo "")
 endif
 ifeq ($(DISTRO_ID),ubuntu)
     DEPS_FILE := docs/deps-debian.txt
+    PKG_CHECK := dpkg -s
     PKG_INSTALL := apt-get update && apt-get install -y
 endif
 ifeq ($(DISTRO_ID),debian)
     DEPS_FILE := docs/deps-debian.txt
+    PKG_CHECK := dpkg -s
     PKG_INSTALL := apt-get update && apt-get install -y
 endif
 ifeq ($(DISTRO_ID),linuxmint)
     DEPS_FILE := docs/deps-debian.txt
+    PKG_CHECK := dpkg -s
     PKG_INSTALL := apt-get update && apt-get install -y
 endif
 ifeq ($(DISTRO_ID),pop)
     DEPS_FILE := docs/deps-debian.txt
+    PKG_CHECK := dpkg -s
     PKG_INSTALL := apt-get update && apt-get install -y
 endif
 ifeq ($(DISTRO_ID),fedora)
     DEPS_FILE := docs/deps-fedora.txt
+    PKG_CHECK := rpm -q
     PKG_INSTALL := dnf install -y
 endif
 ifeq ($(DISTRO_ID),rhel)
     DEPS_FILE := docs/deps-fedora.txt
+    PKG_CHECK := rpm -q
     PKG_INSTALL := dnf install -y
 endif
 ifeq ($(DISTRO_ID),centos)
     DEPS_FILE := docs/deps-fedora.txt
+    PKG_CHECK := rpm -q
     PKG_INSTALL := dnf install -y
 endif
 ifeq ($(DISTRO_ID),opensuse-tumbleweed)
     DEPS_FILE := docs/deps-opensuse.txt
+    PKG_CHECK := rpm -q
     PKG_INSTALL := zypper install -y
 endif
 ifeq ($(DISTRO_ID),opensuse-leap)
     DEPS_FILE := docs/deps-opensuse.txt
+    PKG_CHECK := rpm -q
     PKG_INSTALL := zypper install -y
 endif
 ifeq ($(DISTRO_ID),nixos)
     DEPS_FILE := docs/deps-nixos.txt
+    PKG_CHECK := echo "NixOS"
     PKG_INSTALL := echo "NixOS: usa home-manager / configuration.nix (ver docs/deps-nixos.txt)"
 endif
 
@@ -74,19 +87,23 @@ endif
 ifndef DEPS_FILE
     ifneq (,$(findstring arch,$(DISTRO_LIKE)))
         DEPS_FILE := docs/deps-arch.txt
+        PKG_CHECK := pacman -Qi
         PKG_INSTALL := pacman -S --needed --noconfirm
         AUR_HELPER := $(shell command -v paru 2>/dev/null || command -v yay 2>/dev/null || echo "")
     endif
     ifneq (,$(findstring debian,$(DISTRO_LIKE)))
         DEPS_FILE := docs/deps-debian.txt
+        PKG_CHECK := dpkg -s
         PKG_INSTALL := apt-get update && apt-get install -y
     endif
     ifneq (,$(findstring fedora,$(DISTRO_LIKE)))
         DEPS_FILE := docs/deps-fedora.txt
+        PKG_CHECK := rpm -q
         PKG_INSTALL := dnf install -y
     endif
     ifneq (,$(findstring opensuse,$(DISTRO_LIKE)))
         DEPS_FILE := docs/deps-opensuse.txt
+        PKG_CHECK := rpm -q
         PKG_INSTALL := zypper install -y
     endif
 endif
@@ -94,6 +111,7 @@ endif
 # Si no se detectó nada
 ifndef DEPS_FILE
     DEPS_FILE := docs/deps-arch.txt
+    PKG_CHECK := echo "Distro no detectada"
     PKG_INSTALL := echo "Distro no detectada. Instala manualmente desde $(DEPS_FILE)"
     UNSUPPORTED := 1
 endif
@@ -197,18 +215,101 @@ deps:
 			sudo zypper --gpg-auto-import-keys refresh nerdfonts 2>/dev/null || true; \
 		fi; \
 	fi
-	@if [ -n "$(AUR_HELPER)" ]; then \
+	@# Para Arch: separar paquetes oficiales y AUR
+	@if [ "$(DISTRO_ID)" = "arch" ] || [ "$(DISTRO_ID)" = "manjaro" ] || [ "$(DISTRO_ID)" = "endeavouros" ] || [ "$(DISTRO_ID)" = "garuda" ] || [ "$(DISTRO_ID)" = "artix" ] || echo "$(DISTRO_LIKE)" | grep -qi arch; then \
+		ALL_PKGS=$$(grep -v '^#' $(DEPS_FILE) | grep -v '^$$' | grep -v '^FLATPAK:' | grep -v '^MANUAL:' | grep -v '^COPR:' | grep -v '^OBS:' | grep -v '^BACKPORTS:' | sed 's/#.*//' | tr '\n' ' '); \
+		OFFICIAL=""; \
+		AUR=""; \
+		for pkg in $$ALL_PKGS; do \
+			if pacman -Qi "$$pkg" &>/dev/null; then \
+				echo "  ✓ $$pkg ya instalado"; \
+			elif pacman -Ss "^$$$$pkg$$" &>/dev/null; then \
+				OFFICIAL="$$OFFICIAL $$pkg"; \
+			else \
+				AUR="$$AUR $$pkg"; \
+			fi; \
+		done; \
+		if [ -n "$$OFFICIAL" ]; then \
+			echo "📦 Paquetes oficiales:$$OFFICIAL"; \
+			$(SUDO) pacman -S --needed --noconfirm $$OFFICIAL 2>/dev/null || \
+				for pkg in $$OFFICIAL; do \
+					if ! pacman -Qi "$$pkg" &>/dev/null; then \
+						$(SUDO) pacman -S --needed --noconfirm "$$pkg" 2>/dev/null || echo "⚠ No se pudo instalar $$pkg"; \
+					fi; \
+				done; \
+		fi; \
+		if [ -n "$$AUR" ]; then \
+			if [ -n "$(AUR_HELPER)" ]; then \
+				echo "📦 Paquetes AUR:$$AUR"; \
+				$(AUR_HELPER) -S --needed --noconfirm $$AUR 2>/dev/null || \
+					for pkg in $$AUR; do \
+						if ! pacman -Qi "$$pkg" &>/dev/null; then \
+							$(AUR_HELPER) -S --needed --noconfirm "$$pkg" 2>/dev/null || echo "⚠ No se pudo instalar $$pkg (AUR)"; \
+						fi; \
+					done; \
+			else \
+				echo "⚠ Sin AUR helper. Paquetes AUR pendientes:$$AUR"; \
+			fi; \
+		fi; \
+	elif [ -n "$(AUR_HELPER)" ]; then \
 		echo "AUR Helper: $(AUR_HELPER)"; \
-		$(AUR_HELPER) -S --needed --noconfirm $$(grep -v '^#' $(DEPS_FILE) | grep -v '^$$' | grep -v '^FLATPAK:' | grep -v '^MANUAL:' | grep -v '^COPR:' | grep -v '^OBS:' | grep -v '^BACKPORTS:' | sed 's/#.*//' | tr '\n' ' '); \
+		ALL_PKGS=$$(grep -v '^#' $(DEPS_FILE) | grep -v '^$$' | grep -v '^FLATPAK:' | grep -v '^MANUAL:' | grep -v '^COPR:' | grep -v '^OBS:' | grep -v '^BACKPORTS:' | sed 's/#.*//' | tr '\n' ' '); \
+		TO_INSTALL=""; \
+		for pkg in $$ALL_PKGS; do \
+			if eval "$$PKG_CHECK $$pkg" >/dev/null 2>&1; then \
+				echo "  ✓ $$pkg ya instalado"; \
+			else \
+				TO_INSTALL="$$TO_INSTALL $$pkg"; \
+			fi; \
+		done; \
+		if [ -n "$$TO_INSTALL" ]; then \
+			echo "📦 Instalando:$$TO_INSTALL"; \
+			$(AUR_HELPER) -S --needed --noconfirm $$TO_INSTALL 2>/dev/null || \
+				for pkg in $$TO_INSTALL; do \
+					if ! eval "$$PKG_CHECK $$pkg" >/dev/null 2>&1; then \
+						$(AUR_HELPER) -S --needed --noconfirm "$$pkg" 2>/dev/null || echo "⚠ No se pudo instalar $$pkg"; \
+					fi; \
+				done; \
+		fi; \
 	else \
-		$(SUDO) sh -c "$(PKG_INSTALL) $$(grep -v '^#' $(DEPS_FILE) | grep -v '^$$' | grep -v '^FLATPAK:' | grep -v '^MANUAL:' | grep -v '^COPR:' | grep -v '^OBS:' | grep -v '^BACKPORTS:' | sed 's/#.*//' | tr '\n' ' ')"; \
+		ALL_PKGS=$$(grep -v '^#' $(DEPS_FILE) | grep -v '^$$' | grep -v '^FLATPAK:' | grep -v '^MANUAL:' | grep -v '^COPR:' | grep -v '^OBS:' | grep -v '^BACKPORTS:' | sed 's/#.*//' | tr '\n' ' '); \
+		TO_INSTALL=""; \
+		for pkg in $$ALL_PKGS; do \
+			if eval "$$PKG_CHECK $$pkg" >/dev/null 2>&1; then \
+				echo "  ✓ $$pkg ya instalado"; \
+			else \
+				TO_INSTALL="$$TO_INSTALL $$pkg"; \
+			fi; \
+		done; \
+		if [ -n "$$TO_INSTALL" ]; then \
+			echo "📦 Instalando:$$TO_INSTALL"; \
+			$(SUDO) sh -c "$(PKG_INSTALL) $$TO_INSTALL"; \
+		fi; \
 	fi
-	@# Instalar Flatpaks comunes
+	@# Instalar Flatpaks solo si el paquete nativo NO esta instalado
 	@if command -v flatpak >/dev/null 2>&1; then \
-		echo "📦 Instalando Flatpaks..."; \
-		for fpkg in com.spotify.Client com.github.joseexposito.touchegg com.github.joseexposito.mpdris2 com.sentriz.cliphist org.mozilla.firefox; do \
-			if ! flatpak list --app | grep -q "$$fpkg"; then \
-				flatpak install -y flathub "$$fpkg" 2>/dev/null || echo "⚠ No se pudo instalar $$fpkg"; \
+		echo "📦 Verificando Flatpaks..."; \
+		for entry in "com.spotify.Client:spotify:spotify-client:spotify-client:spotify-client" \
+			"com.github.joseexposito.touchegg:touchegg:touchegg:touchegg:touchegg" \
+			"com.github.joseexposito.mpdris2:mpd-mpris:mpdris2:mpd-mpris:mpd-mpris" \
+			"com.sentriz.cliphist:cliphist:cliphist:cliphist:cliphist" \
+			"org.mozilla.firefox:firefox:firefox:firefox:firefox"; do \
+			fpkg=$$(echo "$$entry" | cut -d: -f1); \
+			native_found=false; \
+			for nat in $$(echo "$$entry" | cut -d: -f2-); do \
+				if pacman -Qi "$$nat" >/dev/null 2>&1 || dpkg -s "$$nat" >/dev/null 2>&1 || rpm -q "$$nat" >/dev/null 2>&1; then \
+					echo "  ✓ $$nat ya instalado (nativo), saltando $$fpkg"; \
+					native_found=true; \
+					break; \
+				fi; \
+			done; \
+			if [ "$$native_found" = "false" ]; then \
+				if ! flatpak list --app | grep -q "$$fpkg"; then \
+					echo "  Instalando $$fpkg..."; \
+					flatpak install -y flathub "$$fpkg" 2>/dev/null || echo "⚠ No se pudo instalar $$fpkg"; \
+				else \
+					echo "  ✓ $$fpkg ya instalado"; \
+				fi; \
 			fi; \
 		done; \
 	else \
