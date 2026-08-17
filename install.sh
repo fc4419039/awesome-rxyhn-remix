@@ -342,17 +342,25 @@ else
         fi
     fi
 
-    # Instalar paquetes FLATPAK solo si el paquete nativo NO esta instalado
+    # =====================================================================
+    # 2b️⃣ FLATPAK: ÚLTIMO RECURSO (solo si no hay paquete nativo)
+    # =====================================================================
+    # PRIORIDAD: 1) Repo oficial → 2) AUR/COPR/OBS → 3) Backports → 4) Manual → 5) Flatpak
+    # Flatpak SOLO se instala si el paquete NO existe en NINGUNA fuente nativa
+
     if command -v flatpak >/dev/null 2>&1; then
-        echo -e "${YELLOW}📦 Verificando paquetes Flatpak...${NC}"
-        # Formato: "flatpak_id:paquete_nativo_arch:paquete_nativo_debian:paquete_nativo_fedora:paquete_nativo_opensuse"
+        echo -e "${YELLOW}📦 Verificando Flatpak (último recurso)...${NC}"
+
+        # Formato: "flatpak_id:nombre_arch:nombre_debian:nombre_fedora:nombre_opensuse:notas"
+        # NOTA: Estos paquetes SOLO se instalan si el nativo NO existe en ninguna distro
         FLATPAK_MAP=(
-            "com.spotify.Client:spotify:spotify-client:spotify-client:spotify-client"
-            "com.github.joseexposito.touchegg:touchegg:touchegg:touchegg:touchegg"
-            "com.github.joseexposito.mpdris2:mpd-mpris:mpdris2:mpd-mpris:mpd-mpris"
-            "com.sentriz.cliphist:cliphist:cliphist:cliphist:cliphist"
-            "org.mozilla.firefox:firefox:firefox:firefox:firefox"
+            "com.spotify.Client:spotify:spotify-client:spotify-client:spotify-client:Solo si no hay repo nativo"
+            "com.github.joseexposito.touchegg:touchegg:touchegg:touchegg:touchegg:Compilar desde fuente es mejor"
+            "com.github.joseexposito.mpdris2:mpd-mpris:mpd-mpris:mpd-mpris:mpd-mpris:pip install mpdris2 es mejor"
+            "com.sentriz.cliphist:cliphist:cliphist:cliphist:cliphist:go install es mejor"
+            "org.mozilla.firefox:firefox:firefox:firefox:firefox:Siempre usar repo nativo"
         )
+
         for entry in "${FLATPAK_MAP[@]}"; do
             IFS=':' read -ra PARTS <<< "$entry"
             fpkg="${PARTS[0]}"
@@ -360,27 +368,42 @@ else
             native_debian="${PARTS[2]}"
             native_fedora="${PARTS[3]}"
             native_opensuse="${PARTS[4]}"
+            notas="${PARTS[5]}"
+
             # Verificar si CUALQUIER variante nativa esta instalada
             native_found=false
             for nat in "$native_arch" "$native_debian" "$native_fedora" "$native_opensuse"; do
                 if pacman -Qi "$nat" &>/dev/null 2>&1 || dpkg -s "$nat" &>/dev/null 2>&1 || rpm -q "$nat" &>/dev/null 2>&1; then
-                    echo -e "${GREEN}  ✓ $nat ya instalado (nativo), saltando flatpak $fpkg${NC}"
+                    echo -e "${GREEN}  ✓ $nat ya instalado (nativo) - saltando flatpak $fpkg${NC}"
                     native_found=true
                     break
                 fi
             done
+
             if [ "$native_found" = true ]; then
                 continue
             fi
-            if ! flatpak list --app | grep -q "$fpkg"; then
-                echo -e "${YELLOW}  Instalando $fpkg...${NC}"
-                flatpak install -y flathub "$fpkg" 2>/dev/null || echo -e "${YELLOW}⚠️  No se pudo instalar $fpkg${NC}"
-            else
-                echo -e "${GREEN}  ✓ $fpkg ya instalado${NC}"
+
+            # Verificar si el flatpak ya esta instalado
+            if flatpak list --app 2>/dev/null | grep -q "$fpkg"; then
+                echo -e "${GREEN}  ✓ $fpkg ya instalado (flatpak)${NC}"
+                continue
             fi
+
+            # ÚLTIMO RECURSO: solo instalar flatpak si no hay otra opcion
+            echo -e "${YELLOW}  ⚠️  $fpkg no disponible como paquete nativo${NC}"
+            echo -e "${YELLOW}    Nota: $notas${NC}"
+            echo -e "${YELLOW}    Instalando como ÚLTIMO RECURSO (flatpak)...${NC}"
+            flatpak install -y flathub "$fpkg" 2>/dev/null \
+                && echo -e "${GREEN}  ✓ $fpkg instalado (flatpak - último recurso)${NC}" \
+                || echo -e "${YELLOW}  ⚠️  No se pudo instalar $fpkg (nativo ni flatpak)${NC}"
         done
     else
-        echo -e "${YELLOW}⚠️  flatpak no instalado. Saltando paquetes Flatpak (spotify, touchegg, mpd-mpris, cliphist).${NC}"
+        echo -e "${YELLOW}⚠️  flatpak no instalado. Paquetes que pueden faltar:${NC}"
+        echo -e "   - spotify (verificar repos de tu distro)"
+        echo -e "   - touchegg (compilar desde fuente)"
+        echo -e "   - mpd-mpris (pip install mpdris2)"
+        echo -e "   - cliphist (go install)"
     fi
 
     echo -e "${GREEN}✓ Dependencias instaladas${NC}"
