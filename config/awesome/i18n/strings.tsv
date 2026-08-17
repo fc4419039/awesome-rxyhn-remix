@@ -242,3 +242,10 @@ sm.clean_cache	Limpiar caché	Clean cache	Limpar cache	Nettoyer le cache	Cache b
 cc.confirm	¿Limpiar caché y basura acumulada (%s)?	Clean accumulated cache and junk (%s)?	Limpar cache e lixo acumulado (%s)?	Nettoyer le cache et les déchets accumulés (%s) ?	Cache und angesammelten Müll bereinigen (%s)?	Pulire cache e spazzatura accumulata (%s)?	蓄積したキャッシュとゴミを削除しますか (%s)?	누적 캐시와 정크를 정리할까요 (%s)?	清理累积的缓存和垃圾 (%s)？	Очистить накопленный кэш и мусор (%s)?	تنظيف ذاكرة التخزين المؤقت المتراكمة والقمامة (%s)؟
 cc.done_title	Caché limpia	Cache cleaned	Cache limpo	Cache nettoyé	Cache bereinigt	Cache pulito	キャッシュ完了	캐시 정리 완료	缓存已清理	Кэш очищен	تم تنظيف ذاكرة التخزين المؤقت
 cc.freed	%s liberados	%s freed	%s liberados	%s libérés	%s freigegeben	%s liberati	%s 解放	%s 확보됨	释放 %s	Освобождено %s	تم تحرير %s
+cc.title	Centro de Control	Control Center	Centro de Controlo	Centre de Contrôle	Kontrollzentrum	Centro di Controllo	コントロールセンター	제어 센터	控制中心	Центр управления	مركز التحكم
+cc.brightness	Brillo	Brightness	Brilho	Luminosité	Helligkeit	Luminosità	明るさ	밝기	亮度	Яркость	سطوع
+cc.volume	Volumen	Volume	Volume	Volume	Lautstärke	Volume	音量	볼륨	音量	Громкость	صوت
+cc.color_temp	Temperatura de Color	Color Temperature	Temperatura de Cor	Température de Couleur	Farbtemperatura	Temperatura del Colore	色温度	색온도	色温	Цветовая температура	درجة حرارة اللون
+cc.screen	Pantalla	Screen	Ecrã	Écran	Bildschirm	Schermo	画面	화면	屏幕	Экран	شاشة
+cc.system	Sistema	System	Sistema	Système	Sistema	Sistema	システム	시스템	系统	Система	نظام
+cc.notifications	Notificaciones	Notifications	Notificações	Notifications	Benachrichtigungen	Notifiche	通知	알림	通知	Уведомления	إشعارات
