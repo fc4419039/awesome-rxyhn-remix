@@ -138,6 +138,44 @@ if [ "$IS_ARCH" = "1" ]; then
         else
             echo -e "${YELLOW}⚠️  yay no disponible. Se usarán solo los repos oficiales; los paquetes AUR los puedes instalar después.${NC}"
             echo -e "${YELLOW}  Paquetes AUR necesarios: awesome-git, picom-git, ttf-jetbrains-mono-nerd, ttf-iosevka-nerd, ttf-hack-nerd, ttf-weather-icons, mpd-mpris, touchegg, xsecurelock${NC}"
+
+
+# =====================================================================
+# 2c️⃣ CONFIGURAR TOUCHEG PARA GESTOS DE 3 DEDOS
+# =====================================================================
+echo -e "${CYAN}🖐️ Configurando touchegg para gestos de 3 dedos...${NC}"
+
+# Crear directorio de configuración si no existe
+TOUCHEGF_DIR="${HOME}/.config/touchegg"
+mkdir -p "${TOUCHEGF_DIR}"
+
+# Copiar configuración del repo al sistema (sobreescribe si ya existe)
+if [ -f "${SCRIPT_DIR}/config/touchegg/touchegg.conf" ]; then
+    cp -f "${SCRIPT_DIR}/config/touchegg/touchegg.conf" "${TOUCHEGF_DIR}/config.conf"
+    echo -e "  ${GREEN}✓ Configuración de touchegg copiada${NC}"
+else
+    echo -e "  ${YELLOW}⚠  No se encontró config/touchegg/touchegg.conf en el repo${NC}"
+fi
+
+# Asegurar que touchegg daemon se inicie en el autostart
+AUTOSTART_FILE="${HOME}/.config/awesome/configuration/autostart"
+if [ -f "${AUTOSTART_FILE}" ]; then
+    if ! grep -q "touchegg.*--daemon" "${AUTOSTART_FILE}"; then
+        # Agregar inicio del daemon antes del cliente (línea 5 del autostart)
+        sed -i '/# 5. Touchegg client/i\
+# 4. Touchegg daemon (siempre iniciar al login)\
+if command -v touchegg >/dev/null 2>&1; then\
+    if ! pgrep -u "$USER" -f "touchegg.*--daemon" >/dev/null 2>&1; then\
+        touchegg --daemon &>/dev/null &\
+    fi;\
+fi' "${AUTOSTART_FILE}" >/dev/null 2>&1\
+        && echo -e "  ${GREEN}✓ Added touchegg daemon autostart${NC}"\
+        || echo -e "  ${YELLOW}⚠  No se pudo modificar ${AUTOSTART_FILE}${NC}"
+    fi
+fi
+
+echo ''
+
         fi
     fi
 fi
