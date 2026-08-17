@@ -343,10 +343,10 @@ else
     fi
 
     # =====================================================================
-    # 2b️⃣ FLATPAK: ÚLTIMO RECURSO (solo si no hay paquete nativo)
+    # 2b️⃣ FLATPAK: fallback si no está en repos nativos ni especiales
     # =====================================================================
-    # PRIORIDAD: 1) Repo oficial → 2) AUR/COPR/OBS → 3) Backports → 4) Manual → 5) Flatpak
-    # Flatpak SOLO se instala si el paquete NO existe en NINGUNA fuente nativa
+    # PRIORIDAD: 1) Repo oficial → 2) AUR/COPR/OBS → 3) Flatpak
+    # Flatpak se instala solo si el paquete NO existe en repos nativos ni especiales
 
     if command -v flatpak >/dev/null 2>&1; then
         echo -e "${YELLOW}📦 Verificando Flatpak (último recurso)...${NC}"
@@ -390,13 +390,12 @@ else
                 continue
             fi
 
-            # ÚLTIMO RECURSO: solo instalar flatpak si no hay otra opcion
-            echo -e "${YELLOW}  ⚠️  $fpkg no disponible como paquete nativo${NC}"
-            echo -e "${YELLOW}    Nota: $notas${NC}"
-            echo -e "${YELLOW}    Instalando como ÚLTIMO RECURSO (flatpak)...${NC}"
+            # Fallback: no está en repos nativos ni especiales, usar Flatpak
+            echo -e "${YELLOW}  ⚠️  $fpkg no está en repos de tu distro${NC}"
+            echo -e "${YELLOW}    Instalando desde Flatpak...${NC}"
             flatpak install -y flathub "$fpkg" 2>/dev/null \
-                && echo -e "${GREEN}  ✓ $fpkg instalado (flatpak - último recurso)${NC}" \
-                || echo -e "${YELLOW}  ⚠️  No se pudo instalar $fpkg (nativo ni flatpak)${NC}"
+                && echo -e "${GREEN}  ✓ $fpkg instalado (flatpak)${NC}" \
+                || echo -e "${YELLOW}  ⚠️  No se pudo instalar $fpkg (ni nativo ni flatpak)${NC}"
         done
     else
         echo -e "${YELLOW}⚠️  flatpak no instalado. Paquetes que pueden faltar:${NC}"
