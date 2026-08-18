@@ -73,6 +73,32 @@ if not naughty.connect_signal then
     function naughty.connect_signal() end
 end
 
+-- Ensure naughty presets exist (Awesome 4.3 compat)
+if not naughty.config.presets then
+    naughty.config.presets = {}
+end
+if not naughty.config.presets.critical then
+    naughty.config.presets.critical = {
+        bg = "#ff0000",
+        fg = "#ffffff",
+        timeout = 0
+    }
+end
+if not naughty.config.presets.normal then
+    naughty.config.presets.normal = {
+        bg = "#333333",
+        fg = "#ffffff",
+        timeout = 5
+    }
+end
+if not naughty.config.presets.low then
+    naughty.config.presets.low = {
+        bg = "#333333",
+        fg = "#ffffff",
+        timeout = 3
+    }
+end
+
 -- Theme handling library
 local beautiful = require("beautiful")
 local dpi = beautiful.xresources.apply_dpi
