@@ -46,7 +46,7 @@ local function load_temp(monitor, default)
     return default
 end
 
-local function temp_to_gamma(temp)
+color_temp.temp_to_gamma = function(temp)
     local t = temp / 100
     local r, g, b
 
@@ -81,7 +81,7 @@ local function temp_to_gamma(temp)
     return r / 255, g / 255, b / 255
 end
 
-local function set_monitor_gamma(monitor, r, g, b)
+color_temp.set_monitor_gamma = function(monitor, r, g, b)
     awful.spawn({
         "xrandr", "--output", monitor, "--gamma",
         string.format("%.4f:%.4f:%.4f", r, g, b)
@@ -241,8 +241,8 @@ function color_temp.create(s)
         slider:connect_signal("property::value", function(_, value)
             local temp = math.floor(value)
             temp_value.markup = helpers.colorize_text(temp .. "K", beautiful.xcolor6)
-            local r, g, b = temp_to_gamma(temp)
-            set_monitor_gamma(monitor_name, r, g, b)
+                    local r, g, b = color_temp.temp_to_gamma(temp)
+                    color_temp.set_monitor_gamma(monitor_name, r, g, b)
             save_temp(monitor_name, temp)
         end)
 
@@ -422,8 +422,8 @@ function color_temp.apply_saved()
             if m and t then
                 local temp = tonumber(t)
                 if temp then
-                    local r, g, b = temp_to_gamma(temp)
-                    set_monitor_gamma(m, r, g, b)
+    local r, g, b = color_temp.temp_to_gamma(temp)
+    color_temp.set_monitor_gamma(m, r, g, b)
                 end
             end
         end

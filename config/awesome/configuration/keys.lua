@@ -312,7 +312,7 @@ awful.keyboard.append_global_keybindings({
     awful.key({modkey}, "v", function()
         require("ui.system_menu.volume_panel").toggle()
     end,
-    {description = "volume control menu", group = "hotkeys"}),
+    {description = "volume, brightness & color temp control menu", group = "hotkeys"}),
 
     -- Clipboard history
     awful.key({modkey, "Shift"}, "v", function()

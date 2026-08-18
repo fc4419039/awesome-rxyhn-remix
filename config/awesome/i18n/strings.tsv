@@ -74,6 +74,7 @@ sm.keyboard	Teclado	Keyboard	Teclado	Clavier	Tastatur	Tastiera	キーボード	�
 sm.language	Idioma	Language	Idioma	Langue	Sprache	Lingua	言語	언어	语言	Язык	اللغة
 sm.clean	Limpiar	Clean	Limpar	Nettoyer	Bereinigen	Pulisci	クリーンアップ	정리	清理	Очистка	تنظيف
 sm.color_temp	Temp. Color	Color Temp	Temp. Cor	Temp. Couleur	Farbtemperatur	Temp. Colore	色温度	색온도	色温	Цветовая температура	درجة حرارة اللون
+sm.control_center	Centro de Control	Control Center	Centro de Controle	Centre de contrôle	Steuerungszentrum	Centro di controllo	コントロールセンター	제어판	控制中心	Центр управления	مركز التحكم
 ct.title	Temperatura de Color	Color Temperature	Temperatura de Cor	Température de couleur	Farbtemperatur	Temperatura Colore	色温度	색온도	色温	Цветовая температура	درجة حرارة اللون
 ct.no_monitors	No hay monitores conectados	No monitors connected	Nenhum monitor conectado	Aucun moniteur connecté	Keine Monitore verbunden	Nessun monitor connesso	モニターが接続されていません	연결된 모니터 없음	无连接显示器	Мониторы не подключены	لا توجد شاشات متصلة
 ct.warm	☀ Cálido	☀ Warm	☀ Quente	☀ Chaud	☀ Warm	☀ Caldo	☀ 暖色	☀ 따뜻함	☀ 暖色	☀ Тёплый	☀ دافئ
