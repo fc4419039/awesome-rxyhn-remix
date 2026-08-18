@@ -44,7 +44,7 @@ mock.awful = {
         connect_signal = function() end,
     },
     placement = { maximize = function() end, centered = function() end, no_overlap = function() end, no_offscreen = function() end, scale = function() end, top = function() end, bottom = function() end, left = function() end, right = function() end },
-    layout = { get = function() return "floating" end, inc = function() end, suit = { floating = "floating", max = "max", tile = "tile" }, set = function() end },
+    layout = { get = function() return "floating" end, inc = function() end, suit = { floating = "floating", max = "max", tile = "tile", spiral = "spiral", fair = "fair", ["fair.horizontal"] = "fair.horizontal", corner = "corner", ["corner.horizontal"] = "corner.horizontal", ["corner.vertical"] = "corner.vertical", magnifying = "magnifying", empty = "empty", seasons = "seasons", dwindle = "dwindle" }, set = function() end },
     screen = { focused = function() return { selected_tag = { gap = 5 }, geometry = { x = 0, y = 0, width = 1920, height = 1080 }, workarea = { x = 0, y = 0, width = 1920, height = 1080 }, padding = { left = 0, right = 0, top = 0, bottom = 0 }, connect_signal = function() end, index = 1 } end, connect_signal = function() end },
     tag = { history = { restore = function() end }, viewprev = function() end, viewnext = function() end, viewtoggle = function() end, view_only = function() end, connect_signal = function() end },
     menu = { clients = function() return { hide = function() end, wibox = { visible = false } } end },
@@ -193,7 +193,7 @@ mock.naughty = {
     notify = function() end,
     action = function() return { connect_signal = function() end } end,
     destroy_all_notifications = function() end,
-    config = { preset = { normal = {}, critical = {}, low = {} } },
+    config = { preset = { normal = {}, critical = {}, low = {} }, presets = { normal = {}, critical = {}, low = {} } },
     destroy = function() end,
     connect_signal = function() end,
     disconnect_signal = function() end,
@@ -372,6 +372,7 @@ package.preload["ruled"] = function() return { client = { connect_signal = funct
 _G.dpi = mock.beautiful.xresources.apply_dpi
 _G.client = mock.client
 _G.screen = mock.screen
+_G.tag = { connect_signal = function() end, disconnect_signal = function() end, emit_signal = function() end, viewonly = function() end, selected = function() return {} end, gettags = function() return {} end, getall = function() return {} end, find = function() return {} end, byid = function() return {} end }
 _G.root = mock.root
 _G.mouse = mock.mouse
 _G.awesome = { restart = function() end, quit = function() end, connect_signal = function() end, emit_signal = function() end, load = function() end, startup = true }
