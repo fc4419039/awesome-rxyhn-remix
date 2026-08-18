@@ -7,7 +7,6 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
 fi
 
 # Set up the prompt
-
 autoload -Uz promptinit
 promptinit
 prompt adam1
@@ -65,7 +64,6 @@ fi
 [[ -f ~/.p10k.zsh ]] && source ~/.p10k.zsh
 
 # Manual configuration
-
 export PATH="$HOME/.local/bin:$PATH"
 
 # Manual aliases
@@ -75,6 +73,7 @@ alias l='lsd --group-dirs=first'
 alias lla='lsd -lha --group-dirs=first'
 alias ls='lsd --group-dirs=first'
 alias cat='bat'
+alias check='bash ~/check.sh'
 
 # Aliases recuperados de respaldos (~/.zshrc.bak*)
 alias sr='source ~/.zshrc'
@@ -88,11 +87,13 @@ alias rm='rm -vr'
 alias wifi='nmtui-connect'
 alias grub-update='sudo grub-mkconfig -o /boot/grub/grub.cfg'
 alias psg='ps aux | grep -v grep | grep -i -e VSZ -e'
+
 # Archivos
 alias mtar='tar -zcvf'   # mtar <archivo> <lista>
 alias utar='tar -zxvf'   # utar <archivo>
 alias z='zip -r'         # z <archivo> <lista>
 alias uz='unzip'         # uz <archivo> -d <dir>
+
 # Paquetes con fzf (solo Arch)
 if command -v pacman &>/dev/null; then
     alias pacs="pacman -Slq | fzf -m --preview 'cat <(pacman -Si {1}) <(pacman -Fl {1} | awk \"{print \$2}\")' | xargs -ro sudo pacman -S"
@@ -102,6 +103,7 @@ fi
 if command -v yay &>/dev/null; then
     alias yays="yay -Slq | fzf -m --preview 'cat <(yay -Si {1}) <(yay -Fl {1} | awk \"{print \$2}\")' | xargs -ro yay -S"
 fi
+
 # Funciones
 mcd() { mkdir -p "$1" && cd "$1"; }
 rc() { g++ "$1" -o run && ./run; }
@@ -152,7 +154,6 @@ function man() {
 
 # fzf improvement
 function fzf-lovely(){
-
 	if [ "$1" = "h" ]; then
 		fzf -m --reverse --preview-window down:20 --preview '[[ $(file --mime {}) =~ binary ]] &&
  	                echo {} is a binary file ||
@@ -161,7 +162,6 @@ function fzf-lovely(){
 	                  coderay {} ||
 	                  rougify {} ||
 	                  cat {}) 2> /dev/null | head -500'
-
 	else
 	        fzf -m --preview '[[ $(file --mime {}) =~ binary ]] &&
 	                         echo {} is a binary file ||
@@ -177,9 +177,12 @@ function rmk(){
 	scrub -p dod $1
 	shred -zun 10 -v $1
 }
+
 eval "$(zoxide init zsh --cmd cd)"
+
 # Finalize Powerlevel10k instant prompt. Should stay at the bottom of ~/.zshrc.
 (( ! ${+functions[p10k-instant-prompt-finalize]} )) || p10k-instant-prompt-finalize
+
 # Powerlevel10k again (needed at bottom for instant prompt)
 if [ -f /usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme ]; then
     source /usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme
@@ -191,6 +194,19 @@ fi
 alias opencode='~/.opencode/bin/opencode'
 alias david='$HOME/mscdown/./ejecutar.sh'
 
+# opencode + tmux: persistencia
+alias oct='tmux new-session -A -s opencode "opencode"'
+alias octa='tmux attach-session -t opencode'
+alias ocr='opencode -c'
+alias ocs='opencode session list'
+
+# export GH_TOKEN="ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"  # Coloca tu token aquí
+
+# KOF 2002 Magic Plus 2 (RetroArch + FBNeo)
+alias kof='setsid nohup retroarch -L ~/.config/retroarch/cores/fbneo_libretro.so ~/.config/retroarch/roms/kf2k2mp2.zip >/dev/null 2>&1 &!; exit'
+
+# Touchegg fix
+alias tgfix='~/.config/awesome/scripts/touchegg-fix.sh'
 
 # opencode
 export PATH="$HOME/.opencode/bin:$PATH"
