@@ -94,6 +94,9 @@ local function run_once(cmd)
     awful.spawn(string.format("pgrep -x %s > /dev/null 2>&1 || %s", findme, cmd))
 end
 
+-- Touchegg: matar solo el daemon viejo y lanzar uno nuevo ANTES del autostart
+awful.spawn.with_shell("'touchegg'")
+
 -- Autostart de servicios base
 awful.spawn(gfs.get_configuration_dir() .. "configuration/autostart")
 -- Desbloquear el keyring al arrancar (evita que Spotify/Opera pidan contraseña)
@@ -128,10 +131,6 @@ end
 run_once("picom --config " .. picom_cfg)
 -- Leer layout guardado de localectl (persiste entre sesiones)
 awful.spawn.with_shell('layout=$(localectl status 2>/dev/null | grep "X11 Layout:" | awk \'{print $NF}\'); [ -n "$layout" ] && setxkbmap "$layout" || setxkbmap latam')
--- Matar todos los touchegg viejos antes de iniciar uno nuevo
--- (evita acumulación de procesos que atrapan eventos del mouse)
--- Nota: solo el daemon; el client lo lanza autostart y no debe morirse
-awful.spawn.with_shell("pkill -u $(whoami) -f 'touchegg --daemon' 2>/dev/null; sleep 0.2; pgrep -u $(whoami) -f 'touchegg --daemon' > /dev/null 2>&1 || nohup touchegg > /dev/null 2>&1 &")
 
 -- Import Configuration, Signals and UI
 -- NOTA: Estos deben cargarse después de definir las variables globales y el tema
@@ -261,9 +260,4 @@ end)
 
 
 
--- Touchegg watchdog: restart daemon if it dies (fixes 3-finger gestures breaking)
--- Se ejecuta una vez al iniciar/recargar awesome
-awful.spawn.easy_async_with_shell(
-    "pgrep -u $(whoami) -f 'touchegg --daemon' > /dev/null 2>&1 || nohup touchegg > /dev/null 2>&1 &",
-    function() end
-)
+
