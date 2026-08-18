@@ -262,14 +262,8 @@ end)
 
 
 -- Touchegg watchdog: restart daemon if it dies (fixes 3-finger gestures breaking)
-gears.timer({
-    timeout = 10,
-    autostart = true,
-    call_now = true,
-    callback = function()
-        awful.spawn.easy_async_with_shell(
-            "pgrep -u $(whoami) -f 'touchegg --daemon' > /dev/null 2>&1 || nohup touchegg > /dev/null 2>&1 &",
-            function() end
-        )
-    end
-})
+-- Se ejecuta una vez al iniciar/recargar awesome
+awful.spawn.easy_async_with_shell(
+    "pgrep -u $(whoami) -f 'touchegg --daemon' > /dev/null 2>&1 || nohup touchegg > /dev/null 2>&1 &",
+    function() end
+)
