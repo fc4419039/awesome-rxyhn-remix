@@ -41,6 +41,7 @@ qt5-image-formats-plugins      # Qt5 image plugins
 qt6-image-formats-plugins      # Qt6 image plugins
 playerctl                      # MPRIS control
 curl                           # HTTP client
+wget                           # HTTP downloader (used by install.sh)
 ffmpeg                         # Video/audio processing
 gpick                          # Color picker
 imagemagick                    # Image processing (convert)

@@ -22,6 +22,8 @@ ttf-weather-icons              # Weather icons [AUR]
 acpi                           # Battery info
 acpid                          # ACPI daemon
 wireless_tools                 # iwconfig, etc.
+wget                           # HTTP downloader (used by install.sh)
+curl                           # HTTP client
 jq                             # JSON processor
 inotify-tools                  # inotifywait
 polkit-gnome                   # Polkit agent GUI

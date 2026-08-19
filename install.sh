@@ -836,13 +836,29 @@ if [ "$NEED_NERD_FONTS" = true ]; then
     echo -e "${YELLOW}  Nerd Fonts no detectadas. Instalando JetBrains Mono Nerd Font...${NC}"
     mkdir -p "$NERD_FONTS_DIR"
     cd "$NERD_FONTS_DIR"
-    if wget -q "https://github.com/ryanoasis/nerd-fonts/releases/latest/download/JetBrainsMono.zip" 2>/dev/null; then
-        unzip -o JetBrainsMono.zip >/dev/null 2>&1
-        rm -f JetBrainsMono.zip
-        fc-cache -fv "$NERD_FONTS_DIR" >/dev/null 2>&1
-        echo -e "${GREEN}  ✓ JetBrains Mono Nerd Font instalada${NC}"
+    DOWNLOADER=""
+    if command -v wget &>/dev/null; then
+        DOWNLOADER="wget -q"
+    elif command -v curl &>/dev/null; then
+        DOWNLOADER="curl -fsSL -o JetBrainsMono.zip"
+    fi
+    if [ -n "$DOWNLOADER" ]; then
+        if echo "$DOWNLOADER" | grep -q "curl"; then
+            $DOWNLOADER "https://github.com/ryanoasis/nerd-fonts/releases/latest/download/JetBrainsMono.zip" 2>/dev/null
+        else
+            $DOWNLOADER "https://github.com/ryanoasis/nerd-fonts/releases/latest/download/JetBrainsMono.zip" 2>/dev/null
+        fi
+        if [ -f "JetBrainsMono.zip" ] && [ -s "JetBrainsMono.zip" ]; then
+            unzip -o JetBrainsMono.zip >/dev/null 2>&1
+            rm -f JetBrainsMono.zip
+            fc-cache -fv "$NERD_FONTS_DIR" >/dev/null 2>&1
+            echo -e "${GREEN}  ✓ JetBrains Mono Nerd Font instalada${NC}"
+        else
+            rm -f JetBrainsMono.zip 2>/dev/null
+            echo -e "${YELLOW}  ⚠️  No se pudo descargar Nerd Font (¿sin red?). Instálala manualmente desde https://github.com/ryanoasis/nerd-fonts${NC}"
+        fi
     else
-        echo -e "${YELLOW}  ⚠️  No se pudo descargar Nerd Font (¿sin red?). Instálala manualmente desde https://github.com/ryanoasis/nerd-fonts${NC}"
+        echo -e "${YELLOW}  ⚠️  Ni wget ni curl disponibles. Instala wget o curl y re-ejecuta.${NC}"
     fi
     cd "$SCRIPT_DIR"
 else
