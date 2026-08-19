@@ -44,7 +44,40 @@ if [ "$IS_VM" -eq 0 ]; then
     exit 0
 fi
 
-echo -e "${YELLOW}🔍 VM detected ($VM_TYPE), configuring SDDM for software rendering...${NC}"
+# Check 3D acceleration in VM using glxinfo
+HAS_3D=0
+if command -v glxinfo >/dev/null 2>&1; then
+    GL_RENDERER=$(glxinfo 2>/dev/null | grep "OpenGL renderer" | cut -d: -f2 | xargs)
+    if [ -n "$GL_RENDERER" ]; then
+        case "$GL_RENDERER" in
+            *llvmpipe*|*swrast*|*softpipe*|*Software*|*Mesa*Offscreen*)
+                HAS_3D=0
+                echo -e "${YELLOW}🔍 VM: renderer software detectado ($GL_RENDERER), sin aceleracion 3D${NC}"
+                ;;
+            *)
+                HAS_3D=1
+                echo -e "${GREEN}✓ VM: renderer hardware detectado ($GL_RENDERER), con aceleracion 3D${NC}"
+                ;;
+        esac
+    else
+        echo -e "${YELLOW}🔍 VM: glxinfo no reporto renderer, asumiendo sin aceleracion 3D${NC}"
+    fi
+else
+    echo -e "${YELLOW}🔍 VM: glxinfo no disponible, asumiendo sin aceleracion 3D${NC}"
+fi
+
+# VM with 3D acceleration: no need to force software rendering
+if [ "$HAS_3D" -eq 1 ]; then
+    echo -e "${GREEN}✓ VM con aceleracion 3D, SDDM usara GPU normal (sin cambios)${NC}"
+    # Create flag file for autostart VM detection
+    VM_FLAG="$HOME/.cache/awesome/vm-detected"
+    mkdir -p "$(dirname "$VM_FLAG")"
+    touch "$VM_FLAG"
+    echo -e "${GREEN}✓ Created VM flag: $VM_FLAG${NC}"
+    exit 0
+fi
+
+echo -e "${YELLOW}🔍 VM detected ($VM_TYPE) sin aceleracion 3D, configurando SDDM for software rendering...${NC}"
 
 # Create flag file for autostart VM detection
 VM_FLAG="$HOME/.cache/awesome/vm-detected"
@@ -57,7 +90,7 @@ XSETUP="/usr/share/sddm/scripts/Xsetup"
 sudo bash -c "cat > '$XSETUP'" << 'XSETUPEOF'
 #!/bin/sh
 # Xsetup - run as root before the login dialog appears
-# Force software rendering in VMs (safer, no 3D required)
+# Force software rendering in VMs without 3D acceleration (safer, no GPU required)
 
 # Force software rendering for Qt Quick
 export QT_QUICK_BACKEND=software

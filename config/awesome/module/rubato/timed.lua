@@ -1,8 +1,43 @@
-if not RUBATO_DIR then RUBATO_DIR = (...):match("(.-)[^%.]+$") end
+	if not RUBATO_DIR then RUBATO_DIR = (...):match("(.-)[^%.]+$") end
 if not RUBATO_MANAGER then RUBATO_MANAGER = require(RUBATO_DIR.."manager") end
 
 local subscribable = require(RUBATO_DIR.."subscribable")
-local glib = require("lgi").GLib
+
+-- Compatible lgi loader for all Lua versions (5.1/5.2/5.3/5.4/LuaJIT)
+local ok, lgi = pcall(require, "lgi")
+local glib
+if ok and lgi then
+	glib = lgi.GLib
+else
+	-- Fallback: create minimal glib mock for environments without lgi
+	glib = {
+		PRIORITY_DEFAULT = 0,
+		get_monotonic_time = function()
+			-- Use Lua's clock as fallback
+			return os.clock() * 1000000
+		end,
+		timeout_add = function(_, interval_ms, callback)
+			-- Create a simple timer using gears.timer if available
+			local timer = { callback = callback, interval = interval_ms }
+			function timer:start()
+				if self._timer then return end
+				self._timer = (require("gears.timer") or {}).start_new
+				if self._timer then
+					self._timer(self.interval / 1000, function()
+						return self.callback()
+					end)
+				end
+			end
+			function timer:stop()
+				if self._timer and self._timer.stop then
+					self._timer:stop()
+				end
+				self._timer = nil
+			end
+			return timer
+		end,
+	}
+end
 
 --- Get the slope (this took me forever to find).
 -- i is intro duration
@@ -234,7 +269,7 @@ local function timed(args)
 	local function set(value)
 
 		--if it's instant just do it lol, no need to go through all this
-		if obj.is_instant then obj:fire(preproceesvalue, obj.duration, obj.pos - value); return end
+		if obj.is_instant then obj:fire(preprocess_pos(obj), obj.duration, obj.pos - value); return end
 
 		--disallow setting it twice (because it makes it go wonky sometimes)
 		if not obj.rapid_set and obj._props.target == value then return end

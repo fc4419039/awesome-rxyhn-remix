@@ -54,6 +54,30 @@ if [ "$IS_VM" -eq 1 ]; then
     touch "$VM_FLAG"
 fi
 
+# Check 3D acceleration in VM using glxinfo
+HAS_3D=0
+if [ "$IS_VM" -eq 1 ] && command -v glxinfo >/dev/null 2>&1; then
+    # Get OpenGL renderer info
+    GL_RENDERER=$(glxinfo 2>/dev/null | grep "OpenGL renderer" | cut -d: -f2 | xargs)
+    if [ -n "$GL_RENDERER" ]; then
+        # Check if renderer is software (no 3D acceleration)
+        case "$GL_RENDERER" in
+            *llvmpipe*|*swrast*|*softpipe*|*Software*|*Mesa*Offscreen*)
+                HAS_3D=0
+                echo "[autostart] VM: renderer software detectado ($GL_RENDERER), sin aceleracion 3D" >&2
+                ;;
+            *)
+                HAS_3D=1
+                echo "[autostart] VM: renderer hardware detectado ($GL_RENDERER), con aceleracion 3D" >&2
+                ;;
+        esac
+    else
+        echo "[autostart] VM: glxinfo no reporto renderer, asumiendo sin aceleracion 3D" >&2
+    fi
+elif [ "$IS_VM" -eq 1 ]; then
+    echo "[autostart] VM: glxinfo no disponible, asumiendo sin aceleracion 3D" >&2
+fi
+
 # 1. Compositor (picom) - con fallback si falla
 PICOM_CONF="$HOME/.config/awesome/theme/picom.conf"
 IS_BLUR_MODE=0
@@ -67,11 +91,12 @@ elif [ -f "$HOME/.cache/awesome/transparency-mode" ] || [ -f /tmp/awesome-transp
     PICOM_CONF="$HOME/.config/awesome/theme/picom-transparency.conf"
 fi
 
-# En VM: usar configs con xrender (sin GLX/3D)
+# En VM sin aceleracion 3D: usar configs con xrender (sin GLX)
+# En VM con aceleracion 3D: usar configs normales (GLX)
 PICOM_BACKEND=""
-if [ "$IS_VM" -eq 1 ]; then
+if [ "$IS_VM" -eq 1 ] && [ "$HAS_3D" -eq 0 ]; then
     PICOM_BACKEND="--backend xrender"
-    echo "[autostart] VM detectada, usando picom backend xrender" >&2
+    echo "[autostart] VM sin aceleracion 3D, usando picom backend xrender" >&2
 
     if [ "$IS_BLUR_MODE" -eq 1 ]; then
         # Blur mode: usar config con box blur (compatible con xrender)
@@ -100,6 +125,8 @@ if [ "$IS_VM" -eq 1 ]; then
             echo "[autostart] VM: picom-vm.conf no encontrado, usando picom.conf" >&2
         fi
     fi
+elif [ "$IS_VM" -eq 1 ] && [ "$HAS_3D" -eq 1 ]; then
+    echo "[autostart] VM con aceleracion 3D, usando picom backend glx (config normal)" >&2
 fi
 
 if command -v picom >/dev/null 2>&1; then

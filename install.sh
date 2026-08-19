@@ -1173,6 +1173,14 @@ EOF"
     sudo systemctl enable sddm.service 2>/dev/null \
         && echo -e "${GREEN}✓ Servicio sddm habilitado${NC}" \
         || echo -e "${YELLOW}⚠️  No se pudo habilitar el servicio sddm (¿sin systemd o sin sudo?). Actívalo manualmente después.${NC}"
+
+    # Configurar SDDM para VMs sin aceleracion 3D (software rendering)
+    if [ -f "$SCRIPT_DIR/scripts/setup-sddm-vm.sh" ]; then
+        echo -e "${YELLOW}🔍 Verificando si se necesita software rendering para SDDM...${NC}"
+        bash "$SCRIPT_DIR/scripts/setup-sddm-vm.sh" 2>/dev/null \
+            && echo -e "${GREEN}✓ SDDM VM config aplicada${NC}" \
+            || echo -e "${YELLOW}⚠️  setup-sddm-vm.sh no se pudo ejecutar (puede no ser VM o sin glxinfo)${NC}"
+    fi
 else
     echo -e "${YELLOW}⚠️  SDDM no está instalado. Saltando configuración.${NC}"
 fi
