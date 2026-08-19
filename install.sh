@@ -40,13 +40,195 @@ if [ "$HOME_AVAIL" -lt 2 ]; then
     echo -e "${YELLOW}⚠️  Poco espacio en $HOME (${HOME_AVAIL}GB libres). Mínimo recomendado: 2GB.${NC}"
 fi
 
-# Verificar si estamos en VM (para advertir sobre GPU/Compositor)
+echo -e "${GREEN}✓ Pre-flight checks completados${NC}"
+echo ""
+
+# =====================================================================
+# 0️⃣b DETECTAR VM E INSTALAR HERRAMIENTAS DE INVITADO
+# =====================================================================
+echo -e "${CYAN}🔍 Verificando entorno virtualizado...${NC}"
+
+VM_TYPE=""
 if systemd-detect-virt -q 2>/dev/null; then
-    VIRT=$(systemd-detect-virt)
-    echo -e "${YELLOW}⚠️  Entorno virtualizado detectado ($VIRT). Picom/blur pueden no funcionar.${NC}"
+    VM_TYPE=$(systemd-detect-virt 2>/dev/null)
 fi
 
-echo -e "${GREEN}✓ Pre-flight checks completados${NC}"
+# Detección adicional por si systemd-detect-virt no está disponible
+if [ -z "$VM_TYPE" ]; then
+    if grep -qi "virtualbox\|vbox" /sys/class/dmi/id/sys_vendor 2>/dev/null || \
+       grep -qi "virtualbox\|vbox" /sys/class/dmi/id/board_name 2>/dev/null; then
+        VM_TYPE="oracle"
+    elif grep -qi "vmware" /sys/class/dmi/id/sys_vendor 2>/dev/null; then
+        VM_TYPE="vmware"
+    elif grep -qi "qemu\|kvm\|red hat" /sys/class/dmi/id/sys_vendor 2>/dev/null; then
+        VM_TYPE="kvm"
+    elif grep -qi "microsoft" /sys/class/dmi/id/sys_vendor 2>/dev/null && \
+         grep -qi "virtual\|hyper-v" /sys/class/dmi/id/board_name 2>/dev/null; then
+        VM_TYPE="microsoft"
+    fi
+fi
+
+IS_VM=0
+if [ -n "$VM_TYPE" ] && [ "$VM_TYPE" != "none" ]; then
+    IS_VM=1
+    echo -e "${YELLOW}⚠️  Entorno virtualizado detectado: ${VM_TYPE}${NC}"
+
+    # Instalar herramientas de invitado según el hypervisor
+    install_vm_tools() {
+        local pkg_check="$1"
+        local pkg_install="$2"
+
+        case "$VM_TYPE" in
+            kvm|qemu|oracle|vmware|microsoft|xen|parallels)
+                echo -e "${YELLOW}📦 Instalando herramientas de invitado para ${VM_TYPE}...${NC}"
+
+                # --- QEMU/KVM: spice-vdagent + qemu-guest-agent ---
+                if echo "$VM_TYPE" | grep -qi "kvm\|qemu"; then
+                    for agent in spice-vdagent qemu-guest-agent; do
+                        if eval "$pkg_check $agent" >/dev/null 2>&1; then
+                            echo -e "${GREEN}  ✓ $agent ya instalado${NC}"
+                        else
+                            echo -e "${YELLOW}  📦 Instalando $agent...${NC}"
+                            eval "$pkg_install $agent" 2>/dev/null \
+                                && echo -e "${GREEN}  ✓ $agent instalado${NC}" \
+                                || echo -e "${YELLOW}  ⚠️  No se pudo instalar $agent (puede no existir en todos los repos)${NC}"
+                        fi
+                    done
+                    # Mesa-utils para verificar OpenGL
+                    if eval "$pkg_check mesa-utils" >/dev/null 2>&1; then
+                        echo -e "${GREEN}  ✓ mesa-utils ya instalado${NC}"
+                    else
+                        eval "$pkg_install mesa-utils" 2>/dev/null \
+                            && echo -e "${GREEN}  ✓ mesa-utils instalado${NC}" || true
+                    fi
+                fi
+
+                # --- VirtualBox: virtualbox-guest-utils ---
+                if echo "$VM_TYPE" | grep -qi "oracle\|virtualbox\|vbox"; then
+                    if eval "$pkg_check virtualbox-guest-utils" >/dev/null 2>&1; then
+                        echo -e "${GREEN}  ✓ virtualbox-guest-utils ya instalado${NC}"
+                    else
+                        echo -e "${YELLOW}  📦 Instalando virtualbox-guest-utils...${NC}"
+                        eval "$pkg_install virtualbox-guest-utils" 2>/dev/null \
+                            && echo -e "${GREEN}  ✓ virtualbox-guest-utils instalado${NC}" \
+                            || echo -e "${YELLOW}  ⚠️  No se pudo instalar virtualbox-guest-utils${NC}"
+                    fi
+                fi
+
+                # --- VMware: open-vm-tools ---
+                if echo "$VM_TYPE" | grep -qi "vmware"; then
+                    if eval "$pkg_check open-vm-tools" >/dev/null 2>&1; then
+                        echo -e "${GREEN}  ✓ open-vm-tools ya instalado${NC}"
+                    else
+                        echo -e "${YELLOW}  📦 Instalando open-vm-tools...${NC}"
+                        eval "$pkg_install open-vm-tools" 2>/dev/null \
+                            && echo -e "${GREEN}  ✓ open-vm-tools instalado${NC}" \
+                            || echo -e "${YELLOW}  ⚠️  No se pudo instalar open-vm-tools${NC}"
+                    fi
+                fi
+
+                # --- Hyper-V: hyperv-daemons / linux-tools ---
+                if echo "$VM_TYPE" | grep -qi "microsoft"; then
+                    for hyperv_pkg in hyperv-daemons linux-tools; do
+                        if eval "$pkg_check $hyperv_pkg" >/dev/null 2>&1; then
+                            echo -e "${GREEN}  ✓ $hyperv_pkg ya instalado${NC}"
+                        else
+                            eval "$pkg_install $hyperv_pkg" 2>/dev/null \
+                                && echo -e "${GREEN}  ✓ $hyperv_pkg instalado${NC}" || true
+                        fi
+                    done
+                fi
+
+                # --- Xen/XenServer ---
+                if echo "$VM_TYPE" | grep -qi "xen"; then
+                    if eval "$pkg_check xen-guest-tools" >/dev/null 2>&1; then
+                        echo -e "${GREEN}  ✓ xen-guest-tools ya instalado${NC}"
+                    else
+                        eval "$pkg_install xen-guest-tools" 2>/dev/null \
+                            && echo -e "${GREEN}  ✓ xen-guest-tools instalado${NC}" || true
+                    fi
+                fi
+
+                # --- Parallels ---
+                if echo "$VM_TYPE" | grep -qi "parallels"; then
+                    if eval "$pkg_check parallels-tools" >/dev/null 2>&1; then
+                        echo -e "${GREEN}  ✓ parallels-tools ya instalado${NC}"
+                    else
+                        eval "$pkg_install parallels-tools" 2>/dev/null \
+                            && echo -e "${GREEN}  ✓ parallels-tools instalado${NC}" \
+                            || echo -e "${YELLOW}  ⚠️  Instala Parallels Tools manualmente desde el menú de Parallels${NC}"
+                    fi
+                fi
+                ;;
+        esac
+    }
+
+    # Ejecutar instalación de herramientas de invitado
+    case "$DISTRO_ID $DISTRO_LIKE" in
+        *arch*|*manjaro*|*endeavouros*|*garuda*|*artix*)
+            install_vm_tools "pacman -Qi" "sudo pacman -S --needed --noconfirm"
+            ;;
+        *ubuntu*|*debian*|*linuxmint*|*pop*|*elementary*|*zorin*)
+            install_vm_tools "dpkg -s" "sudo apt-get install -y"
+            ;;
+        *fedora*|*rhel*|*centos*|*rocky*|*almalinux*|*nobara*)
+            install_vm_tools "rpm -q" "sudo dnf install -y"
+            ;;
+        *opensuse*|*suse*|*sled*)
+            install_vm_tools "rpm -q" "sudo zypper install -y"
+            ;;
+        *)
+            install_vm_tools "echo 'no-pkg-check'" "echo 'no-pkg-install'"
+            ;;
+    esac
+
+    # --- Habilitar servicios de invitado ---
+    echo -e "${YELLOW}🔄 Habilitando servicios de VM...${NC}"
+
+    enable_vm_service() {
+        local svc="$1"
+        if systemctl list-unit-files | grep -q "^${svc}\.service"; then
+            if systemctl is-enabled "$svc" >/dev/null 2>&1; then
+                echo -e "${GREEN}  ✓ $svc ya habilitado${NC}"
+            else
+                sudo systemctl enable --now "$svc" 2>/dev/null \
+                    && echo -e "${GREEN}  ✓ $svc habilitado${NC}" \
+                    || echo -e "${YELLOW}  ⚠️  No se pudo habilitar $svc${NC}"
+            fi
+        fi
+    }
+
+    # Servicios comunes para KVM/QEMU
+    if echo "$VM_TYPE" | grep -qi "kvm\|qemu"; then
+        enable_vm_service "qemu-guest-agent"
+        enable_vm_service "spice-vdagentd"
+        enable_vm_service "spice-vdagent"
+    fi
+
+    # Servicios para VirtualBox
+    if echo "$VM_TYPE" | grep -qi "oracle\|virtualbox\|vbox"; then
+        enable_vm_service "vboxadd"
+        enable_vm_service "vboxadd-service"
+        enable_vm_service "virtualbox-guest-utils"
+    fi
+
+    # Servicios para VMware
+    if echo "$VM_TYPE" | grep -qi "vmware"; then
+        enable_vm_service "vmtoolsd"
+        enable_vm_service "vgauthd"
+    fi
+
+    # Servicios para Hyper-V
+    if echo "$VM_TYPE" | grep -qi "microsoft"; then
+        enable_vm_service "hv_kvp_daemon"
+        enable_vm_service "hv_vss_daemon"
+    fi
+
+    echo -e "${GREEN}✓ Herramientas de VM configuradas${NC}"
+else
+    echo -e "${GREEN}✓ Entorno físico detectado (sin herramientas de VM)${NC}"
+fi
+
 echo ""
 
 # =====================================================================
