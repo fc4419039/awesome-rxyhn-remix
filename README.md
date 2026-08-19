@@ -550,6 +550,58 @@ sudo cp -r sddm/sddm-astronaut-theme /usr/share/sddm/themes/
 </details>
 
 <details>
+<summary><strong>🖥️ Virtual Machine (QEMU/KVM, VirtualBox, VMware) — 3D Acceleration & Picom</strong></summary>
+
+<br>
+
+**Auto-detection:** The autostart script detects if you're running in a VM and automatically switches picom to `xrender` backend (no GPU required).
+
+**If you have 3D acceleration enabled:**
+- Picom uses `glx` backend (default) — full blur, transparency, shadows
+- QEMU: requires `virtio-gpu` with `gl=on` in XML
+- VirtualBox: requires Guest Additions with 3D enabled
+- VMware: requires `open-vm-tools` with 3D
+
+**If you DON'T have 3D acceleration (most VMs):**
+- Picom auto-switches to `xrender` backend
+- Blur effects are disabled (software rendering can't handle them)
+- Shadows and transparency still work
+- Dashboard and widgets function normally
+
+**Manual override (if auto-detection fails):**
+```bash
+# Force xrender in VM without 3D
+pkill picom
+picom -b --backend xrender --config ~/.config/awesome/theme/picom.conf
+
+# Force glx on host with GPU
+pkill picom
+picom -b --backend glx --config ~/.config/awesome/theme/picom.conf
+```
+
+**Enable 3D on existing QEMU VM (without losing data):**
+```bash
+# Stop VM
+virsh destroy <VM_NAME>
+
+# Edit XML
+virsh edit <VM_NAME>
+
+# Change video model to virtio-gpu with GL:
+# <video>
+#   <model type='virtio' heads='1' primary='yes'/>
+# </video>
+# <graphics type='spice' gl='on'>
+
+# Start VM
+virsh start <VM_NAME>
+```
+
+> **Note:** `virtio-gpu` with 3D requires QEMU compiled with `--enable-virtio-gpu`. Check with: `qemu-system-x86_64 -device 'help' | grep virtio-gpu`
+
+</details>
+
+<details>
 <summary><strong>🎵 No sound / MPD won't start</strong></summary>
 
 <br>
