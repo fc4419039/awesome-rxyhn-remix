@@ -40,19 +40,37 @@ elif [ -f "$HOME/.cache/awesome/transparency-mode" ] || [ -f /tmp/awesome-transp
     PICOM_CONF="$HOME/.config/awesome/theme/picom-transparency.conf"
 fi
 
-# En VM: usar configs compatibles con xrender (sin GLX)
+# En VM: usar configs con xrender (sin GLX/3D)
 PICOM_BACKEND=""
 if [ "$IS_VM" -eq 1 ]; then
     PICOM_BACKEND="--backend xrender"
     echo "[autostart] VM detectada, usando picom backend xrender" >&2
-    # VM blur: usar config con box blur (compatible con xrender)
+
     if [ "$IS_BLUR_MODE" -eq 1 ]; then
+        # Blur mode: usar config con box blur (compatible con xrender)
         if [ -f "$HOME/.config/awesome/theme/picom-blur-vm.conf" ]; then
             PICOM_CONF="$HOME/.config/awesome/theme/picom-blur-vm.conf"
-            echo "[autostart] VM blur mode: usando picom-blur-vm.conf (box blur + xrender)" >&2
+            echo "[autostart] VM blur: picom-blur-vm.conf (box blur + xrender)" >&2
         else
-            echo "[autostart] VM blur mode: picom-blur-vm.conf no encontrado, blur deshabilitado" >&2
-            PICOM_CONF="$HOME/.config/awesome/theme/picom.conf"
+            echo "[autostart] VM blur: picom-blur-vm.conf no encontrado, sin blur" >&2
+            PICOM_CONF="$HOME/.config/awesome/theme/picom-vm.conf"
+        fi
+    elif [ "$IS_TRANSPARENCY_MODE" -eq 1 ]; then
+        # Transparency mode: usar config con xrender
+        if [ -f "$HOME/.config/awesome/theme/picom-transparency-vm.conf" ]; then
+            PICOM_CONF="$HOME/.config/awesome/theme/picom-transparency-vm.conf"
+            echo "[autostart] VM transparency: picom-transparency-vm.conf (xrender)" >&2
+        else
+            PICOM_CONF="$HOME/.config/awesome/theme/picom-vm.conf"
+            echo "[autostart] VM transparency: fallback a picom-vm.conf" >&2
+        fi
+    else
+        # Normal mode: usar config con xrender
+        if [ -f "$HOME/.config/awesome/theme/picom-vm.conf" ]; then
+            PICOM_CONF="$HOME/.config/awesome/theme/picom-vm.conf"
+            echo "[autostart] VM normal: picom-vm.conf (xrender)" >&2
+        else
+            echo "[autostart] VM: picom-vm.conf no encontrado, usando picom.conf" >&2
         fi
     fi
 fi
