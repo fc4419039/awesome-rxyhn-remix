@@ -98,7 +98,7 @@ if not RUBATO_TIMEOUTS then RUBATO_TIMEOUTS = {{}, {}} end
 local function create_timeout(rate, override_dt)
 	local time_last = glib.get_monotonic_time()
 	local initial_dt = 1 / rate
-	return glib.timeout_add(glib.PRIORITY_DEFAULT, initial_dt * 1000, function()
+	return glib.timeout_add(glib.PRIORITY_DEFAULT, math.floor(initial_dt * 1000), function()
 
 	local dt = initial_dt
 	if not override_dt then
