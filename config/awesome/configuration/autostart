@@ -11,6 +11,22 @@ safe_start() {
     fi
 }
 
+# Detectar si estamos en VM (para ajustar compositor)
+IS_VM=0
+if command -v systemd-detect-virt >/dev/null 2>&1; then
+    VM_TYPE=$(systemd-detect-virt 2>/dev/null)
+    if [ -n "$VM_TYPE" ] && [ "$VM_TYPE" != "none" ]; then
+        IS_VM=1
+    fi
+fi
+# Fallback: verificar DMI si systemd-detect-virt no disponible
+if [ "$IS_VM" -eq 0 ]; then
+    if grep -qi "virtualbox\|vbox\|vmware\|qemu\|kvm\|microsoft\|hyper" /sys/class/dmi/id/sys_vendor 2>/dev/null || \
+       grep -qi "virtual\|kvm\|vmware\|virtualbox" /sys/class/dmi/id/board_name 2>/dev/null; then
+        IS_VM=1
+    fi
+fi
+
 # 1. Compositor (picom) - con fallback si falla
 PICOM_CONF="$HOME/.config/awesome/theme/picom.conf"
 if [ -f "$HOME/.cache/awesome/blur-mode" ]; then
@@ -23,11 +39,18 @@ elif [ -f /tmp/awesome-transparency-mode ]; then
     PICOM_CONF="$HOME/.config/awesome/theme/picom-transparency.conf"
 fi
 
+# En VM: usar xrender en vez de glx (no hay aceleración 3D)
+PICOM_BACKEND=""
+if [ "$IS_VM" -eq 1 ]; then
+    PICOM_BACKEND="--backend xrender"
+    echo "[autostart] VM detectada, usando picom backend xrender" >&2
+fi
+
 if command -v picom >/dev/null 2>&1; then
     if ! pgrep -f "picom.*--config" >/dev/null 2>&1; then
-        picom -b --dbus --config "$PICOM_CONF" 2>/dev/null || \
-            echo "[autostart] picom falló (¿VM sin GPU?); probando sin --dbus..." >&2 && \
-            picom -b --config "$PICOM_CONF" 2>/dev/null || \
+        picom -b --dbus $PICOM_BACKEND --config "$PICOM_CONF" 2>/dev/null || \
+            echo "[autostart] picom falló con --dbus, probando sin..." >&2 && \
+            picom -b $PICOM_BACKEND --config "$PICOM_CONF" 2>/dev/null || \
             echo "[autostart] picom no disponible, continuando sin compositor" >&2
     fi
 else
