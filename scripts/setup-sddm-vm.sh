@@ -33,34 +33,17 @@ echo -e "${YELLOW}🔍 VM detected ($VM_TYPE), configuring SDDM for software ren
 
 # Create Xsetup script to force software rendering for Qt Quick
 XSETUP="/usr/share/sddm/scripts/Xsetup"
-sudo bash -c "cat > '$XSETUP'" << 'EOF'
+sudo bash -c "cat > '$XSETUP'" << 'XSETUPEOF'
 #!/bin/sh
 # Xsetup - run as root before the login dialog appears
-# Force software rendering for Qt Quick in VMs without 3D acceleration
+# Force software rendering in VMs (safer, no 3D required)
 
-# Check if 3D acceleration is available
-HAS_3D=0
-if command -v glxinfo >/dev/null 2>&1; then
-    if glxinfo 2>/dev/null | grep -q "OpenGL renderer.*Mesa\|OpenGL renderer.*VMware\|OpenGL renderer.*QXL\|OpenGL renderer.*Virgil"; then
-        HAS_3D=1
-    fi
-fi
+# Force software rendering for Qt Quick
+export QT_QUICK_BACKEND=software
+export QSG_RHI=software
+export QSG_RENDER_LOOP=basic
 
-# Also check via lspci for virtio-gpu with 3D
-if [ "$HAS_3D" -eq 0 ]; then
-    if lspci 2>/dev/null | grep -qi "virtio.*gpu\|3d\|accel"; then
-        HAS_3D=1
-    fi
-fi
-
-# If no 3D, force software rendering
-if [ "$HAS_3D" -eq 0 ]; then
-    export QT_QUICK_BACKEND=software
-    export QSG_RHI=software
-    export QSG_RENDER_LOOP=basic
-    echo "[sddm-vm] No 3D acceleration, forcing software rendering" > /dev/kmsg 2>/dev/null || true
-fi
-EOF
+XSETUPEOF
 sudo chmod +x "$XSETUP"
 
 # Create sddm.conf with VM-specific settings if not exists
