@@ -13,18 +13,45 @@ safe_start() {
 
 # Detectar si estamos en VM (para ajustar compositor)
 IS_VM=0
-if command -v systemd-detect-virt >/dev/null 2>&1; then
+VM_FLAG="$HOME/.cache/awesome/vm-detected"
+
+# 1. Check flag file (set by setup-sddm-vm.sh or first successful detection)
+if [ -f "$VM_FLAG" ]; then
+    IS_VM=1
+fi
+
+# 2. systemd-detect-virt (most reliable)
+if [ "$IS_VM" -eq 0 ] && command -v systemd-detect-virt >/dev/null 2>&1; then
     VM_TYPE=$(systemd-detect-virt 2>/dev/null)
     if [ -n "$VM_TYPE" ] && [ "$VM_TYPE" != "none" ]; then
         IS_VM=1
     fi
 fi
-# Fallback: verificar DMI si systemd-detect-virt no disponible
+
+# 3. DMI check (sys_vendor/board_name)
 if [ "$IS_VM" -eq 0 ]; then
-    if grep -qi "virtualbox\|vbox\|vmware\|qemu\|kvm\|microsoft\|hyper" /sys/class/dmi/id/sys_vendor 2>/dev/null || \
-       grep -qi "virtual\|kvm\|vmware\|virtualbox" /sys/class/dmi/id/board_name 2>/dev/null; then
-        IS_VM=1
-    fi
+    for f in /sys/class/dmi/id/sys_vendor /sys/class/dmi/id/board_name /sys/class/dmi/id/product_name; do
+        if [ -f "$f" ] && grep -qi "virtualbox\|vbox\|vmware\|qemu\|kvm\|microsoft\|hyper\|parallels\|xen\|bochs\|innotek" "$f" 2>/dev/null; then
+            IS_VM=1
+            break
+        fi
+    done
+fi
+
+# 4. /proc/cpuinfo hypervisor flag
+if [ "$IS_VM" -eq 0 ] && grep -qi "hypervisor" /proc/cpuinfo 2>/dev/null; then
+    IS_VM=1
+fi
+
+# 5. Check for virtio devices
+if [ "$IS_VM" -eq 0 ] && ls /sys/bus/virtio/devices/ 2>/dev/null | head -1 | grep -q .; then
+    IS_VM=1
+fi
+
+# Save flag for future sessions
+if [ "$IS_VM" -eq 1 ]; then
+    mkdir -p "$(dirname "$VM_FLAG")"
+    touch "$VM_FLAG"
 fi
 
 # 1. Compositor (picom) - con fallback si falla

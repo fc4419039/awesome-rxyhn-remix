@@ -6,20 +6,35 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 NC='\033[0m'
 
-# Detect if running in VM
+# Detect if running in VM (same logic as autostart)
 IS_VM=0
 VM_TYPE=""
-if command -v systemd-detect-virt >/dev/null 2>&1; then
-    VM_TYPE=$(systemd-detect-virt 2>/dev/null)
-    if [ -n "$VM_TYPE" ] && [ "$VM_TYPE" != "none" ]; then
+
+# Check DMI (works without root)
+for f in /sys/class/dmi/id/sys_vendor /sys/class/dmi/id/board_name /sys/class/dmi/id/product_name; do
+    if [ -f "$f" ] && grep -qi "virtualbox\|vbox\|vmware\|qemu\|kvm\|microsoft\|hyper\|parallels\|xen\|bochs\|innotek" "$f" 2>/dev/null; then
         IS_VM=1
+        VM_TYPE=$(cat "$f" 2>/dev/null)
+        break
     fi
+done
+
+# Check /proc/cpuinfo hypervisor flag
+if [ "$IS_VM" -eq 0 ] && grep -qi "hypervisor" /proc/cpuinfo 2>/dev/null; then
+    IS_VM=1
+    VM_TYPE="hypervisor"
 fi
 
-# Fallback: check DMI
-if [ "$IS_VM" -eq 0 ]; then
-    if grep -qi "virtualbox\|vbox\|vmware\|qemu\|kvm\|microsoft\|hyper" /sys/class/dmi/id/sys_vendor 2>/dev/null || \
-       grep -qi "virtual\|kvm\|vmware\|virtualbox" /sys/class/dmi/id/board_name 2>/dev/null; then
+# Check virtio devices
+if [ "$IS_VM" -eq 0 ] && ls /sys/bus/virtio/devices/ 2>/dev/null | head -1 | grep -q .; then
+    IS_VM=1
+    VM_TYPE="virtio"
+fi
+
+# systemd-detect-virt (if available and not already detected)
+if [ "$IS_VM" -eq 0 ] && command -v systemd-detect-virt >/dev/null 2>&1; then
+    VM_TYPE=$(systemd-detect-virt 2>/dev/null)
+    if [ -n "$VM_TYPE" ] && [ "$VM_TYPE" != "none" ]; then
         IS_VM=1
     fi
 fi
@@ -30,6 +45,12 @@ if [ "$IS_VM" -eq 0 ]; then
 fi
 
 echo -e "${YELLOW}🔍 VM detected ($VM_TYPE), configuring SDDM for software rendering...${NC}"
+
+# Create flag file for autostart VM detection
+VM_FLAG="$HOME/.cache/awesome/vm-detected"
+mkdir -p "$(dirname "$VM_FLAG")"
+touch "$VM_FLAG"
+echo -e "${GREEN}✓ Created VM flag: $VM_FLAG${NC}"
 
 # Create Xsetup script to force software rendering for Qt Quick
 XSETUP="/usr/share/sddm/scripts/Xsetup"
