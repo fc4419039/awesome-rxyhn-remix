@@ -1,4 +1,4 @@
-	if not RUBATO_DIR then RUBATO_DIR = (...):match("(.-)[^%.]+$") end
+if not RUBATO_DIR then RUBATO_DIR = (...):match("(.-)[^%.]+$") end
 if not RUBATO_MANAGER then RUBATO_MANAGER = require(RUBATO_DIR.."manager") end
 
 local subscribable = require(RUBATO_DIR.."subscribable")
@@ -13,11 +13,9 @@ else
 	glib = {
 		PRIORITY_DEFAULT = 0,
 		get_monotonic_time = function()
-			-- Use Lua's clock as fallback
 			return os.clock() * 1000000
 		end,
 		timeout_add = function(_, interval_ms, callback)
-			-- Create a simple timer using gears.timer if available
 			local timer = { callback = callback, interval = interval_ms }
 			function timer:start()
 				if self._timer then return end
