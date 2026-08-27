@@ -3,6 +3,9 @@ local awful = require("awful")
 local gears = require("gears")
 local gfs = gears.filesystem
 
+-- Compat: unpack existe como global en 5.1/LuaJIT, como table.unpack en 5.2+
+local unpack = unpack or table.unpack
+
 -- Compatibilidad con awesome estable 4.3: append_*_keybindings y append_*_mousebindings
 -- solo existen en awesome-git. En 4.3 el getter de root.keys()/root.buttons() devuelve
 -- una vista con metatable que el setter rechaza, así que se acumula en buffers locales
@@ -24,7 +27,7 @@ if not awful.keyboard.append_global_keybindings then
         for _, k in ipairs(bindings) do
             table.insert(global_keys, k)
         end
-        root.keys(tjoin(table.unpack(global_keys)))
+        root.keys(tjoin(unpack(global_keys)))
     end
 
     function awful.keyboard.append_client_keybindings(bindings)
@@ -32,7 +35,7 @@ if not awful.keyboard.append_global_keybindings then
             table.insert(client_keys, k)
         end
         client.connect_signal("manage", function(c)
-            c.keys = tjoin(table.unpack(client_keys))
+            c.keys = tjoin(unpack(client_keys))
         end)
     end
 
@@ -40,7 +43,7 @@ if not awful.keyboard.append_global_keybindings then
         for _, b in ipairs(bindings) do
             table.insert(global_buttons, b)
         end
-        root.buttons(tjoin(table.unpack(global_buttons)))
+        root.buttons(tjoin(unpack(global_buttons)))
     end
 
     function awful.mouse.append_client_mousebindings(bindings)
@@ -48,7 +51,7 @@ if not awful.keyboard.append_global_keybindings then
             table.insert(client_buttons, b)
         end
         client.connect_signal("manage", function(c)
-            c.buttons = tjoin(table.unpack(client_buttons))
+            c.buttons = tjoin(unpack(client_buttons))
         end)
     end
 
