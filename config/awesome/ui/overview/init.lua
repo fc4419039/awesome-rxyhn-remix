@@ -11,8 +11,7 @@ local dpi = beautiful.xresources.apply_dpi
 local M = {}
 M.active = false
 M.overlay = nil
-
-pcall(awful.keygrabber.stop)
+M._grabber = nil
 
 client.connect_signal("property::active", function(c)
     if not c.active and c.content then
@@ -264,7 +263,7 @@ function M.show()
     }
     M.overlay:set_widget(content)
 
-    awful.keygrabber.run(function(mod, key, event)
+    M._grabber = awful.keygrabber.run(function(mod, key, event)
         if event ~= "press" then return end
         if key == "Escape" or key == "e" then
             M.hide()
@@ -277,7 +276,10 @@ function M.hide()
     if not M.active then return end
     M.active = false
 
-    pcall(awful.keygrabber.stop)
+    if M._grabber then
+        pcall(awful.keygrabber.stop, M._grabber)
+        M._grabber = nil
+    end
 
     if M.overlay then
         M.overlay.visible = false
