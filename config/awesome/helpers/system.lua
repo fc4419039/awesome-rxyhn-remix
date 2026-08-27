@@ -35,6 +35,7 @@ function system.music_control(state)
     elseif state == "next" then
         cmd = "playerctl -p spotify,mpd next"
     end
+    if not cmd then return end
     awful.spawn.with_shell(cmd)
 end
 

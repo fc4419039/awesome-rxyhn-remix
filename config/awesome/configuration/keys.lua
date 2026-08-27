@@ -124,7 +124,9 @@ awful.keyboard.append_global_keybindings({
         {description = "open opera gx", group = "launcher"}),
         awful.key({modkey, ctrl}, "t", function()
             local state_file = "/tmp/awesome-night-mode"
-            local night_mode = io.open(state_file, "r") and true or false
+            local nf = io.open(state_file, "r")
+            local night_mode = nf ~= nil
+            if nf then nf:close() end
             if night_mode then
                 os.remove(state_file)
                 awful.spawn.with_shell("redshift -x")
@@ -296,11 +298,6 @@ awful.keyboard.append_global_keybindings({
         lock_screen.show()
     end,
     {description = "lock screen", group = "hotkeys"}),
-    awful.key({modkey}, "l", function()
-        local lock_screen = require("ui.lockscreen")
-        lock_screen.show()
-    end,
-    {description = "lock screen (Super+L)", group = "hotkeys"}),
 
     -- Power menu
     awful.key({alt}, "F4", function()
