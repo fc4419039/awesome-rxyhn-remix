@@ -20,9 +20,11 @@ local function unaccent(str)
         [0xE3] = "a", [0xF5] = "o", [0xE7] = "c", [0xF1] = "n",
     }
     local chars = {}
-    for codepoint in str:gmatch(utf8.charpattern) do
-        local cp = utf8.codepoint(codepoint)
-        chars[#chars+1] = map[cp] or codepoint
+    local i, n = 1, #str
+    while i <= n do
+        local cp, next_i = helpers.string.utf8_next(str, i)
+        chars[#chars+1] = map[cp] or str:sub(i, next_i - 1)
+        i = next_i
     end
     return table.concat(chars)
 end

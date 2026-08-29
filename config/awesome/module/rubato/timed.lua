@@ -78,8 +78,6 @@ local function simulate_easing(pos, duration, intro, intro_e, outro, outro_e, m,
 	local ps_time = 0
 	local ps_pos = pos
 	local dx
-	print("simulating")
-
 
 	-- Key for cacheing results
 	local key = string.format("%f %f %f %s %f %s %f %f",
@@ -331,20 +329,20 @@ local function timed(args)
 	-- Completely resets the timer
 	-- this is more like an "abort" than a "reset" since I don't keep track of intiial position
 	function obj:abort()
-		obj._time = 0
+		obj._time = obj.duration
 		obj._props.target = obj.pos
 		obj._dx = 0
-		obj._m = nil
-		obj._b = nil
+		obj._m = 0
+		obj._b = 0
 		obj._is_inter = false
 		obj._coef = 1
 		obj._dt = 1 / obj.rate
-		obj:fire(obj.pos, obj.time, obj._dx) --fire once to reset visually too
+		obj:fire(obj.pos, obj._time, obj._dx) --fire once to reset visually too
 	end
 
 	--override to allow calling fire with no arguments
 	local unpack = unpack or table.unpack
-	function obj:fire(...) args = ({...})[1] and {...} or {obj.pos, obj._time, obj._dx}; for _, func in pairs(obj._subscribed) do func(unpack(args)) end end
+	function obj:fire(...) local args = ({...})[1] and {...} or {obj.pos, obj._time, obj._dx}; for _, func in pairs(obj._subscribed) do func(unpack(args)) end end
 
 	--subscribe stuff initially and add callback
 	obj.subscribe_callback = function(func) func(obj.pos, obj._time, obj._dt) end
