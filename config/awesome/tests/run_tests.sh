@@ -4,7 +4,7 @@
 set -e
 
 export PATH="$HOME/.luarocks/bin:$PATH"
-CONFIG_DIR="$(dirname "$0")/.."
+CONFIG_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 
 if ! command -v busted &> /dev/null; then
     echo "busted no está instalado. Instálalo con: luarocks install --local busted"

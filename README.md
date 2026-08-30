@@ -477,9 +477,8 @@ yay -S --needed \
 | `mpd-mpris.service` | user | MPRIS bridge → media controls in dashboard/notifications |
 | `udiskie.service` | user | Auto-mount USB/external drives with notifications |
 | `limpiar-sistema.timer` | user | Auto cleanup every 3 days (`limpiar_sistema.sh`) |
-| `touchegg.service` | system (root) | Touchpad gestures daemon |
 
-> **Note:** user services enabled with `systemctl --user enable --now`. The `touchegg` daemon runs as root; the client launches from autostart.
+> **Note:** user services enabled with `systemctl --user enable --now`. The `touchegg` daemon and client both launch from `autostart` (`install.sh` adds the daemon and configures `config/touchegg`).
 
 ---
 

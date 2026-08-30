@@ -44,6 +44,29 @@ echo -e "${GREEN}✓ Pre-flight checks completados${NC}"
 echo ""
 
 # =====================================================================
+# 0️⃣ DETECTAR DISTRO
+# =====================================================================
+if [ -f /etc/os-release ]; then
+    . /etc/os-release
+    DISTRO_ID="$ID"
+    DISTRO_LIKE="$ID_LIKE"
+else
+    DISTRO_ID="unknown"
+    DISTRO_LIKE=""
+fi
+
+IS_ARCH=0
+case "$DISTRO_ID $DISTRO_LIKE" in
+    *arch*|*manjaro*|*endeavouros*|*garuda*|*artix*)
+        IS_ARCH=1
+        ;;
+esac
+
+echo -e "${CYAN}Distro detectada: ${DISTRO_NAME:-$DISTRO_ID}${NC}"
+
+echo ""
+
+# =====================================================================
 # 0️⃣b DETECTAR VM E INSTALAR HERRAMIENTAS DE INVITADO
 # =====================================================================
 echo -e "${CYAN}🔍 Verificando entorno virtualizado...${NC}"
@@ -232,27 +255,6 @@ fi
 echo ""
 
 # =====================================================================
-# 0️⃣ DETECTAR DISTRO
-# =====================================================================
-if [ -f /etc/os-release ]; then
-    . /etc/os-release
-    DISTRO_ID="$ID"
-    DISTRO_LIKE="$ID_LIKE"
-else
-    DISTRO_ID="unknown"
-    DISTRO_LIKE=""
-fi
-
-IS_ARCH=0
-case "$DISTRO_ID $DISTRO_LIKE" in
-    *arch*|*manjaro*|*endeavouros*|*garuda*|*artix*)
-        IS_ARCH=1
-        ;;
-esac
-
-echo -e "${CYAN}Distro detectada: ${DISTRO_NAME:-$DISTRO_ID}${NC}"
-
-# =====================================================================
 # 1️⃣ VERIFICAR E INSTALAR AUR HELPER (solo distros basadas en Arch)
 # =====================================================================
 AUR_HELPER=""
@@ -321,43 +323,6 @@ if [ "$IS_ARCH" = "1" ]; then
             echo -e "${YELLOW}⚠️  yay no disponible. Se usarán solo los repos oficiales; los paquetes AUR los puedes instalar después.${NC}"
             echo -e "${YELLOW}  Paquetes AUR necesarios: awesome-git, picom-git, ttf-jetbrains-mono-nerd, ttf-iosevka-nerd, ttf-hack-nerd, ttf-weather-icons, mpd-mpris, touchegg, xsecurelock${NC}"
 
-
-# =====================================================================
-# 2c️⃣ CONFIGURAR TOUCHEG PARA GESTOS DE 3 DEDOS
-# =====================================================================
-echo -e "${CYAN}🖐️ Configurando touchegg para gestos de 3 dedos...${NC}"
-
-# Crear directorio de configuración si no existe
-TOUCHEGF_DIR="${HOME}/.config/touchegg"
-mkdir -p "${TOUCHEGF_DIR}"
-
-# Copiar configuración del repo al sistema (sobreescribe si ya existe)
-if [ -f "${SCRIPT_DIR}/config/touchegg/touchegg.conf" ]; then
-    cp -f "${SCRIPT_DIR}/config/touchegg/touchegg.conf" "${TOUCHEGF_DIR}/config.conf"
-    echo -e "  ${GREEN}✓ Configuración de touchegg copiada${NC}"
-else
-    echo -e "  ${YELLOW}⚠  No se encontró config/touchegg/touchegg.conf en el repo${NC}"
-fi
-
-# Asegurar que touchegg daemon se inicie en el autostart
-AUTOSTART_FILE="${HOME}/.config/awesome/configuration/autostart"
-if [ -f "${AUTOSTART_FILE}" ]; then
-    if ! grep -q "touchegg.*--daemon" "${AUTOSTART_FILE}"; then
-        # Agregar inicio del daemon antes del cliente (línea 5 del autostart)
-        sed -i '/# 5. Touchegg client/i\
-# 4. Touchegg daemon (siempre iniciar al login)\
-if command -v touchegg >/dev/null 2>&1; then\
-    if ! pgrep -u "$USER" -f "touchegg.*--daemon" >/dev/null 2>&1; then\
-        touchegg --daemon &>/dev/null &\
-    fi;\
-fi' "${AUTOSTART_FILE}" >/dev/null 2>&1\
-        && echo -e "  ${GREEN}✓ Added touchegg daemon autostart${NC}"\
-        || echo -e "  ${YELLOW}⚠  No se pudo modificar ${AUTOSTART_FILE}${NC}"
-    fi
-fi
-
-echo ''
-
         fi
     fi
 fi
@@ -385,7 +350,9 @@ case "$DISTRO_ID" in
             DEBIAN_VER=$(cat /etc/debian_version | cut -d. -f1)
             if [ "$DEBIAN_VER" -ge 12 ] && ! grep -q "backports" /etc/apt/sources.list /etc/apt/sources.list.d/* 2>/dev/null; then
                 echo -e "${YELLOW}📦 Habilitando backports en Debian...${NC}"
-                echo "deb http://deb.debian.org/debian bookworm-backports main" | sudo tee /etc/apt/sources.list.d/backports.list >/dev/null
+                # Usar el codename real (bookworm, trixie...) en vez de hardcodear uno
+                DEBIAN_CODE=${VERSION_CODENAME:-bookworm}
+                echo "deb http://deb.debian.org/debian ${DEBIAN_CODE}-backports main" | sudo tee /etc/apt/sources.list.d/backports.list >/dev/null
                 sudo apt-get update
             fi
         fi
@@ -767,6 +734,44 @@ if [ -f ~/.config/awesome/secrets.lua.template ] && [ ! -f ~/.config/awesome/sec
     echo -e "${GREEN}✓ secrets.lua generado desde el template${NC}"
 fi
 
+# =====================================================================
+# 5b️⃣ CONFIGURAR TOUCHEGG PARA GESTOS DE 3 DEDOS
+# =====================================================================
+echo -e "${CYAN}🖐️ Configurando touchegg para gestos de 3 dedos...${NC}"
+
+# Crear directorio de configuración si no existe
+TOUCHEGF_DIR="${HOME}/.config/touchegg"
+mkdir -p "${TOUCHEGF_DIR}"
+
+# Copiar configuración del repo al sistema (sobreescribe si ya existe)
+if [ -f "${SCRIPT_DIR}/config/touchegg/touchegg.conf" ]; then
+    cp -f "${SCRIPT_DIR}/config/touchegg/touchegg.conf" "${TOUCHEGF_DIR}/config.conf"
+    echo -e "  ${GREEN}✓ Configuración de touchegg copiada${NC}"
+else
+    echo -e "  ${YELLOW}⚠  No se encontró config/touchegg/touchegg.conf en el repo${NC}"
+fi
+
+# Asegurar que touchegg daemon se inicie en el autostart (ejecutado tras copiar config/)
+AUTOSTART_FILE="${HOME}/.config/awesome/configuration/autostart"
+if [ -f "${AUTOSTART_FILE}" ]; then
+    if ! grep -q "touchegg.*--daemon" "${AUTOSTART_FILE}"; then
+        # Agregar inicio del daemon antes del cliente (sección 5 del autostart)
+        sed -i '/# 5. Touchegg client/i\
+# 4. Touchegg daemon (siempre iniciar al login)\
+if command -v touchegg >/dev/null 2>&1; then\
+    if ! pgrep -u "$USER" -f "touchegg.*--daemon" >/dev/null 2>&1; then\
+        touchegg --daemon &>/dev/null &\
+    fi;\
+fi' "${AUTOSTART_FILE}" >/dev/null 2>&1 \
+        && echo -e "  ${GREEN}✓ Touchegg daemon añadido al autostart${NC}" \
+        || echo -e "  ${YELLOW}⚠  No se pudo modificar ${AUTOSTART_FILE}${NC}"
+    fi
+fi
+
+echo -e "${GREEN}✓ Touchegg configurado${NC}"
+
+echo ""
+
 # Actualizar módulos externos a sus últimas versiones
 echo -e "${YELLOW}📦 Actualizando módulos externos (bling, rubato, layout-machi)...${NC}"
 bash "$SCRIPT_DIR/update_modules.sh" 2>/dev/null || echo -e "${YELLOW}  ⚠ No se pudieron actualizar, se usan los versionados en el repo${NC}"
@@ -849,7 +854,15 @@ if [ "$NEED_NERD_FONTS" = true ]; then
             $DOWNLOADER "https://github.com/ryanoasis/nerd-fonts/releases/latest/download/JetBrainsMono.zip" 2>/dev/null
         fi
         if [ -f "JetBrainsMono.zip" ] && [ -s "JetBrainsMono.zip" ]; then
-            unzip -o JetBrainsMono.zip >/dev/null 2>&1
+            if command -v unzip >/dev/null 2>&1; then
+                unzip -o JetBrainsMono.zip >/dev/null 2>&1
+            elif command -v python3 >/dev/null 2>&1; then
+                echo -e "${YELLOW}  ⚠️  unzip no instalado, extrayendo con python3...${NC}"
+                python3 -m zipfile -e JetBrainsMono.zip . >/dev/null 2>&1
+            else
+                echo -e "${YELLOW}  ⚠️  Ni unzip ni python3 para extraer la fuente. Instálala manualmente.${NC}"
+                rm -f JetBrainsMono.zip 2>/dev/null
+            fi
             rm -f JetBrainsMono.zip
             fc-cache -fv "$NERD_FONTS_DIR" >/dev/null 2>&1
             echo -e "${GREEN}  ✓ JetBrains Mono Nerd Font instalada${NC}"
@@ -952,12 +965,15 @@ if [ ! -f "$MSCDOWN_INSTALLER" ] && [ -d "$ROOT_DIR/.git" ]; then
 fi
 
 if [ -f "$MSCDOWN_INSTALLER" ]; then
-    echo -e "${YELLOW}📦 Ejecutando instalador de mscdown...${NC}"
-    chmod +x "$MSCDOWN_INSTALLER" 2>/dev/null || true
-    ( cd "$ROOT_DIR/mscdown" && ./install.sh ) || echo -e "${YELLOW}⚠️  El instalador de MSCDown falló, continuando...${NC}"
+    # Ya está instalado: saltar el instalador interactivo (README: "no vuelve a instalar mscdown")
+    if [ -d "$HOME/mscdown" ]; then
+        echo -e "${GREEN}✓ MSCDown ya presente en ~/mscdown. Saltando instalación.${NC}"
+    else
+        echo -e "${YELLOW}📦 Ejecutando instalador de mscdown...${NC}"
+        chmod +x "$MSCDOWN_INSTALLER" 2>/dev/null || true
+        ( cd "$ROOT_DIR/mscdown" && ./install.sh ) || echo -e "${YELLOW}⚠️  El instalador de MSCDown falló, continuando...${NC}"
 
-    # Colocar mscdown en ~/mscdown (donde apunta el alias creado por su instalador)
-    if [ ! -d "$HOME/mscdown" ]; then
+        # Colocar mscdown en ~/mscdown (donde apunta el alias creado por su instalador)
         echo -e "${YELLOW}📂 Colocando mscdown en ~/mscdown...${NC}"
         mkdir -p "$HOME/mscdown" 2>/dev/null || true
         if ! rsync -a --exclude='.git' --exclude='__pycache__' "$ROOT_DIR/mscdown/" "$HOME/mscdown/" 2>/dev/null; then
@@ -968,9 +984,8 @@ if [ -f "$MSCDOWN_INSTALLER" ]; then
         else
             echo -e "${YELLOW}⚠️  No se pudo copiar mscdown a ~/mscdown. El alias 'musica' no funcionará hasta copiarlo manualmente.${NC}"
         fi
+        echo -e "${GREEN}✓ MSCDown instalado${NC}"
     fi
-
-    echo -e "${GREEN}✓ MSCDown instalado${NC}"
 else
     echo -e "${YELLOW}⚠️  No se encontró mscdown (ni como submódulo). Puedes clonarlo después: git submodule update --init.${NC}"
 fi
