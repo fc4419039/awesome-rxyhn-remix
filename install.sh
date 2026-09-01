@@ -401,6 +401,74 @@ detect_awesome_lua() {
 }
 
 # =====================================================================
+# 0️⃣e FORZAR VERSIÓN DE AWESOME (awesome-git) Y SUS DEPENDENCIAS
+# =====================================================================
+# Asegura que se instale la versión de awesome que el sistema necesita
+# (awesome-git, la que compila contra la liblua correcta) y TODAS sus
+# dependencias. Reemplaza un `awesome` estable que quizá el usuario ya
+# tenía instalado, y rellena los paquetes de build/runtime que el
+# PKGBUILD de awesome-git necesita.
+AWESOME_DEPS_ARCH=(
+    "cairo" "dbus" "gdk-pixbuf2" "libxdg-basedir" "libxkbcommon-x11"
+    "lua54" "lua54-lgi" "pango" "startup-notification"
+    "xcb-util-cursor" "xcb-util-keysyms" "xcb-util-wm" "xcb-util-xrm" "libxfixes"
+    "lua54-luarocks" "pam"
+)
+
+force_awesome_version() {
+    # Solo aplica a distros basadas en Arch (donde existe awesome-git en AUR)
+    [ "$IS_ARCH" = "1" ] || return 0
+
+    echo -e "${CYAN}🔨 Verificando versión de awesome requerida (awesome-git)...${NC}"
+
+    # 1) Si está instalado el `awesome` ESTABLE, quitarlo para que no
+    #    choque con awesome-git (ambos proveen /usr/bin/awesome).
+    if pacman -Q awesome &>/dev/null; then
+        echo -e "${YELLOW}⚠️  Encontrado awesome (estable). Reinstalando como awesome-git...${NC}"
+        sudo pacman -Rdd --noconfirm awesome 2>/dev/null \
+            || sudo pacman -Rns --noconfirm awesome 2>/dev/null \
+            || echo -e "${YELLOW}⚠️  No se pudo quitar awesome estable. Continuando...${NC}"
+    fi
+
+    # 2) Devolver true si ya está instalado (para no fallar si no hay AUR helper)
+    if pacman -Q awesome-git &>/dev/null; then
+        echo -e "${GREEN}✓ awesome-git ya instalado: $(pacman -Q awesome-git 2>/dev/null | awk '{print $2}')${NC}"
+        install_aur_deps_of_awesome
+        return 0
+    fi
+
+    # 3) Instalar desde AUR si hay helper
+    if [ -n "$AUR_HELPER" ] && command -v "$AUR_HELPER" &>/dev/null; then
+        echo -e "${YELLOW}📦 Instalando awesome-git desde AUR (compila ~5 min)...${NC}"
+        $AUR_HELPER -S --needed --noconfirm awesome-git 2>/dev/null \
+            && echo -e "${GREEN}✓ awesome-git instalado correctamente${NC}" \
+            || echo -e "${YELLOW}⚠️  La instalación de awesome-git falló (¿AUR caído o sin base-devel?).${NC}"
+    else
+        echo -e "${YELLOW}⚠️  No hay AUR helper. Deja esta lista correr con install.sh completo."
+        echo -e "${YELLOW}    O instala manualmente: git clone https://aur.archlinux.org/awesome-git.git \&\& cd awesome-git \&\& makepkg -si${NC}"
+    fi
+
+    install_aur_deps_of_awesome
+    return 0
+}
+
+# Instala las dependencias del PKGBUILD de awesome-git que el sistema necesite
+install_aur_deps_of_awesome() {
+    local missing=()
+    for d in "${AWESOME_DEPS_ARCH[@]}"; do
+        pacman -Q "$d" &>/dev/null || missing+=("$d")
+    done
+    if [ ${#missing[@]} -gt 0 ]; then
+        echo -e "${YELLOW}📦 Instalando dependencias de awesome-git: ${missing[*]}${NC}"
+        sudo pacman -S --needed --noconfirm "${missing[@]}" 2>/dev/null \
+            && echo -e "${GREEN}✓ Dependencias de awesome-git instaladas${NC}" \
+            || echo -e "${YELLOW}⚠️  Algunas dependencias no se pudieron instalar (¿repos sin sync? ejecuta sudo pacman -Syy)${NC}"
+    else
+        echo -e "${GREEN}✓ Todas las dependencias de awesome-git ya están instaladas${NC}"
+    fi
+}
+
+# =====================================================================
 # 2️⃣ INSTALAR DEPENDENCIAS (multi-distro)
 # =====================================================================
 echo -e "${YELLOW}📦 Instalando dependencias...${NC}"
@@ -511,6 +579,8 @@ else
 
     # Para Arch: separar paquetes oficiales y AUR, instalar desde la fuente correcta
     if [ "$IS_ARCH" = "1" ]; then
+        # Forzar la versión de awesome requerida (awesome-git) y sus deps
+        force_awesome_version
         # Detectar la versión de Lua que usa awesome real y ajustar las deps de lua/lgi
         if detect_awesome_lua; then
             # Quitar cualquier paquete de lua/lgi/luarocks de la lista (para no duplicar
@@ -1311,6 +1381,36 @@ EOF"
     fi
 else
     echo -e "${YELLOW}⚠️  SDDM no está instalado. Saltando configuración.${NC}"
+fi
+
+echo ""
+
+# =====================================================================
+# 1️⃣1️⃣b PERMITIR SUDO SIN CONTRASEÑA PARA EL MENÚ DEL SISTEMA
+# =====================================================================
+# El system_menu (idioma, distribución de teclado, zona horaria, apagado,
+# bloqueo, limpieza) lanza `sudo localectl`, `sudo timedatectl` y
+# `sudo systemctl` desde rofi. Desde ahí NO hay TTY para pedir la
+# contraseña → en una instalación limpia falla silenciosamente.
+# Estas reglas replican lo que ya está funcionando en el sistema de origen.
+if [ -n "$USER" ] && command -v sudo &> /dev/null && ( [ -x /usr/bin/localectl ] || [ -x /usr/bin/systemctl ] ); then
+    echo -e "${YELLOW}🔐 Permitiendo al usuario $USER usar localectl/timedatectl/systemctl sin contraseña (para el system_menu)...${NC}"
+    sudo mkdir -p /etc/sudoers.d 2>/dev/null || true
+    SUDOERS_FILE="/etc/sudoers.d/99-awesome-menu"
+    RULE=$(cat <<EOF
+$USER ALL=(ALL) NOPASSWD: /usr/bin/timedatectl
+$USER ALL=(ALL) NOPASSWD: /usr/bin/localectl
+$USER ALL=(ALL) NOPASSWD: /usr/bin/systemctl
+$USER ALL=(ALL) NOPASSWD: /usr/bin/localedef
+$USER ALL=(ALL) NOPASSWD: /usr/bin/locale-gen
+EOF
+)
+    sudo bash -c "printf '%s\n' '$RULE' > '$SUDOERS_FILE'" 2>/dev/null \
+        && sudo chmod 440 "$SUDOERS_FILE" \
+        && sudo visudo -cf "$SUDOERS_FILE" &>/dev/null \
+        && echo -e "${GREEN}✓ Regla NOPASSWD creada: $SUDOERS_FILE${NC}" \
+        || echo -e "${YELLOW}⚠️  No se pudo escribir el sudoers (¿sudo pide contraseña y no hay terminal?)."
+    echo -e "    Hazlo manualmente una vez: echo -e '$RULE' | sudo tee /etc/sudoers.d/99-awesome-menu \&\& sudo chmod 440 /etc/sudoers.d/99-awesome-menu"
 fi
 
 echo ""

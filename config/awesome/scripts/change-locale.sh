@@ -46,6 +46,21 @@ line=$(grep -F "$selected" "$map_file" | head -1)
 locale=$(echo "$line" | cut -f2)
 [ -z "$locale" ] && exit 0
 
+# Si el locale elegido NO está compilado en glibc, generarlo primero.
+# (En instalaciones limpias solo suele estar generado el locale de archinstall;
+#  si no, localectl set-locale guarda LANG pero el idioma no se activa.)
+base="${locale%.*}"
+if ! locale -a 2>/dev/null | grep -qix "${locale//UTF-8/utf8}"; then
+    if command -v localedef >/dev/null 2>&1; then
+        sudo localedef -i "$base" -f UTF-8 "$locale" 2>/dev/null
+    fi
+fi
+# Reintento con locale-gen por si localedef no existió (Debian/Ubuntu)
+if ! locale -a 2>/dev/null | grep -qix "${locale//UTF-8/utf8}"; then
+    sudo sed -i "s/^# *$locale UTF-8/$locale UTF-8/" /etc/locale.gen 2>/dev/null
+    command -v locale-gen >/dev/null 2>&1 && sudo locale-gen 2>/dev/null
+fi
+
 sudo localectl set-locale "LANG=$locale" 2>/dev/null
 if [ $? -eq 0 ]; then
     notify-send "$(t lc.updated_title)" "$(tsub lc.updated_body "$locale")" -i preferences-desktop-locale
