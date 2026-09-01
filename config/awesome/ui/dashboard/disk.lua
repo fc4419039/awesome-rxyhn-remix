@@ -87,13 +87,18 @@ local disk_widget = wibox.widget{
 
 local current_mount = "/"
 
+local preferred_mounts = {"/home", "/"}
+
 awesome.connect_signal("signal::disk", function(disks)
     local root = nil
-    for _, d in ipairs(disks) do
-        if d.mount == "/" then
-            root = d
-            break
+    for _, m in ipairs(preferred_mounts) do
+        for _, d in ipairs(disks) do
+            if d.mount == m then
+                root = d
+                break
+            end
         end
+        if root then break end
     end
     if not root then
         root = disks[1]
