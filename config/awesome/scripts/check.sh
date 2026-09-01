@@ -38,7 +38,7 @@ check_lua_syntax() {
     local errors=0 total=0 f out
     while IFS= read -r -d '' f; do
         total=$((total + 1))
-        out=$(luac -p "$f" 2>&1)
+        out=$("$LUAC_BIN" -p "$f" 2>&1)
         if [ -n "$out" ]; then
             echo -e "  ${RED}✖${RESET} ${BOLD}${f#$CFG/}${RESET}"
             echo "$out" | sed "s/^/    /"
@@ -83,14 +83,29 @@ for f in sys.argv[1:]:
 
 check_runtime() {
     echo -e "${CYAN}Lua (runtime)${RESET}"
-    lua "$RUNTIME_SCRIPT"
+    "$LUA_BIN" "$RUNTIME_SCRIPT"
     return $?
 }
 
 run() {
     local total_err=0 lua_err=0 sh_err=0 py_err=0 rt_err=0
 
-    echo -e "${BOLD}── check.sh${RESET} ${DIM}→ $CFG${RESET} ${DIM}[$MODE]${RESET}"
+    # Detectar binarios de Lua/luac que coincidan con la versión que usa awesome.
+    # Evita validar con Lua 5.5 cuando awesome usa 5.4 (y viceversa) → falsos negativos.
+    LUA_BIN="lua"; LUAC_BIN="luac"
+    if command -v awesome >/dev/null 2>&1; then
+        local linked
+        linked=$(ldd "$(command -v awesome)" 2>/dev/null | grep -o 'liblua[a-z0-9.-]*\.so\.[0-9]*' | head -n1)
+        case "$linked" in
+            *luajit*|*5\.1*) for c in /usr/bin/lua5.1 /usr/bin/lua51; do [ -x "$c" ] && { LUA_BIN="$c"; LUAC_BIN="/usr/bin/luac5.1"; break; }; done ;;
+            *5\.3*)         for c in /usr/bin/lua5.3 /usr/bin/lua53; do [ -x "$c" ] && { LUA_BIN="$c"; LUAC_BIN="/usr/bin/luac5.3"; break; }; done ;;
+            *5\.4*)         for c in /usr/bin/lua5.4 /usr/bin/lua54; do [ -x "$c" ] && { LUA_BIN="$c"; LUAC_BIN="/usr/bin/luac5.4"; break; }; done ;;
+        esac
+    fi
+    [ -x "$LUAC_BIN" ] || command -v "$LUAC_BIN" >/dev/null 2>&1 || LUAC_BIN="luac"
+    [ -x "$LUA_BIN" ] || command -v "$LUA_BIN" >/dev/null 2>&1 || LUA_BIN="lua"
+
+    echo -e "${BOLD}── check.sh${RESET} ${DIM}→ $CFG${RESET} ${DIM}[$MODE]${RESET} ${DIM}(lua: $LUA_BIN)${RESET}"
 
     case "$MODE" in
         syntax)

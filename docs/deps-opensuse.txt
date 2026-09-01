@@ -93,11 +93,12 @@ lsd                            # ls replacement
 bat                            # cat replacement
 
 # ==================== LUA / DEPS ====================
-python3-gobject                # GObject introspection
+python3-gobject                # GObject introspection (python)
 python3-dbus                   # DBus bindings
 lua54                          # Lua 5.4
 lua54-devel                    # Lua headers
 luarocks                       # Lua package manager
+lua54-lgi                      # Lua GObject introspection (rubato, layout-machi, cairo)
 
 # ==================== LOGIN / LOCK ====================
 i3lock                         # Screen locker
@@ -105,6 +106,11 @@ slock                          # Simple locker
 # xsecurelock: no está en repos. Compilar: git clone https://github.com/google/xsecurelock && cd xsecurelock && ./autogen.sh && ./configure && make && sudo make install
 sddm                           # Display manager
 qt6-declarative-devel          # Qt6 QML (SDDM theme)
+qt6-multimedia                 # Qt6 multimedia (fondos de video en SDDM theme)
+qt6-multimedia-imports         # Imports QML de multimedia (SDDM theme)
+qt6-virtualkeyboard            # Teclado virtual del SDDM theme
+qt6-virtualkeyboard-imports    # Imports QML del teclado virtual (SDDM theme)
+libQt6Svg6                     # Iconos SVG del SDDM theme
 
 # ==================== EXTRA: Compilar / Flatpak / OBS ====================
 # awesome-git: compilar desde fuente

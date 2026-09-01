@@ -330,6 +330,77 @@ fi
 echo ""
 
 # =====================================================================
+# 1a️⃣ DETECTAR VERSIÓN DE LUA QUE USA AWESOME (para lgi/luarocks correctos)
+# =====================================================================
+# awesome-git puede compilarse contra Lua 5.1/LuaJIT, 5.3, 5.4 o 5.5 según el
+# PKGBUILD/distro. El par lua+lgi+luarocks DEBE coincidir con esa versión, si no
+# rubato, layout-machi, overview, reloj analógico y el switcher explotan.
+# Más abajo (sección de instalación) se inyectan los paquetes detectados.
+LUA_PKG=""   # paquete runtime de lua (lua54, lua53, lua51, luajit...)
+LGI_PKG=""   # paquete lgi de esa versión (lua54-lgi, lua53-lgi, lua51-lgi)
+LR_PKG=""    # paquete luarocks de esa versión (lua54-luarocks...)
+LR_BIN=""    # binario de luarocks (luarocks-5.4, etc.) o vacío = usar 'luarocks'
+
+detect_awesome_lua() {
+    local awesome_bin linked
+    awesome_bin=$(command -v awesome 2>/dev/null)
+    [ -z "$awesome_bin" ] && return 1
+
+    linked=$(ldd "$awesome_bin" 2>/dev/null | grep -o 'liblua[a-z0-9.-]*\.so\.[0-9]*' | head -n1)
+
+    # Mapea versión de lua → paquetes según la distro (Arch/Debian/Fedora/openSUSE)
+    # Se rellena LUA_VER y luego se traduce a nombres de paquete del caso distro.
+    local LUA_VER=""
+    case "$linked" in
+        *luajit*)  LUA_VER="51" ;;
+        *5\.1*)    LUA_VER="51" ;;
+        *5\.3*)    LUA_VER="53" ;;
+        *5\.4*)    LUA_VER="54" ;;
+        *5\.5*)
+            # lgi 0.9.2 aún NO funciona con Lua 5.5 ("attempt to assign to const variable 'en'").
+            # awesome-git de Arch se compila contra 5.4 → usamos 5.4 aunque el sistema tenga 5.5.
+            LUA_VER="54" ;;
+        *) return 1 ;;
+    esac
+
+    case "$DISTRO_ID" in
+        arch|manjaro|endeavouros|garuda|artix)
+            if [ "$LUA_VER" = "51" ]; then
+                LUA_PKG="luajit"; LGI_PKG="lua51-lgi"; LR_PKG="lua51-luarocks"; LR_BIN="luarocks-5.1"
+            else
+                LUA_PKG="lua$LUA_VER"; LGI_PKG="lua$LUA_VER-lgi"; LR_PKG="lua$LUA_VER-luarocks"
+                LR_BIN="luarocks-5.${LUA_VER#5}"
+            fi
+            ;;
+        ubuntu|debian|linuxmint|pop|elementary|zorin)
+            if [ "$LUA_VER" = "54" ]; then
+                LUA_PKG="lua5.4"; LGI_PKG="lua5.4-lgi"; LR_PKG="luarocks"
+            elif [ "$LUA_VER" = "53" ]; then
+                LUA_PKG="lua5.3"; LGI_PKG="lua5.3-lgi"; LR_PKG="luarocks"
+            elif [ "$LUA_VER" = "51" ]; then
+                LUA_PKG="lua5.1"; LGI_PKG="lua5.1-lgi"; LR_PKG="luarocks"
+            else
+                return 1
+            fi
+            LR_BIN=""
+            ;;
+        fedora|rhel|centos|rocky|almalinux|nobara)
+            LUA_PKG="lua"; LGI_PKG="lua-lgi"; LR_PKG="luarocks"; LR_BIN=""
+            ;;
+        opensuse-tumbleweed|opensuse-leap|suse|sled)
+            LUA_PKG="lua$LUA_VER"; LGI_PKG="lua$LUA_VER-lgi"; LR_PKG="lua$LUA_VER-luarocks"; LR_BIN=""
+            ;;
+        *)
+            # Desconocida: no conocemos nombres exactos → dejar que deps-arch actúe
+            return 1 ;;
+    esac
+
+    echo -e "${CYAN}   → awesome usa ${linked:-lua local}. Entorno Lua: ${LUA_PKG} + ${LGI_PKG}${NC}"
+    [ -z "$LUA_PKG" ] && return 1
+    return 0
+}
+
+# =====================================================================
 # 2️⃣ INSTALAR DEPENDENCIAS (multi-distro)
 # =====================================================================
 echo -e "${YELLOW}📦 Instalando dependencias...${NC}"
@@ -440,6 +511,27 @@ else
 
     # Para Arch: separar paquetes oficiales y AUR, instalar desde la fuente correcta
     if [ "$IS_ARCH" = "1" ]; then
+        # Detectar la versión de Lua que usa awesome real y ajustar las deps de lua/lgi
+        if detect_awesome_lua; then
+            # Quitar cualquier paquete de lua/lgi/luarocks de la lista (para no duplicar
+            # ni instalar una versión equivocada), luego añadir la versión correcta
+            filtered_pkgs=()
+            for pkg in "${packages[@]}"; do
+                case "$pkg" in
+                    lua|luajit|lua5*|lua51|lua53|lua54)
+                        if [ "$pkg" != "$LUA_PKG" ]; then continue; fi ;;
+                    *lgi*)
+                        if [ "$pkg" != "$LGI_PKG" ]; then continue; fi ;;
+                    luarocks|*luarocks*)
+                        continue ;;
+                esac
+                filtered_pkgs+=("$pkg")
+            done
+            packages=("${filtered_pkgs[@]}")
+            packages+=("$LUA_PKG" "$LGI_PKG" "$LR_PKG")
+            echo -e "${CYAN}   Paquetes Lua: ${LUA_PKG}, ${LGI_PKG}, ${LR_PKG}${NC}"
+        fi
+
         official_pkgs=()
         aur_pkgs=()
 
@@ -503,6 +595,12 @@ else
         fi
     else
         # Para otras distros: verificar cada paquete individualmente
+        # Añadir también los paquetes de Lua/lgi/luarocks detectados (si applicable)
+        if detect_awesome_lua; then
+            packages+=("$LUA_PKG" "$LGI_PKG" "$LR_PKG")
+            echo -e "${CYAN}   Paquetes Lua: ${LUA_PKG}, ${LGI_PKG}, ${LR_PKG}${NC}"
+        fi
+
         to_install=()
         for pkg in "${packages[@]}"; do
             if eval "$PKG_CHECK $pkg" > /dev/null 2>&1; then
@@ -793,8 +891,23 @@ echo -e "${YELLOW}🔐 Instalando librerías PAM para Lua (lockscreen)...${NC}"
 
 # Los headers de PAM se instalan con el paquete del distro (pam / libpam0g-dev / pam-devel)
 # ya incluido en docs/deps-*.txt (sección LUA / DEPS). Aquí solo falta lua-pam via luarocks.
-if command -v luarocks &> /dev/null; then
-    luarocks install lua-pam 2>/dev/null || echo -e "${YELLOW}⚠️  lua-pam ya instalado o falló (requiere headers de PAM: libpam0g-dev / pam-devel)${NC}"
+# Usa el luarocks de la MISMA versión de Lua que usa awesome (detectada arriba).
+LRBIN="luarocks"
+if [ -n "${LR_BIN:-}" ]; then
+    # Busca el binario de luarocks de la versión detectada (distintos nombres según distro)
+    for cand in "/usr/bin/$LR_BIN" "/usr/bin/luarocks-${LR_BIN#luarocks-}"; do
+        if [ -x "$cand" ]; then LRBIN="$cand"; break; fi
+    done
+    # En Arch el paquete luaXX-luarocks a veces solo instala 'luarocks' (usa la var de entorno LUA_*).
+fi
+# Fallback explícitos de Arch (luarocks-5.x o luarocks con env var)
+if [ "$LRBIN" = "luarocks" ]; then
+    if [ -x "/usr/bin/luarocks-5.4" ]; then LRBIN="/usr/bin/luarocks-5.4";
+    elif [ -x "/usr/bin/luarocks-5.3" ]; then LRBIN="/usr/bin/luarocks-5.3";
+    elif [ -x "/usr/bin/luarocks-5.1" ]; then LRBIN="/usr/bin/luarocks-5.1"; fi
+fi
+if command -v "$LRBIN" &> /dev/null || [ -x "$LRBIN" ]; then
+    "$LRBIN" install lua-pam 2>/dev/null || echo -e "${YELLOW}⚠️  lua-pam ya instalado o falló (requiere headers de PAM: libpam0g-dev / pam-devel)${NC}"
 else
     echo -e "${YELLOW}⚠️  luarocks no encontrado, saltando lua-pam${NC}"
 fi

@@ -103,11 +103,12 @@ neovim                         # Editor (BACKPORTS para versión nueva)
 #   MANUAL:  descargar .deb de https://github.com/sharkdp/bat/releases
 
 # ==================== LUA / DEPS ====================
-python3-gi                     # GObject introspection
+python3-gi                     # GObject introspection (python)
 python3-dbus                   # DBus bindings
 lua5.4                         # Lua 5.4
 lua5.4-dev                     # Lua headers
-luarocks                       # Lua package manager
+luarocks                       # Lua package manager (configura para 5.4)
+lua5.4-lgi                     # Lua GObject introspection (rubato, layout-machi, cairo)
 liblua5.4-0                    # Lua runtime
 
 # ==================== LOGIN / LOCK ====================
@@ -116,6 +117,11 @@ slock                          # Simple locker (suckless-tools)
 # xsecurelock: no está en repos. Compilar: git clone https://github.com/google/xsecurelock && cd xsecurelock && ./autogen.sh && ./configure && make && sudo make install
 sddm                           # Display manager
 qt6-declarative-dev            # Qt6 QML (SDDM theme)
+qt6-multimedia-dev             # Qt6 multimedia (fondos de video en SDDM theme)
+qml6-module-qtquick-virtualkeyboard # Teclado virtual del SDDM theme
+qml6-module-qtquick-effects    # Efectos de desenfoque del SDDM theme (QtQuick.Effects)
+qml6-module-qtquick-controls   # Controles QtQuick (requerido por el SDDM theme)
+libxcb-cursor0                 # req. SDDM theme en Debian trixie
 
 # ==================== EXTRA: Compilar desde fuente / Flatpak / Backports ====================
 # awesome-git: git clone https://github.com/awesomeWM/awesome && cmake && make install

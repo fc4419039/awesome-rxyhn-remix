@@ -99,8 +99,11 @@ bat                            # cat replacement
 python-gobject                 # GObject introspection
 python-dbus                    # DBus bindings
 pipewire-alsa                  # ALSA plugin
-lua                            # Lua 5.4
-luarocks                       # Lua package manager
+# IMPORTANTE: awesome-git compila con Lua 5.4 (liblua5.4). NO usar `lua` (5.5):
+# el paquete `lua-lgi` 0.9.2 NO funciona con Lua 5.5 (bug "const variable 'en'").
+lua54                          # Lua 5.4 (requerido por awesome-git)
+lua54-lgi                      # GObject introspection bindings (rubato, layout-machi, cairo)
+lua54-luarocks                 # Lua package manager
 pam                            # PAM headers (para lua-pam)
 
 # ==================== LOGIN / LOCK ====================
@@ -109,6 +112,9 @@ slock                          # Simple locker
 xsecurelock                    # Secure locker
 sddm                           # Display manager
 qt6-declarative                # Qt6 QML (SDDM theme)
+qt6-multimedia-ffmpeg          # Qt6 multimedia (fondos de video en SDDM theme)
+qt6-virtualkeyboard            # Teclado virtual del SDDM theme
+qt6-svg                        # Iconos SVG del SDDM theme
 
 # ==================== AUR ONLY (paru/yay) ====================
 # Los siguientes paquetes SOLO estan en AUR.
