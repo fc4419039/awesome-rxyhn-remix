@@ -31,7 +31,15 @@ update_module() {
     echo ""
 }
 
-update_module "rubato"    "https://github.com/andOrlando/rubato.git"          ""
+# rubato: NO se actualiza automáticamente.
+# El repo incluye fixes cross-Lua (lgi pcall fallback, preprocess_pos,
+# math.floor en timeout_add, generación de IDs en subscribable) que el
+# upstream de andOrlando/rubato aún no tiene. Sobrescribirlo reintroduce
+# el error de rubato en clones/instalaciones limpias.
+echo "=== rubato ==="
+echo "  ⚠ rubato se mantiene en la versión corregida del repo (upstream sin fixes cross-Lua)"
+echo "  Para actualizarlo manualmente, vuelve a aplicar los fixes de commit 1777115"
+
 update_module "layout-machi" "https://github.com/xinhaoyuan/layout-machi.git" ""
 
 # bling: NO se actualiza automáticamente.
