@@ -1416,6 +1416,69 @@ fi
 echo ""
 
 # =====================================================================
+# 1️⃣1️⃣c CREAR ARCHIVOS DE CONFIGURACIÓN DEL SYSTEM_MENU
+# =====================================================================
+# El system_menu (idioma, zona horaria, distribución de teclado) guarda sus
+# cambios en archivos de sistema vía `localectl`/`timedatectl`. En una
+# instalación limpia esos archivos pueden no existir, así que los creamos
+# con valores por defecto para que las opciones del menú funcionen desde el
+# primer uso.
+if command -v localectl &> /dev/null || command -v systemctl &> /dev/null; then
+
+    # --- Idioma (/etc/locale.conf) ---
+    if [ ! -f /etc/locale.conf ]; then
+        if [ -n "$LANG" ]; then
+            sudo sh -c "echo 'LANG=$LANG' > /etc/locale.conf" 2>/dev/null
+        else
+            sudo sh -c "echo 'LANG=es_MX.UTF-8' > /etc/locale.conf" 2>/dev/null
+        fi
+        [ -f /etc/locale.conf ] && echo -e "  ✓ /etc/locale.conf creado"
+    fi
+
+    # --- Idioma: asegurar que los locales más usados estén compilados ---
+    # (Sin esto, localectl set-locale guarda LANG pero el idioma no se activa)
+    if command -v localedef &> /dev/null; then
+        for loc in es_MX.UTF-8 es_ES.UTF-8 en_US.UTF-8 pt_BR.UTF-8 fr_FR.UTF-8 de_DE.UTF-8; do
+            if ! locale -a 2>/dev/null | grep -qix "${loc//UTF-8/utf8}"; then
+                base="${loc%.*}"; charmap="${loc##*.}"
+                sudo localedef -i "$base" -f "$charmap" "$loc" 2>/dev/null \
+                    && echo -e "  ✓ locale compilado: $loc"
+            fi
+        done
+    elif command -v locale-gen &> /dev/null && [ -f /etc/locale.gen ]; then
+        sudo sed -i 's/^# *\(es_MX\.UTF-8\|es_ES\.UTF-8\|en_US\.UTF-8\)/\1/' /etc/locale.gen 2>/dev/null
+        sudo locale-gen 2>/dev/null
+    fi
+
+    # --- Zona horaria (/etc/localtime) ---
+    if [ ! -L /etc/localtime ] && [ ! -f /etc/localtime ]; then
+        TZ_INIT=$(timedatectl show --property=Timezone --value 2>/dev/null)
+        [ -z "$TZ_INIT" ] && TZ_INIT="America/Mexico_City"
+        if [ -f "/usr/share/zoneinfo/$TZ_INIT" ]; then
+            sudo ln -sf "/usr/share/zoneinfo/$TZ_INIT" /etc/localtime 2>/dev/null \
+                && echo -e "  ✓ /etc/localtime → $TZ_INIT"
+        fi
+    fi
+
+    # --- Distribución de teclado (00-keyboard.conf de Xorg) ---
+    if [ ! -f /etc/X11/xorg.conf.d/00-keyboard.conf ]; then
+        KB_INIT=$(setxkbmap -query 2>/dev/null | grep "^layout:" | awk '{print $2}')
+        [ -z "$KB_INIT" ] && KB_INIT="latam"
+        sudo mkdir -p /etc/X11/xorg.conf.d 2>/dev/null
+        sudo sh -c "cat > /etc/X11/xorg.conf.d/00-keyboard.conf" <<EOF
+Section "InputClass"
+    Identifier "system-keyboard"
+    MatchIsKeyboard "on"
+    Option "XkbLayout" "$KB_INIT"
+EndSection
+EOF
+        [ -f /etc/X11/xorg.conf.d/00-keyboard.conf ] && echo -e "  ✓ distribucion de teclado creada: $KB_INIT"
+    fi
+fi
+
+echo ""
+
+# =====================================================================
 # 1️⃣2️⃣ CONFIGURAR ZSH DE ROOT (symlinks a la config del usuario)
 # =====================================================================
 echo -e "${YELLOW}👑 Configurando zsh de root (symlinks)...${NC}"
