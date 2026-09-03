@@ -50,5 +50,9 @@ helpers.resize_gaps = helpers.misc.resize_gaps
 helpers.resize_padding = helpers.misc.resize_padding
 helpers.find = helpers.misc.find
 helpers.round = helpers.misc.round
+helpers.desktop_widgets_hidden = helpers.misc.desktop_widgets_hidden
+helpers.hide_all_desktop_widgets = helpers.misc.hide_all_desktop_widgets
+helpers.show_all_desktop_widgets = helpers.misc.show_all_desktop_widgets
+helpers.toggle_all_desktop_widgets = helpers.misc.toggle_all_desktop_widgets
 
 return helpers

@@ -399,32 +399,7 @@ local transparency_btn = create_btn("", i18n.tr("sm.transparency"), beautiful
     end)
 
     local function toggle_osd_widgets()
-        for s in screen do
-            if s.datetime_widget then
-                s.datetime_widget.visible = not s.datetime_widget.visible
-            end
-            if s.desktop_sysmon then
-                s.desktop_sysmon.visible = not s.desktop_sysmon.visible
-            end
-            if s.desktop_music then
-                s.desktop_music.visible = not s.desktop_music.visible
-            end
-        end
-        -- Persistir estado
-        local state_file = os.getenv("HOME") .. "/.cache/awesome/.desktop-widgets-hidden"
-        local hidden = false
-        for s in screen do
-            if s.datetime_widget and not s.datetime_widget.visible then
-                hidden = true
-                break
-            end
-        end
-        if hidden then
-            local f = io.open(state_file, "w")
-            if f then f:close() end
-        else
-            os.remove(state_file)
-        end
+        helpers.toggle_all_desktop_widgets()
     end
 
     local widgets_btn = create_btn("", i18n.tr("sm.widgets"), beautiful.xcolor3, function()

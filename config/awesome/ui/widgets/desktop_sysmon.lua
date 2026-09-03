@@ -341,7 +341,7 @@ local function create_widget(s)
                     w:geometry({width = dpi(base_w * current_scale), height = dpi(base_h * current_scale)})
                 end},
                 { i18n.tr("dw.hide"), function()
-                    w.visible = false
+                    helpers.hide_all_desktop_widgets()
                 end},
             },
             theme = { width = dpi(160), font = beautiful.font_name .. "10" }

@@ -361,7 +361,7 @@ local function create_widget(s)
                     update_scale(current_scale)
                 end},
                 { i18n.tr("dw.hide"), function()
-                    w.visible = false
+                    helpers.hide_all_desktop_widgets()
                 end},
             },
             theme = { width = dpi(200), font = beautiful.font_name .. "10" }
