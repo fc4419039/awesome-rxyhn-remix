@@ -309,7 +309,7 @@ awful.keyboard.append_global_keybindings({
     awful.key({modkey}, "v", function()
         require("ui.system_menu.volume_panel").toggle()
     end,
-    {description = "volume, brightness & color temp control menu", group = "hotkeys"}),
+    {description = "volume, brightness &amp; color temp control menu", group = "hotkeys"}),
 
     -- Clipboard history
     awful.key({modkey, "Shift"}, "v", function()
@@ -368,7 +368,7 @@ awful.keyboard.append_global_keybindings({
 -- Awesome stuff
 awful.keyboard.append_global_keybindings({
     awful.key({modkey}, "F1",
-        hotkeys_popup.show_help,
+        function() hotkeys_popup.show_help(nil, awful.screen.focused()) end,
     {description = "show help", group = "awesome"}),
     awful.key({modkey, ctrl}, "r",
         function() require("ui.reload").restart() end,
