@@ -48,14 +48,80 @@ retry_cmd() {
     return 1
 }
 
-# 1. Obtener el sink físico (hardware) - con retry
+# 1. Elegir el sink físico de salida (hardware)
+#    Se prioriza el dispositivo de salida "activo" en este orden:
+#      1) Parlante Bluetooth conectado (bluez_output)
+#      2) HDMI / DisplayPort con audio
+#      3) Audio USB
+#      4) Analógico/integrados (fallback)
+#    Para los de tipo alsa se prefiere el que esté RUNNING (reproduciendo),
+#    evitando así el error de "destino fijo" que cortaba el audio al cambiar
+#    de dispositivo de salida.
+pick_typed_sink() {
+    local pattern="$1" prefs_state="$2"
+    # Primero un sink de ese tipo que esté RUNNING (activo)
+    local s
+    s=$(pactl list sinks short 2>/dev/null | awk -v p="$pattern" '$2 ~ p && $NF == "RUNNING" {print $2; exit}')
+    [ -n "$s" ] && { echo "$s"; return 0; }
+    [ "$prefs_state" = "1" ] && return 1
+    # Luego cualquiera de ese tipo
+    pactl list sinks short 2>/dev/null | awk -v p="$pattern" '$2 ~ p {print $2; exit}'
+}
+
+bt_sink_connected() {
+    local bt mac
+    bt=$(pactl list sinks short 2>/dev/null | awk '/bluez_output/ {print $2; exit}')
+    [ -z "$bt" ] && return 1
+    mac=$(sed -E 's/bluez_output\.([0-9A-Fa-f_]+)\..*/\1/' <<<"$bt" | tr '_' ':')
+    [ -n "$mac" ] && bluetoothctl info "$mac" 2>/dev/null | grep -q '^[[:space:]]*Connected: yes'
+}
+
+pick_hardware_sink() {
+    local s
+    # 1) Parlante Bluetooth conectado
+    if bt_sink_connected; then
+        pactl list sinks short 2>/dev/null | awk '/bluez_output/ {print $2; exit}'
+        return 0
+    fi
+    # 2) HDMI / DisplayPort
+    s=$(pick_typed_sink 'alsa_output.*hdmi' 0 || pick_typed_sink 'alsa_output.*(hdmi|dp|displayport)' 0)
+    [ -n "$s" ] && { echo "$s"; return 0; }
+    # 3) USB
+    s=$(pick_typed_sink 'alsa_output.*usb' 0)
+    [ -n "$s" ] && { echo "$s"; return 0; }
+    # 4) Analógico/integrados
+    s=$(pick_typed_sink 'alsa_output.*analog' 0)
+    [ -n "$s" ] && { echo "$s"; return 0; }
+    # Fallback: cualquier sink de hardware
+    pactl list sinks short 2>/dev/null | awk '/alsa_output/ || /alsa_/ {print $2; exit}'
+}
+
+# Reapuntar (recrear) los loopbacks hacia el sink de hardware deseado.
+# Como module-loopback tiene destino fijo, se descarga y recarga apuntando
+# al nuevo sink destino.
+repoint_loopback() {
+    local src="$1" target="$2"
+    [ -z "$target" ] && return 1
+    local old
+    old=$(pactl list modules short 2>/dev/null | grep "module-loopback" | grep "source=${src}.monitor" | awk '{print $1; exit}')
+    if [ -n "$old" ]; then
+        pactl unload-module "$old" 2>/dev/null
+    fi
+    if pactl load-module module-loopback source="${src}.monitor" sink="$target" latency_msec=25 2>/dev/null; then
+        log "Loopback $src → $target"
+        return 0
+    fi
+    log "WARN: No se pudo crear loopback $src → $target"
+    return 1
+}
+
 log "Buscando sink de hardware..."
-HARDWARE_SINK=$(pactl list sinks short 2>/dev/null | awk '/alsa_output/ || /bluez/ || /alsa_/ {print $2; exit}')
+HARDWARE_SINK=$(pick_hardware_sink)
 
 if [ -z "$HARDWARE_SINK" ]; then
     log "Sink no encontrado, esperando a PipeWire/PulseAudio..."
-    if retry_cmd 'pactl list sinks short 2>/dev/null | awk '"'"'/alsa_output/ || /bluez/ || /alsa_/ {print $2; exit}'"'"' >/dev/null'; then
-        HARDWARE_SINK=$(pactl list sinks short 2>/dev/null | awk '/alsa_output/ || /bluez/ || /alsa_/ {print $2; exit}')
+    if retry_cmd 'pactl list sinks short 2>/dev/null | awk '"'"'/alsa_output/ || /alsa_/ {print $2; exit}'"'"' >/dev/null'; then
+        HARDWARE_SINK=$(pick_hardware_sink)
     fi
 fi
 
@@ -77,18 +143,9 @@ if ! pactl list sinks short 2>/dev/null | awk '{print $2}' | grep -qx "$SYSTEM_S
     fi
 fi
 
-# 3. Loopback system_sink → hardware
-if [ -n "${HARDWARE_SINK:-}" ] && ! pactl list modules short 2>/dev/null | \
-  grep "module-loopback" | \
-  grep -q "source=${SYSTEM_SINK_NAME}.monitor.*sink=${HARDWARE_SINK}"; then
-    if pactl load-module module-loopback \
-        source="${SYSTEM_SINK_NAME}.monitor" \
-        sink="$HARDWARE_SINK" \
-        latency_msec=25 2>/dev/null; then
-        log "Creado loopback $SYSTEM_SINK_NAME → $HARDWARE_SINK"
-    else
-        log "WARN: No se pudo crear loopback system_sink"
-    fi
+# 3. Loopback system_sink → hardware (dinámico: BT o analógico)
+if [ -n "${HARDWARE_SINK:-}" ]; then
+    repoint_loopback "$SYSTEM_SINK_NAME" "$HARDWARE_SINK"
 fi
 
 # 4. Elegir system_sink como default
@@ -141,8 +198,9 @@ if ! pactl list sinks short 2>/dev/null | awk '{print $2}' | grep -qx "$NOTIF_SI
     fi
 fi
 
-# 7. Loopback notifications → hardware
+# 7. Loopback notifications → hardware (dinámico)
 if [ -n "${HARDWARE_SINK:-}" ]; then
+    # Limpiar cualquier loopback de notificaciones viejo que apunte a otro destino
     pactl list modules short 2>/dev/null | \
       grep "module-loopback" | \
       grep "source=${NOTIF_SINK_NAME}.monitor" | \
@@ -153,21 +211,7 @@ if [ -n "${HARDWARE_SINK:-}" ]; then
         fi
       done
 
-    EXISTING_NOTIF_LOOPBACK=$(pactl list modules short 2>/dev/null | \
-      grep "module-loopback" | \
-      grep "source=${NOTIF_SINK_NAME}.monitor.*sink=${HARDWARE_SINK}" | \
-      wc -l)
-
-    if [ "$EXISTING_NOTIF_LOOPBACK" -eq 0 ]; then
-        if pactl load-module module-loopback \
-            source="${NOTIF_SINK_NAME}.monitor" \
-            sink="$HARDWARE_SINK" \
-            latency_msec=25 2>/dev/null; then
-            log "Creado loopback $NOTIF_SINK_NAME → $HARDWARE_SINK"
-        else
-            log "WARN: No se pudo crear loopback notifications"
-        fi
-    fi
+    repoint_loopback "$NOTIF_SINK_NAME" "$HARDWARE_SINK"
 fi
 
 # 8. Asegurar volumen del hardware al maximo

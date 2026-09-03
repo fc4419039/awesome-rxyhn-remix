@@ -162,3 +162,6 @@ fi
 
 # 6. Notification sink setup (audio routing)
 safe_start "$HOME/.config/awesome/scripts/notif-sink-setup.sh"
+
+# 6b. Monitor de sink Bluetooth: re-encamina audio al parlante BT automáticamente
+safe_start "$HOME/.config/awesome/scripts/bt-sink-monitor.sh"
