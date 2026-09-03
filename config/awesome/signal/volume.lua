@@ -60,9 +60,9 @@ end
 -- Ejecutar una vez al inicio para inicializar el widget/notificación
 emit_volume_info()
 
--- Timer de polling: verificar cambios de volumen cada 0.5s
+-- Timer de polling: verificar cambios de volumen cada 2s
 local volume_timer = gears.timer {
-    timeout = 0.5,
+    timeout = 2,
     autostart = true,
     call_now = false,
     callback = emit_volume_info
