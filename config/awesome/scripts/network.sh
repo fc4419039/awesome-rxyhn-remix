@@ -135,9 +135,9 @@ build_menu() {
     local networks
     networks=$(cat "$list_file" 2>/dev/null)
     if [ "$radio_state" = "enabled" ]; then
-        printf "<span foreground='#f87171'>󰤮</span>   %s\n" "$(t wifi.disable)"
+        printf "<span foreground='#06b6d4'>󰤨</span>   %s\n" "$(t wifi.disable)"
     elif [ "$radio_state" = "disabled" ]; then
-        printf "<span foreground='#22c55e'>󰤨</span>   %s\n" "$(t wifi.enable)"
+        printf "<span foreground='#f87171'>󰤮</span>   %s\n" "$(t wifi.enable)"
     fi
     printf "<span foreground='#f97316'></span>   %s\n" "$(t wifi.scan)"
     if [ -z "$networks" ]; then
