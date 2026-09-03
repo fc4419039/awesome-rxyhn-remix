@@ -68,7 +68,7 @@ local function create_widget(s)
     local show_date = true
     local show_time = true
 
-    local visible_file = os.getenv("HOME") .. "/.cache/awesome/.desktop-widgets-hidden"
+    local visible_file = os.getenv("HOME") .. "/.cache/awesome/.desktop-widget-hidden-datetime"
     local initially_hidden = false
     local f_v = io.open(visible_file, "r")
     if f_v then f_v:close(); initially_hidden = true end
@@ -361,7 +361,7 @@ local function create_widget(s)
                     update_scale(current_scale)
                 end},
                 { i18n.tr("dw.hide"), function()
-                    helpers.hide_all_desktop_widgets()
+                    helpers.hide_desktop_widget("datetime_widget")
                 end},
             },
             theme = { width = dpi(200), font = beautiful.font_name .. "10" }

@@ -251,7 +251,7 @@ local function create_widget(s)
 
     local pos_file = os.getenv("HOME") .. "/.config/awesome/.desktop-music-pos-" .. s.index
 
-    local visible_file = os.getenv("HOME") .. "/.cache/awesome/.desktop-widgets-hidden"
+    local visible_file = os.getenv("HOME") .. "/.cache/awesome/.desktop-widget-hidden-music"
     local initially_hidden = false
     local f_v = io.open(visible_file, "r")
     if f_v then f_v:close(); initially_hidden = true end
@@ -339,7 +339,7 @@ local function create_widget(s)
                     save_pos()
                 end},
                 { i18n.tr("dw.hide"), function()
-                    helpers.hide_all_desktop_widgets()
+                    helpers.hide_desktop_widget("desktop_music")
                 end},
             },
             theme = { width = dpi(160), font = beautiful.font_name .. "10" }

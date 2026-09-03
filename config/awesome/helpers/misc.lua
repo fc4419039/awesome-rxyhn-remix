@@ -45,44 +45,72 @@ function misc.round(number, decimals)
 end
 
 -- Estado de visibilidad de los widgets de escritorio (Sistema, Sysmon, Música).
--- Se persiste en ~/.cache/awesome/.desktop-widgets-hidden para que queden
--- ocultos también tras recargar Awesome.
-local WIDGETS_STATE = os.getenv("HOME") .. "/.cache/awesome/.desktop-widgets-hidden"
+-- Cada widget persiste su estado por separado en ~/.cache/awesome/, así al
+-- ocultar un widget desde su propio menú solo ese queda oculto (y se mantiene
+-- oculto tras recargar). En system_menu "Widgets" se ocultan/muestran los 3.
+local WIDGET_KEYS = {
+    datetime_widget = ".desktop-widget-hidden-datetime",
+    desktop_sysmon  = ".desktop-widget-hidden-sysmon",
+    desktop_music   = ".desktop-widget-hidden-music",
+}
 
--- Recorre todas las pantallas y recoge los widgets de escritorio existentes.
-local function all_desktop_widgets()
+local function state_file(key)
+    return os.getenv("HOME") .. "/.cache/awesome/" .. WIDGET_KEYS[key]
+end
+
+-- Recorre todas las pantallas y recoge los widgets de escritorio de una clave.
+local function widgets_by_key(key)
     local list = {}
     for s in screen do
-        if s.datetime_widget then list[#list + 1] = s.datetime_widget end
-        if s.desktop_sysmon then list[#list + 1] = s.desktop_sysmon end
-        if s.desktop_music then list[#list + 1] = s.desktop_music end
+        if s[key] then list[#list + 1] = s[key] end
     end
     return list
 end
 
--- true si algún widget de escritorio está oculto en alguna pantalla.
+-- true si el widget de esa clave está en modo oculto (persistido).
+function misc.desktop_widget_hidden(key)
+    local f = io.open(state_file(key), "r")
+    if f then f:close(); return true end
+    return false
+end
+
+-- Oculta SOLO el widget indicado y persiste su estado individual.
+function misc.hide_desktop_widget(key)
+    for _, w in ipairs(widgets_by_key(key)) do
+        w.visible = false
+    end
+    local f = io.open(state_file(key), "w")
+    if f then f:close() end
+end
+
+-- Muestra SOLO el widget indicado y borra su estado individual.
+function misc.show_desktop_widget(key)
+    for _, w in ipairs(widgets_by_key(key)) do
+        w.visible = true
+    end
+    os.remove(state_file(key))
+end
+
+-- true si hay al menos un widget de escritorio en modo oculto (persistido).
 function misc.desktop_widgets_hidden()
-    for _, w in ipairs(all_desktop_widgets()) do
-        if not w.visible then return true end
+    for key in pairs(WIDGET_KEYS) do
+        if misc.desktop_widget_hidden(key) then return true end
     end
     return false
 end
 
--- Oculta todos los widgets de escritorio y persiste el estado.
+-- Oculta los 3 widgets y persiste el estado de cada uno.
 function misc.hide_all_desktop_widgets()
-    for _, w in ipairs(all_desktop_widgets()) do
-        w.visible = false
+    for key in pairs(WIDGET_KEYS) do
+        misc.hide_desktop_widget(key)
     end
-    local f = io.open(WIDGETS_STATE, "w")
-    if f then f:close() end
 end
 
--- Muestra todos los widgets de escritorio y borra el estado persistido.
+-- Muestra los 3 widgets y borra el estado de cada uno.
 function misc.show_all_desktop_widgets()
-    for _, w in ipairs(all_desktop_widgets()) do
-        w.visible = true
+    for key in pairs(WIDGET_KEYS) do
+        misc.show_desktop_widget(key)
     end
-    os.remove(WIDGETS_STATE)
 end
 
 -- Desde el system_menu: si no hay ninguno oculto, oculta los 3; si hay uno

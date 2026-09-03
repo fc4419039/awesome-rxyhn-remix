@@ -250,7 +250,7 @@ local function create_widget(s)
     local current_scale = 1
     local pos_file = os.getenv("HOME") .. "/.config/awesome/.desktop-sysmon-pos-" .. s.index
 
-    local visible_file = os.getenv("HOME") .. "/.cache/awesome/.desktop-widgets-hidden"
+    local visible_file = os.getenv("HOME") .. "/.cache/awesome/.desktop-widget-hidden-sysmon"
     local initially_hidden = false
     local f_v = io.open(visible_file, "r")
     if f_v then f_v:close(); initially_hidden = true end
@@ -341,7 +341,7 @@ local function create_widget(s)
                     w:geometry({width = dpi(base_w * current_scale), height = dpi(base_h * current_scale)})
                 end},
                 { i18n.tr("dw.hide"), function()
-                    helpers.hide_all_desktop_widgets()
+                    helpers.hide_desktop_widget("desktop_sysmon")
                 end},
             },
             theme = { width = dpi(160), font = beautiful.font_name .. "10" }
