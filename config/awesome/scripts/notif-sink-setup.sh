@@ -107,7 +107,7 @@ repoint_loopback() {
     if [ -n "$old" ]; then
         pactl unload-module "$old" 2>/dev/null
     fi
-    if pactl load-module module-loopback source="${src}.monitor" sink="$target" latency_msec=70 2>/dev/null; then
+    if pactl load-module module-loopback source="${src}.monitor" sink="$target" latency_msec=10 2>/dev/null; then
         log "Loopback $src → $target"
         return 0
     fi
