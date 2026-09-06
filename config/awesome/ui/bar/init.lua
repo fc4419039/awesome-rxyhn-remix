@@ -327,6 +327,77 @@ screen.connect_signal("request::desktop_decoration", function(s)
     anchor("temp_text", temp_text)
     screen_temps[s] = {temp = temp_text}
 
+    -- Bluetooth device battery widget
+    local bt_batt = wibox.widget{
+        font = beautiful.font_name .. "bold 7",
+        align = "center",
+        valign = "center",
+        markup = "",
+        widget = wibox.widget.textbox
+    }
+    anchor("bt_batt", bt_batt)
+
+    local bt_batt_icons = {
+        [90] = "󰂂", [80] = "󰂁", [70] = "󰂀", [60] = "󰁿",
+        [50] = "󰁾", [40] = "󰁽", [30] = "󰁼", [20] = "󰁻"
+    }
+    local bt_batt_devname = "Bluetooth"
+    local function bt_batt_icon(p)
+        for k, v in pairs(bt_batt_icons) do
+            if p >= k then return v end
+        end
+        return "󰁺"
+    end
+    local function update_bt_battery()
+        awful.spawn.easy_async_with_shell(
+            os.getenv("HOME") .. "/.config/awesome/scripts/bt_battery.py",
+            function(stdout)
+                local line = stdout:match("([^\n]*)")
+                if line and line ~= "" then
+                    local name, pct = line:match("^(.*)|(%d+)$")
+                    if pct then
+                        local n = tonumber(pct)
+                        local color = beautiful.deco_green or beautiful.xcolor2
+                        if n < 60 then color = beautiful.deco_yellow or beautiful.xcolor3 end
+                        if n < 30 then color = beautiful.deco_red or beautiful.xcolor1 end
+                        bt_batt_devname = name ~= "" and name or bt_batt_devname
+                        bt_batt.markup = helpers.colorize_text(
+                            bt_batt_icon(n) .. "\n" .. n .. "%", color)
+                        bt_batt.visible = true
+                        return
+                    end
+                end
+                bt_batt.visible = false
+            end
+        )
+    end
+
+    bt_batt:buttons(gears.table.join(
+        awful.button({}, 1, function()
+            awful.spawn.with_shell(os.getenv("HOME") .. "/.config/awesome/scripts/bluetooth.sh")
+        end)
+    ))
+    helpers.add_hover_cursor(bt_batt, "hand2")
+
+    bt_batt:connect_signal("mouse::enter", function()
+        if bt_batt._tooltip then
+            bt_batt._tooltip.text = bt_batt_devname
+            bt_batt._tooltip.visible = true
+        else
+            bt_batt._tooltip = awful.tooltip{objects = {bt_batt}, text = bt_batt_devname}
+        end
+    end)
+    bt_batt:connect_signal("mouse::leave", function()
+        if bt_batt._tooltip then bt_batt._tooltip.visible = false end
+    end)
+
+    gears.timer{
+        timeout = 45,
+        call_now = true,
+        autostart = true,
+        callback = update_bt_battery
+    }
+
     -- Stats
     -----------
 
@@ -661,6 +732,7 @@ screen.connect_signal("request::desktop_decoration", function(s)
                 awesome_icon,
                 taglist,
                 temp_text,
+                bt_batt,
                 spacing = dpi(6),
                 layout = wibox.layout.fixed.vertical
             },
