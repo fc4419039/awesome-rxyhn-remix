@@ -5,6 +5,7 @@ local beautiful = require("beautiful")
 
 local update_interval = 30
 local last_notified = 0
+local last_charge = nil
 
 local bat_path = "/sys/class/power_supply/BAT0"
 local ac_path = "/sys/class/power_supply/AC"
@@ -36,7 +37,24 @@ end
 
 local function read_charger()
     awful.spawn.easy_async_with_shell("cat " .. ac_path .. "/online", function(out)
-        awesome.emit_signal("signal::charger", tonumber(out) == 1)
+        local on = tonumber(out) == 1
+        awesome.emit_signal("signal::charger", on)
+
+        -- Notificar solo en transiciones de estado (no al arrancar)
+        if last_charge == nil then
+            last_charge = on
+            return
+        end
+        if on ~= last_charge then
+            last_charge = on
+            naughty.notify{
+                title = on and "🔌 Cargador conectado" or "🔋 Cargador desconectado",
+                text = on and "La batería se está cargando" or "Funcionando con batería",
+                timeout = 5,
+                bg = on and (beautiful.deco_green or beautiful.xcolor2) or beautiful.xcolor8,
+                fg = beautiful.xforeground,
+            }
+        end
     end)
 end
 
@@ -70,7 +88,10 @@ gears.timer({
     timeout = update_interval,
     call_now = true,
     autostart = true,
-    callback = read_battery
+    callback = function()
+        read_battery()
+        read_charger()
+    end
 })
 
 -- Charger on startup

@@ -59,6 +59,23 @@ awful.keyboard.append_global_keybindings({
             awful.spawn(file_manager)
         end,
         {description = "open file manager", group = "launcher"}),
+        awful.key({modkey, ctrl}, "Return", function()
+            local c = client.focus
+            local dir = os.getenv("HOME")
+            if c and c.pid then
+                local ok, path = pcall(function()
+                    local fd = io.open("/proc/" .. c.pid .. "/cwd", "r")
+                    if fd then
+                        local p = fd:read("*a")
+                        fd:close()
+                        return p and p:match("(.+)\n$")
+                    end
+                end)
+                if ok and path and path ~= "" then dir = path end
+            end
+            awful.spawn("kitty --directory " .. dir)
+        end,
+        {description = "terminal in active dir", group = "launcher"}),
         awful.key({ctrl}, "f", function()
             if wibar_toggle then wibar_toggle() end
         end,
@@ -502,13 +519,17 @@ client.connect_signal("request::default_keybindings", function()
             c:move_to_screen() end,
         {description = "move to screen", group = "client"}),
         awful.key({modkey, shift}, "b", function(c)
-            c.floating = not c.floating
-            c.width = 400
-            c.height = 200
-            awful.placement.bottom_right(c)
-            c.sticky = not c.sticky
+            if c.sticky and c.ontop then
+                c.sticky = false
+                c.ontop = false
+                c.floating = false
+            else
+                c.floating = true
+                c.sticky = true
+                c.ontop = true
+            end
         end,
-        {description = "toggle keep on top", group = "client"}),
+        {description = "toggle anchor (keep on top)", group = "client"}),
 
         awful.key({modkey}, "n", function(c)
             -- The client currently has the input focus, so it cannot be
