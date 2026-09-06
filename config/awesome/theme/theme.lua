@@ -56,9 +56,9 @@ theme.deco_fg     = saturate(xrdb.foreground, 0.5)
 ----------
 
 -- Load ~/.Xresources colors (SÓLIDOS - sin transparencia)
-theme.xbackground = "#0a1419ff"
+theme.xbackground = "#0a141973"
 theme.xforeground = xrdb.foreground
-theme.xcolor0 = "#1c252cff"
+theme.xcolor0 = "#1c252c73"
 theme.xcolor1 = xrdb.color1
 theme.xcolor2 = xrdb.color2
 theme.xcolor3 = xrdb.color3
@@ -74,8 +74,8 @@ theme.xcolor12 = xrdb.color12
 theme.xcolor13 = xrdb.color13
 theme.xcolor14 = xrdb.color14
 theme.xcolor15 = xrdb.color15
-theme.darker_bg = "#0a1419ff"
-theme.lighter_bg = "#162026ff"
+theme.darker_bg = "#0a141973"
+theme.lighter_bg = "#16202673"
 theme.dashboard_fg = "#666c79"
 theme.transparent = "#00000000"
 
@@ -184,7 +184,7 @@ theme.pop_fg = theme.xforeground
 theme.pop_border_radius = theme.border_radius
 
 -- Tooltip
-theme.tooltip_bg = "#0a1419ff"
+theme.tooltip_bg = "#0a141980"
 theme.tooltip_height = dpi(245)
 theme.tooltip_width = dpi(200)
 theme.tooltip_gap = dpi(10)
@@ -202,7 +202,7 @@ theme.prompt_fg = theme.xforeground
 
 -- dashboard
 theme.dashboard_width = dpi(280)
-theme.dashboard_box_bg = "#162026ff"
+theme.dashboard_box_bg = "#16202673"
 theme.dashboard_box_fg = theme.dashboard_fg
 
 -- Playerctl
@@ -248,7 +248,7 @@ theme.useless_gap = dpi(5)
 
 -- Wibar
 theme.wibar_width = dpi(39)
-theme.wibar_bg = "#0a1419ff"
+theme.wibar_bg = "#0a1419cc"
 theme.wibar_position = "left"
 
 -- Tabs

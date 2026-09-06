@@ -26,6 +26,7 @@ kill_existing_router() {
         fi
     fi
     pkill -f "notification-router.sh" 2>/dev/null || true
+    pkill -f "pactl subscribe" 2>/dev/null || true
 }
 
 # Helper: log with timestamp
