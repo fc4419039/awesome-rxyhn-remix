@@ -327,27 +327,48 @@ screen.connect_signal("request::desktop_decoration", function(s)
     anchor("temp_text", temp_text)
     screen_temps[s] = {temp = temp_text}
 
-    -- Bluetooth device battery widget
-    local bt_batt = wibox.widget{
-        font = beautiful.font_name .. "bold 7",
+    -- Bluetooth device battery widget (estilo arcchart redondeado como batt,
+    -- ocupa el slot de la temperatura: se alterna según haya dispositivo BT)
+    local bt_batt_arc = wibox.widget{
+        colors = {beautiful.deco_cyan},
+        bg = beautiful.xcolor8 .. "88",
+        value = 50,
+        min_value = 0,
+        max_value = 100,
+        thickness = dpi(3),
+        paddings = dpi(2),
+        start_angle = math.pi * 3 / 2,
+        widget = wibox.container.arcchart
+    }
+    anchor("bt_batt_arc", bt_batt_arc)
+
+    local bt_batt_pct = wibox.widget{
+        font = beautiful.font_name .. "bold 7.5",
         align = "center",
         valign = "center",
-        markup = "",
+        markup = helpers.colorize_text("…", beautiful.deco_cyan),
         widget = wibox.widget.textbox
+    }
+    anchor("bt_batt_pct", bt_batt_pct)
+
+    local bt_batt = wibox.widget{
+        bt_batt_arc,
+        {
+            bt_batt_pct,
+            widget = wibox.container.place
+        },
+        layout = wibox.layout.stack
     }
     anchor("bt_batt", bt_batt)
 
-    local bt_batt_icons = {
-        [90] = "󰂂", [80] = "󰂁", [70] = "󰂀", [60] = "󰁿",
-        [50] = "󰁾", [40] = "󰁽", [30] = "󰁼", [20] = "󰁻"
+    local bt_batt_wrap = wibox.widget{
+        bt_batt,
+        margins = dpi(7),
+        widget = wibox.container.margin
     }
+    anchor("bt_batt_wrap", bt_batt_wrap)
+
     local bt_batt_devname = "Bluetooth"
-    local function bt_batt_icon(p)
-        for k, v in pairs(bt_batt_icons) do
-            if p >= k then return v end
-        end
-        return "󰁺"
-    end
     local function update_bt_battery()
         awful.spawn.easy_async_with_shell(
             os.getenv("HOME") .. "/.config/awesome/scripts/bt_battery.py",
@@ -357,17 +378,18 @@ screen.connect_signal("request::desktop_decoration", function(s)
                     local name, pct = line:match("^(.*)|(%d+)$")
                     if pct then
                         local n = tonumber(pct)
-                        local color = beautiful.deco_green or beautiful.xcolor2
-                        if n < 60 then color = beautiful.deco_yellow or beautiful.xcolor3 end
-                        if n < 30 then color = beautiful.deco_red or beautiful.xcolor1 end
                         bt_batt_devname = name ~= "" and name or bt_batt_devname
-                        bt_batt.markup = helpers.colorize_text(
-                            bt_batt_icon(n) .. "\n" .. n .. "%", color)
-                        bt_batt.visible = true
+                        bt_batt_arc.value = n
+                        bt_batt_pct.markup = helpers.colorize_text(n, beautiful.deco_cyan)
+                        bt_batt_wrap.visible = true
+                        if temp_text.visible then temp_text.visible = false end
                         return
                     end
                 end
-                bt_batt.visible = false
+                if bt_batt_wrap.visible then
+                    bt_batt_wrap.visible = false
+                    temp_text.visible = true
+                end
             end
         )
     end
@@ -392,7 +414,7 @@ screen.connect_signal("request::desktop_decoration", function(s)
     end)
 
     gears.timer{
-        timeout = 45,
+        timeout = 2,
         call_now = true,
         autostart = true,
         callback = update_bt_battery
@@ -732,7 +754,7 @@ screen.connect_signal("request::desktop_decoration", function(s)
                 awesome_icon,
                 taglist,
                 temp_text,
-                bt_batt,
+                bt_batt_wrap,
                 spacing = dpi(6),
                 layout = wibox.layout.fixed.vertical
             },
